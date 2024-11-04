@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Exam</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+
+</head>
+<body>
+
+    <!-- Sidebar Navigation Menu -->
+    <div class="sidebar">
+        <a href="{{ url_for('home') }}" class="sidebar-button">Home</a>
+        <a href="{{ url_for('logout') }}" class="sidebar-button">Logout</a>
+    </div>
+    
+    <form method="POST">
+        {% for question in questions %}
+            <p>{{ question.question_text }}</p>
+            <input type="radio" name="{{ question.id }}" value="A"> {{ question.option_a }}<br>
+            <input type="radio" name="{{ question.id }}" value="B"> {{ question.option_b }}<br>
+            <input type="radio" name="{{ question.id }}" value="C"> {{ question.option_c }}<br>
+            <input type="radio" name="{{ question.id }}" value="D"> {{ question.option_d }}<br>
+        {% endfor %}
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

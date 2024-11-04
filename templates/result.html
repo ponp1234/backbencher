@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Result</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Sidebar Navigation Menu -->
+    <div class="sidebar">
+        <a href="{{ url_for('user_home') }}" class="sidebar-button">User Home</a>
+        <a href="{{ url_for('logout') }}" class="sidebar-button">Bye</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <div class="result-container">
+            <h1 class="score">Your Score: {{ score }} out of {{ total }}</h1>
+            <p>Congratulations on completing the exam! Keep working hard and improving your skills.</p>
+        </div>
+    </div>
+</body>
+</html>

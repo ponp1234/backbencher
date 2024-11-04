@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Question</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+
+
+        /* Top Bar Styling */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background-color: #f1f1f1;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Progress Bar Styling */
+        .progress-bar {
+            width: 70%;
+            background-color: #e0e0e0;
+            height: 15px;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-left: 20px;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #4caf50;
+            width: {{ (question_number / total_questions) * 100 }}%;
+            transition: width 0.3s;
+        }
+
+        /* Content Styling */
+        .header {
+            margin-left: 160px;
+            margin-top: 100px; /* Offset for the top bar */
+            padding: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        .question-container {
+            margin-left: 300px;
+            padding: 20px;
+        }
+        .question-container form {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Top Bar with Question Number, Progress Bar, and Current Time -->
+    <div class="top-bar">
+        {{ exam.title }}
+        <div>Question {{ question_number }} of {{ total_questions }}</div>
+        <div class="progress-bar">
+            <div class="progress-bar-fill"></div>
+        </div>
+        <div id="current-time"></div>
+    </div>
+
+    <!-- Sidebar Navigation Menu -->
+    <div class="sidebar">
+        <a href="{{ url_for('user_home') }}" class="sidebar-button">My Board</a>
+        <a href="{{ url_for('logout') }}" class="sidebar-button">Bye</a>
+    </div>
+
+
+    <!-- Question Content -->
+    <div class="question-container">
+        <p>{{ question.question_text }}</p>
+        
+        <form method="POST" action="{{ url_for('exam', exam_id=exam.id, question_number=question_number) }}">
+            {% if question.question_type == 'fill_in_the_blank' %}
+                <!-- Render input fields for each blank -->
+                {% for i in range(1, question.blanks + 1) %}
+                    <label for="blank{{ i }}">Answer {{ i }}:</label>
+                    <input type="text" name="blank{{ i }}" id="blank{{ i }}" required>
+                    <br><br>
+                {% endfor %}
+            
+            {% elif question.question_type == 'multiple' %}
+                <!-- Render checkboxes for multiple-choice questions -->
+                {% if question.option_a %}
+                    <label>
+                        <input type="checkbox" name="answer" value="option_a"> {{ question.option_a }}
+                    </label><br>
+                {% endif %}
+                {% if question.option_b %}
+                    <label>
+                        <input type="checkbox" name="answer" value="option_b"> {{ question.option_b }}
+                    </label><br>
+                {% endif %}
+                {% if question.option_c %}
+                    <label>
+                        <input type="checkbox" name="answer" value="option_c"> {{ question.option_c }}
+                    </label><br>
+                {% endif %}
+                {% if question.option_d %}
+                    <label>
+                        <input type="checkbox" name="answer" value="option_d"> {{ question.option_d }}
+                    </label><br>
+                {% endif %}
+            
+            {% else %}
+                <!-- Render radio buttons for single-choice questions -->
+                {% if question.option_a %}
+                    <label>
+                        <input type="radio" name="answer" value="option_a" required> {{ question.option_a }}
+                    </label><br>
+                {% endif %}
+                {% if question.option_b %}
+                    <label>
+                        <input type="radio" name="answer" value="option_b"> {{ question.option_b }}
+                    </label><br>
+                {% endif %}
+                {% if question.option_c %}
+                    <label>
+                        <input type="radio" name="answer" value="option_c"> {{ question.option_c }}
+                    </label><br>
+                {% endif %}
+                {% if question.option_d %}
+                    <label>
+                        <input type="radio" name="answer" value="option_d"> {{ question.option_d }}
+                    </label><br>
+                {% endif %}
+            
+            {% endif %}
+            
+            <button type="submit">Next</button>
+        </form>
+    </div>
+    
+    <div class="question-container">
+    </div>
+
+    <!-- JavaScript to Update Current Time -->
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById("current-time").textContent = `Time: ${hours}:${minutes}:${seconds}`;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+    </script>
+
+</body>
+</html>

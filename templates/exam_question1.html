@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Question</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        /* General Styling */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+        }
+
+        /* Sidebar Styling */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 200px;
+            background-color: #333;
+            color: #ffffff;
+            padding-top: 60px; /* Space for top bar */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        }
+        .sidebar a {
+            color: #ffffff;
+            text-decoration: none;
+            padding: 10px 20px;
+            text-align: center;
+            width: 100%;
+            display: block;
+        }
+        .sidebar a:hover {
+            background-color: #555;
+        }
+
+        /* Top Bar Styling */
+        .top-bar {
+            position: fixed;
+            top: 0;
+            left: 200px; /* Offset for sidebar */
+            right: 0;
+            height: 60px;
+            background-color: #ffffff;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Progress Bar Styling */
+        .progress-bar {
+            width: 60%;
+            background-color: #e0e0e0;
+            height: 10px;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            background-color: #4caf50;
+            width: {{ (question_number / total_questions) * 100 }}%;
+            transition: width 0.3s;
+        }
+
+        /* Full-screen Question Box */
+        .question-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            margin-left: 200px; /* Offset for sidebar */
+            box-sizing: border-box;
+            margin-top: 60px; /* Offset for the top bar */
+        }
+
+        .question-box {
+            background-color: #ffffff;
+            width: 100%;
+            max-width: 800px;
+            padding: 40px;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        .question-box:hover {
+            transform: scale(1.02);
+        }
+
+        /* Question Text Styling */
+        .question-text {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* Answer Options Styling */
+        .answer-options label {
+            display: block;
+            font-size: 1em;
+            color: #555;
+            margin: 10px 0;
+            text-align: left;
+        }
+
+        /* Submit Button Styling */
+        .submit-button {
+            margin-top: 30px;
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .submit-button:hover {
+            background-color: #45a049;
+        }
+
+        /* AI Response Button and Box */
+        .ai-button {
+            margin-top: 20px;
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px 20px;
+            font-size: 1em;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .ai-button:hover {
+            background-color: #0069d9;
+        }
+        .ai-response {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+            font-size: 1em;
+            color: #333;
+            display: none; /* Initially hidden */
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Sidebar Navigation Menu -->
+    <div class="sidebar">
+        <a href="{{ url_for('user_home') }}">My Board</a>
+        <a href="{{ url_for('exam_overview') }}">Exam Overview</a>
+        <a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+    <!-- Top Bar with Exam Title, Question Number, Progress Bar, and Current Time -->
+    <div class="top-bar">
+        <div>{{ exam.title }}</div>
+        <div>Question {{ question_number }} of {{ total_questions }}</div>
+        <div class="progress-bar">
+            <div class="progress-bar-fill"></div>
+        </div>
+        <div id="current-time"></div>
+    </div>
+
+    <!-- Question Content in a Full-screen Box -->
+    <div class="question-container">
+        <div class="question-box">
+            <p class="question-text" id="question-text">{{ question.question_text }}</p>
+            
+            <form method="POST" action="{{ url_for('exam', exam_id=exam.id, question_number=question_number) }}" class="answer-options">
+                {% if question.question_type == 'fill_in_the_blank' %}
+                    <!-- Render input fields for each blank -->
+                    {% for i in range(1, question.blanks + 1) %}
+                        <label for="blank{{ i }}">Answer {{ i }}:</label>
+                        <input type="text" name="blank{{ i }}" id="blank{{ i }}" required>
+                        <br><br>
+                    {% endfor %}
+                
+                {% elif question.question_type == 'multiple' %}
+                    <!-- Render checkboxes for multiple-choice questions -->
+                    {% if question.option_a %}
+                        <label>
+                            <input type="checkbox" name="answer" value="option_a"> {{ question.option_a }}
+                        </label>
+                    {% endif %}
+                    {% if question.option_b %}
+                        <label>
+                            <input type="checkbox" name="answer" value="option_b"> {{ question.option_b }}
+                        </label>
+                    {% endif %}
+                    {% if question.option_c %}
+                        <label>
+                            <input type="checkbox" name="answer" value="option_c"> {{ question.option_c }}
+                        </label>
+                    {% endif %}
+                    {% if question.option_d %}
+                        <label>
+                            <input type="checkbox" name="answer" value="option_d"> {{ question.option_d }}
+                        </label>
+                    {% endif %}
+                
+                {% else %}
+                    <!-- Render radio buttons for single-choice questions -->
+                    {% if question.option_a %}
+                        <label>
+                            <input type="radio" name="answer" value="option_a" required> {{ question.option_a }}
+                        </label>
+                    {% endif %}
+                    {% if question.option_b %}
+                        <label>
+                            <input type="radio" name="answer" value="option_b"> {{ question.option_b }}
+                        </label>
+                    {% endif %}
+                    {% if question.option_c %}
+                        <label>
+                            <input type="radio" name="answer" value="option_c"> {{ question.option_c }}
+                        </label>
+                    {% endif %}
+                    {% if question.option_d %}
+                        <label>
+                            <input type="radio" name="answer" value="option_d"> {{ question.option_d }}
+                        </label>
+                    {% endif %}
+                
+                {% endif %}
+                
+                <button type="submit" class="submit-button">Next</button>
+            </form>
+            
+            <!-- AI Assistance Button and Response Box -->
+            <button class="ai-button" onclick="getAIResponse()">Ask AI for Help</button>
+            <div class="ai-response" id="ai-response"></div>
+        </div>
+    </div>
+
+    <!-- JavaScript to Update Current Time and Fetch AI Response -->
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            document.getElementById("current-time").textContent = `Time: ${hours}:${minutes}:${seconds}`;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        async function getAIResponse() {
+            const question = document.getElementById('question-text').textContent;
+            const responseBox = document.getElementById('ai-response');
+            
+            responseBox.style.display = 'block';
+            responseBox.textContent = 'Loading AI response...';
+            
+            try {
+                const response = await fetch('https://api-inference.huggingface.co/models/gpt2', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ inputs: question })
+                });
+                
+                const data = await response.json();
+                responseBox.textContent = data[0].generated_text || "AI response unavailable.";
+            } catch (error) {
+                responseBox.textContent = 'Error fetching AI response. Please try again later.';
+            }
+        }
+    </script>
+
+</body>
+</html>
