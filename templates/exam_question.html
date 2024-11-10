@@ -343,7 +343,7 @@ async function getAIResponse() {
                     "3. Key concepts related to this question"
         };
 
-        const response = await fetch('http://localhost:5000/ask-ai', {
+        const response = await fetch('/ask-ai', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -422,7 +422,7 @@ async function getAICheck() {
             useranswer: document.getElementById('textbox_answer').value,      
         };
 
-        const response = await fetch('http://localhost:5000/check-with-ai', {
+        const response = await fetch('/check-with-ai', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
