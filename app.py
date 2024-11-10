@@ -291,12 +291,12 @@ def ask_gemini():
         print(f"Received question: {question}")  # Debug log
         
         # Structure the prompt
-        prompt = f"""Please help explain this exam question and provide guidance while maintaining academic integrity. 
+        prompt = f"""Please help explain this exam question and provide guidance with respect to IGCSC sylabus. 
         Question: {question}
         Please provide:
         1. A clear explanation of the question
         2. Key concepts to consider
-        3. Approach to solving it (without giving the answer)
+        3. Approach to solving it 
         """
         
         try:
@@ -322,7 +322,55 @@ def ask_gemini():
             'error': f"Server error: {str(e)}"
         }), 500
 
+@app.route('/check-with-ai', methods=['POST'])
+def check_gemini():
+    try:
+        data = request.json
+        exam_id = data['messages'][0]['examId']
+        question_number = int(data['messages'][0]['questionNumber'])
+        
+        # Get the question
+        questions = Question.query.filter_by(exam_id=exam_id).all()
+        question = questions[question_number - 1]
+        
+        correct_answer = None
+        correct_answers = question.correct_options       
 
+        question_text = data['messages'][0]['content']
+        
+        # Add better error handling and logging
+        print(f"Received question: {question}")  # Debug log
+        
+        # Structure the prompt
+        prompt = f"""
+        {question_text}
+        expected answer: {correct_answers}
+        Please provide:
+        1. A clear explanation why the useranswer: is correct or incorrect or partialy correct with a score from 0 to 100 based on the  expected answer
+        """
+        
+        try:
+            # Generate response using Gemini
+            response = model.generate_content(prompt)
+            
+            # Debug logging
+            print("API Response received")
+            
+            return jsonify({
+                'response': response.text if hasattr(response, 'text') else str(response)
+            })
+            
+        except Exception as api_error:
+            print(f"Gemini API error: {str(api_error)}")  # Debug log
+            return jsonify({
+                'error': f"Gemini API error: {str(api_error)}"
+            }), 500
+    
+    except Exception as e:
+        print(f"Server error: {str(e)}")  # Debug log
+        return jsonify({
+            'error': f"Server error: {str(e)}"
+        }), 500
 
 
 if __name__ == '__main__':

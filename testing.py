@@ -34,13 +34,13 @@ with app.app_context():
             "question_text": "A computer is designed using the Von Neumann model for a computer system.\n\n(a) (i) State the name of the primary storage from where data is fetched.",
             "blanks": 1,
             "correct_options": "RAM",
-            "question_type": "fill_in_the_blank"
+            "question_type": "textbox"
         },
         {
-            "question_text": "(ii) The CPU performs a cycle to process data. Fetch is the first stage in this cycle.\n\nState the names of the second and third stages in the cycle.",
+            "question_text": "dentify and describe three ethical issues that could be a concern when using the Internet.",
             "blanks": 2,
-            "correct_options": "Decode,Execute",
-            "question_type": "fill_in_the_blank"
+            "correct_options": "Plagiarism – The copying of other people's work without their permission – Claiming someone else's work as your own. Hacking – Unauthorised access to a computer/data. Malware – Malicious software designed to damage a computer system or stored data. Spyware – Keylogger used to record keypresses and sends them to third party. Ransomware – Holding hostage a user's data, often for a release fee. Intellectual property theft – Stealing other people work. Breaching copyright – Breaking the law by copying someone's work. Piracy – Using piracy websites to gain content for free that should have been paid for. Privacy – A person's data could be leaked. Phishing – Sending an email to lure users to a fake site to obtain their personal details.",
+            "question_type": "textbox"
         },
        
         # Question 8
