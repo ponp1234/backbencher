@@ -4,46 +4,65 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Exam Question</title>
- 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <style>
-    
-   
- 
-        .sidebar a {
-            color: #ffffff;
-            text-decoration: none;
-            padding: 10px 20px;
-            text-align: center;
-            width: 100%;
-            display: block;
-        }
-        .sidebar a:hover {
-            background-color: #2a4f8f;
-        }
-        
-        .sidebar {
-            background-color: #4e73df;
-            width: 200px;
-            height: 100vh;
-            position: fixed;
-            top: 0;
-            left: 0;
-            padding-top: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .sidebar-logo h2 {
+            color: white;
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+
+        .sidebar a {
+            display: block;
+            padding: 12px 20px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(5px);
+        }
 
         /* Top Bar Styling */
         .top-bar {
             position: fixed;
             top: 0;
-            left: 200px; /* Offset for sidebar */
+            left: 250px;
             right: 0;
             height: 60px;
-            background-color: #ffffff;
+            background-color: rgba(255, 255, 255, 0.8);
             padding: 10px 20px;
             display: flex;
             align-items: center;
@@ -52,7 +71,6 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
-        /* Progress Bar Styling */
         .progress-bar {
             width: 60%;
             background-color: #e0e0e0;
@@ -60,6 +78,7 @@
             border-radius: 5px;
             overflow: hidden;
         }
+
         .progress-bar-fill {
             height: 100%;
             background-color: #4caf50;
@@ -67,26 +86,29 @@
             transition: width 0.3s;
         }
 
-        /* Full-screen Question Box */
+        /* Main Content Styles */
         .question-container {
-        width: calc(100% - 300px); /* Full width minus sidebar */
-         margin-left: 300px;
-         margin-top: 100px;
+            flex: 1;
+            margin-left: 50px;
+            margin-top: 100px;
+            display: flex;
+            justify-content: center;
+            padding: 20px;
         }
 
-                /* Style when the button is disabled */
-        .submit-button:disabled {
-            background-color: #cccccc; /* Gray color when disabled */
-            color: #666666;           /* Darker text for disabled state */
-            cursor: not-allowed;      /* Show a not-allowed cursor on hover */
+        .question-box {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            animation: fadeInUp 1s;
         }
-      
 
-        /* Question Text Styling */
         .question-text {
-            font-size: 1.2em;
+            font-size: 1.5em;
             color: #333;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
         /* Answer Options Styling */
@@ -95,40 +117,75 @@
             font-size: 1em;
             color: #555;
             margin: 10px 0;
-            text-align: left;
         }
 
-        /* Submit Button Styling */
+        .answer-options input[type="text"],
+        .answer-options textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+            margin-bottom: 15px;
+        }
+
+        .answer-options input[type="text"]:focus,
+        .answer-options textarea:focus {
+            border-color: #2575fc;
+            outline: none;
+        }
+
+        .answer-options input[type="checkbox"],
+        .answer-options input[type="radio"] {
+            margin-right: 10px;
+        }
+
+        /* Submit and AI Button Styling */
+
+        
+        .submit-button, .ai-button, .next-button, .back-button {
+          margin-top: 20px;
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .back-button {
+            background: #ff6b6b;
+            color: white;
+        }
+
+
+        .back-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+        }
+
+
         .submit-button {
-            margin-top: 30px;
-            background-color: #4caf50;
-            color: #fff;
-            padding: 10px 20px;
-            font-size: 1em;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .submit-button:hover {
-            background-color: #45a049;
+            background: #4caf50;
+            color: white;
         }
 
-        /* AI Response Button and Box */
         .ai-button {
-            margin-top: 20px;
             background-color: #007bff;
-            color: #fff;
-            padding: 10px 20px;
-            font-size: 1em;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
+            color: white;
         }
+
+        .submit-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
         .ai-button:hover {
             background-color: #0069d9;
         }
+
         .ai-response {
             margin-top: 20px;
             padding: 15px;
@@ -136,55 +193,53 @@
             border-radius: 5px;
             font-size: 1em;
             color: #333;
-            display: none; /* Initially hidden */
+            display: none;
         }
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f6f9;
-            display: flex;
-            min-height: 100vh;
-            margin: 0;
+
+        .ai-response-content p, .ai-hints {
+            margin: 10px 0;
+        }
+
+        .ai-hints {
+            font-size: 0.9em;
+            color: #666;
+            background: #e3f2fd;
             padding: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #2196f3;
         }
-        
-        /* Labels */
-label {
-    display: block;
-    font-weight: 600;
-    margin-bottom: 5px;
-    color: #333;
-    font-size: 0.95em;
-}
 
-/* Input Fields */
-input[type="text"],
-input[type="email"],
-input[type="password"],
-textarea,
-select {
-    width: 50%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 1em;
-    margin-bottom: 15px;
-    transition: border-color 0.3s ease;
-}
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
 
-textarea {
-  width: 80%;
-  height: 350px;
-   font-size: 1em;
-}
- 
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            }
+
+            .top-bar {
+                left: 0;
+            }
+
+            .question-container {
+                margin-left: 0;
+                padding: 10px;
+            }
+        }
     </style>
-    
 </head>
 
 <body>
 
     <!-- Sidebar Navigation Menu -->
     <div class="sidebar">
+        <div class="sidebar-logo">
+            <h2>Backbench</h2>
+        </div>
         <a href="{{ url_for('user_home') }}">My Board</a>
         <a href="{{ url_for('logout') }}">Bye</a>
     </div>
@@ -204,8 +259,8 @@ textarea {
         <div class="question-box">
             <p class="question-text" id="question-text">{{ question.question_text }}</p>
             
-            <form   method="POST" action="{{ url_for('exam', exam_id=exam.id, question_number=question_number) }}" class="answer-options">
-               {% if question.question_type == 'textbox' %}
+            <form method="POST" action="{{ url_for('exam', exam_id=exam.id, question_number=question_number) }}" class="answer-options">
+                {% if question.question_type == 'textbox' %}
                     <textarea 
                         class="textbox-answer" 
                         name="textbox_answer" 
@@ -213,17 +268,12 @@ textarea {
                         placeholder="Type your answer here..."
                         required
                     ></textarea>
-                    <br><br>
                 {% elif question.question_type == 'fill_in_the_blank' %}
-                    <!-- Render input fields for each blank -->
                     {% for i in range(1, question.blanks + 1) %}
                         <label for="blank{{ i }}">Answer {{ i }}:</label>
                         <input type="text" name="blank{{ i }}" id="blank{{ i }}" required>
-                        <br><br>
                     {% endfor %}
-                
                 {% elif question.question_type == 'multiple' %}
-                    <!-- Render checkboxes for multiple-choice questions -->
                     {% if question.option_a %}
                         <label>
                             <input type="checkbox" name="answer" value="option_a"> {{ question.option_a }}
@@ -244,9 +294,7 @@ textarea {
                             <input type="checkbox" name="answer" value="option_d"> {{ question.option_d }}
                         </label>
                     {% endif %}
-                
                 {% else %}
-                    <!-- Render radio buttons for single-choice questions -->
                     {% if question.option_a %}
                         <label>
                             <input type="radio" name="answer" value="option_a" required> {{ question.option_a }}
@@ -267,20 +315,28 @@ textarea {
                             <input type="radio" name="answer" value="option_d"> {{ question.option_d }}
                         </label>
                     {% endif %}
-                
                 {% endif %}
+                
                 <button type="button" class="submit-button" id="sb-button" onclick="checkAnswer()">Submit</button>
-                <button type="submit" class="submit-button">Next</button>
+                <button type="button" class="next-button" id="next" disabled onclick="goToNextQuestion()">Next</button>
+                <button type="button" class="back-button" onclick="goBack()">Back</button>
             </form>
-            
+
             <!-- AI Assistance Button and Response Box -->
             <button class="ai-button" onclick="getAIResponse()" id="ai-button" disabled>Ask AI for Help</button>
             <div class="ai-response" id="ai-response"></div>
         </div>
     </div>
 
+    <!-- JavaScript to Update Current Time -->
+  
     <!-- JavaScript to Update Current Time and Fetch AI Response -->
     <script>
+    
+    function goToNextQuestion() {
+    document.querySelector('form').submit();
+}
+
         function updateTime() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -494,6 +550,12 @@ styles.textContent = `
         color: #666666;           /* Darker text for disabled state */
         cursor: not-allowed;      /* Show a not-allowed cursor on hover */
     }
+    
+    .submit-button:disabled {
+        background-color: #cccccc; /* Gray color when disabled */
+        color: #666666;           /* Darker text for disabled state */
+        cursor: not-allowed;      /* Show a not-allowed cursor on hover */
+    }
 
     .ai-response-content {
         padding: 15px;
@@ -531,6 +593,8 @@ document.head.appendChild(styles);
 async function checkAnswer() {
     document.getElementById("ai-button").disabled = false;
     document.getElementById("sb-button").disabled = true;
+    document.getElementById("next").disabled = false;
+
      const form = document.querySelector('.answer-options');
             const feedbackDiv = document.getElementById('answer-feedback');
             const textboxAnswer = document.getElementById('textbox_answer');
@@ -696,6 +760,10 @@ checkAnswerStyles.textContent = `
     }
 `;
 document.head.appendChild(checkAnswerStyles);
+
+function goBack() {
+            window.history.back();
+        }
 
     </script>
 
