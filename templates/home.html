@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Backbench - Interactive Learning for Kids</title>
+    <title>Backbench - AI-Powered Learning for IGCSE Success</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <style>
         * {
@@ -18,11 +18,26 @@
             color: #333;
         }
 
+        /* Header with Logo */
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header img {
+            width: 150px;
+            height: auto;
+        }
+
         /* Hero Section */
         .hero {
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             text-align: center;
-            padding: 80px 20px;
+            padding: 60px 20px;
             color: white;
             position: relative;
             overflow: hidden;
@@ -45,7 +60,7 @@
         }
 
         .hero h1 {
-            font-size: 3.5em;
+            font-size: 2.5em;
             margin-bottom: 20px;
             animation: fadeInDown 1s;
         }
@@ -58,8 +73,8 @@
 
         /* Buttons */
         .cta-button {
-            padding: 15px 30px;
-            font-size: 1.2em;
+            padding: 12px 25px;
+            font-size: 1em;
             background-color: #ff6b6b;
             color: white;
             border: none;
@@ -84,7 +99,7 @@
 
         .section h2 {
             text-align: center;
-            font-size: 2.5em;
+            font-size: 2em;
             margin-bottom: 40px;
             color: #2c3e50;
         }
@@ -110,10 +125,10 @@
         }
 
         .course-card img {
-            width: 150px;
-            height: 150px;
+            width: 100px;
+            height: 100px;
             margin-bottom: 20px;
-            border-radius: 15px;
+            border-radius: 10px;
         }
 
         .course-card h3 {
@@ -163,7 +178,7 @@
         /* Responsive Design */
         @media (max-width: 768px) {
             .hero h1 {
-                font-size: 2.5em;
+                font-size: 2em;
             }
             
             .courses {
@@ -177,60 +192,68 @@
     </style>
 </head>
 <body>
+    <!-- Header with Logo -->
+    <div class="header">
+        <img src="static/logo.png" alt="Backbench Logo">
+    </div>
+
+    <!-- Hero Section -->
     <div class="hero">
         <div class="hero-content">
-            <h1>Welcome to Backbench</h1>
-            <p>Embark on an exciting learning adventure designed especially for young minds!</p>
-            <button class="cta-button" onclick="window.location.href='{{ url_for('login') }}'" >Start Learning Now!</button>
+            <h1>Toppers Are Not Born, They're Made with Backbench</h1>
+            <p>Transforming young learners into IGCSE experts through our fully AI-powered, personalized platform.</p>
+            <button class="cta-button" onclick="window.location.href='{{ url_for('login') }}'">Begin Your Backbench Journey</button>
         </div>
     </div>
 
+    <!-- Courses Section -->
     <div class="section">
-        <h2>Popular Learning Paths</h2>
+        <h2>IGCSE Courses by Backbench</h2>
         <div class="courses">
             <div class="course-card">
-                <img src="/api/placeholder/150/150" alt="Math Adventures">
-                <h3>Math Adventures</h3>
-                <p>Join our fun-filled journey through numbers, shapes, and puzzles. Perfect for budding mathematicians!</p>
+                <img src="static/math.png" alt="IGCSE Mathematics">
+                <h3>IGCSE Mathematics</h3>
+                <p>From algebra to calculus, our AI tailors lessons to guide you through the fundamentals and beyond.</p>
             </div>
             <div class="course-card">
-                <img src="/api/placeholder/150/150" alt="Science Explorers">
-                <h3>Science Explorers</h3>
-                <p>Discover the wonders of science through exciting experiments and interactive demonstrations!</p>
+                <img src="static/lab.png" alt="IGCSE Science">
+                <h3>IGCSE Science</h3>
+                <p>Delve into physics, chemistry, and biology with AI-assisted insights and interactive modules.</p>
             </div>
             <div class="course-card">
-                <img src="/api/placeholder/150/150" alt="Code for Kids">
-                <h3>Code for Kids</h3>
-                <p>Learn to code through games and creative projects. Start your programming journey today!</p>
+                <img src="static/ai.png" alt="IGCSE Computer Science">
+                <h3>IGCSE Computer Science</h3>
+                <p>Master programming, algorithms, and problem-solving with real-world applications and AI support.</p>
             </div>
         </div>
     </div>
 
+    <!-- Features Section -->
     <div class="section">
         <h2>Why Choose Backbench?</h2>
         <div class="features">
             <div class="feature-item">
                 <div class="feature-icon">
-                    <img src="/api/placeholder/60/60" alt="Interactive Learning">
+                    <img src="static/mm.png" alt="AI-Powered Personalization">
                 </div>
                 <div class="feature-text">
-                    Interactive lessons with immediate feedback and rewards
+                    AI-driven, adaptive lessons that evolve with each learner's journey.
                 </div>
             </div>
             <div class="feature-item">
                 <div class="feature-icon">
-                    <img src="/api/placeholder/60/60" alt="Expert Support">
+                    <img src="static/mm.png" alt="IGCSE Curriculum Aligned">
                 </div>
                 <div class="feature-text">
-                    Expert guidance from experienced educators
+                    Courses fully aligned with the IGCSE curriculum, ensuring academic readiness.
                 </div>
             </div>
             <div class="feature-item">
                 <div class="feature-icon">
-                    <img src="/api/placeholder/60/60" alt="Safe Learning">
+                    <img src="static/mm.png" alt="Real-Time Progress Tracking">
                 </div>
                 <div class="feature-text">
-                    Safe and secure learning environment for children
+                    Immediate feedback and progress tracking for effective learning and confidence building.
                 </div>
             </div>
         </div>

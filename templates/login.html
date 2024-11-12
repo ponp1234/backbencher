@@ -161,6 +161,13 @@
             height: 150px;
             animation: float 3s ease-in-out infinite;
         }
+        
+        .character-decoration1 {
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            animation: float 3s ease-in-out infinite;
+        }
 
         .character-1 {
             top: 20px;
@@ -199,7 +206,7 @@
     <!-- Sidebar -->
     <div class="sidebar">
         <div class="sidebar-logo">
-            <img src="/api/placeholder/120/120" alt="Backbench Logo">
+            <img src="static/logo.png" alt="Backbench Logo">
             <h2>Backbench</h2>
         </div>
         <a href="{{ url_for('home') }}" class="sidebar-button">Home</a>
@@ -211,8 +218,7 @@
     <!-- Main Content -->
     <div class="main-content">
         <!-- Decorative Characters -->
-        <img src="/api/placeholder/150/150" alt="Student Character" class="character-decoration character-1">
-        <img src="/api/placeholder/150/150" alt="Teacher Character" class="character-decoration character-2">
+
 
         <!-- Login Form -->
         <div class="login-container">
