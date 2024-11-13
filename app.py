@@ -7,7 +7,7 @@ from datetime import datetime
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '12345'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site0.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site6.db'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
@@ -47,6 +47,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
+    student_class = db.Column(db.String(50), nullable=False)  
 
 
 
@@ -65,18 +66,35 @@ def load_user(user_id):
 def home():
     return render_template("home.html")
 
+@app.route("/help")
+def help():
+    return render_template("help.html")
+
+
 @app.route("/register", methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        student_class = request.form['student_class']  # Get class information from the form
+        
+        # Check if username already exists
+        existing_user = User.query.filter_by(username=username).first()
+        if existing_user:
+            flash('Username already exists. Please choose a different one.', 'danger')
+            return redirect(url_for('register'))
+        
+        # Hash the password and create new user
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        user = User(username=username, password=hashed_password)
+        user = User(username=username, password=hashed_password, student_class=student_class)
         db.session.add(user)
         db.session.commit()
+        
         flash('Your account has been created!', 'success')
-        return redirect(url_for('login'))
+        return redirect(url_for('register'))
+    
     return render_template('register.html')
+
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():
@@ -90,61 +108,23 @@ def login():
     return render_template('login.html')
 
 
-
-@app.route("/exam1/<int:exam_id>/<int:question_number>", methods=['GET', 'POST'])
+@app.route("/attempts")
 @login_required
-def exam1(exam_id, question_number):
-    # Fetch the exam and questions
-    exam = Exam.query.get_or_404(exam_id)
-    questions = Question.query.filter_by(exam_id=exam_id).all()
+def attempts():
+    attempts = ExamAttempt.query.filter_by(user_id=current_user.id).order_by(ExamAttempt.attempt_date.desc()).all()
+    return render_template("attempts.html", attempts=attempts)
 
-    # Check if question_number is within range
-    if question_number < 1 or question_number > len(questions):
-        return redirect(url_for('exam', exam_id=exam_id, question_number=1))
+@app.route("/profile")
+@login_required
+def profile():
+    return render_template("profile.html")
 
-    # Get the current question based on the question_number
-    question = questions[question_number - 1]
+@app.route("/settings")
+@login_required
+def settings():
+    return render_template("settings.html")
 
-    # Handle the form submission for answering questions
-    if request.method == 'POST':
-        user_answer = request.form.get("answer")
 
-        # Initialize score in session if it doesn't exist
-        if 'score' not in session:
-            session['score'] = 0
-        
-        
-        print(question.correct_option)
-        print(user_answer)
-        # Update score if the answer is correct
-        if user_answer == question.correct_option:
-            session['score'] += 1
-        session.modified = True  # Mark the session as modified to save changes
-
-        # If it's the last question, save the score to the database
-        if question_number == len(questions):
-            final_score = session['score']
-            
-            # Save attempt to the database
-            attempt = ExamAttempt(
-                user_id=current_user.id,
-                exam_id=exam_id,
-                score=final_score,
-                total_questions=len(questions),
-                attempt_date=datetime.utcnow()
-            )
-            db.session.add(attempt)
-            db.session.commit()
-
-            # Clear score from session after the exam
-            session.pop('score', None)
-            return render_template('result.html', score=final_score, total=len(questions))
-
-        # Redirect to the next question
-        return redirect(url_for('exam', exam_id=exam_id, question_number=question_number + 1))
-
-    # Render the current question page
-    return render_template('exam_question.html', exam=exam, question=question, question_number=question_number, total_questions=len(questions))
 
 @app.route("/exam/<int:exam_id>/<int:question_number>", methods=['GET', 'POST'])
 @login_required
