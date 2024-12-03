@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IGCSE Computer Science Study Guide</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            display: flex;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            position: fixed;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: white;
+        }
+
+        .sidebar a {
+            display: block;
+            color: white;
+            text-decoration: none;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .content {
+            margin-left: 270px;
+            padding: 40px;
+            flex: 1;
+        }
+
+        .tab {
+            display: none;
+        }
+
+        .tab.active {
+            display: block;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            margin-top: 40px;
+            font-size: 1.8em;
+            color: #f8f9fa;
+        }
+
+        p {
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+
+            .content {
+                margin-left: 0;
+                padding: 20px;
+            }
+        }
+        
+        .sidebar-button {
+            display: block;
+            padding: 12px 20px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(5px);
+        }
+        
+        details {
+    margin: 10px 0;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+}
+
+summary {
+    cursor: pointer;
+    font-weight: bold;
+    color: #ff6b6b;
+}
+
+summary:hover {
+    color: #ff5252;
+}
+
+details p, details ul {
+    margin-left: 20px;
+}
+
+    </style>
+</head>
+<body>
+    <!-- Sidebar Menu -->
+    <div class="sidebar">
+     <img src="static/logo.png" alt="Backbench Logo">
+        <a href="{{ url_for('user_home') }}" class="sidebar-button">Back to Classroom</a>
+
+        <h2>Topics</h2>
+        <a href="#data_representation" onclick="showTab('data_representation')">1. Data Representation</a>
+        <a href="#communication" onclick="showTab('communication')">2. Communication and Internet Technologies</a>
+        <a href="#hardware" onclick="showTab('hardware')">3. Hardware and Software</a>
+        <a href="#security" onclick="showTab('security')">4. Security</a>
+        <a href="#ethics" onclick="showTab('ethics')">5. Ethics</a>
+        <a href="#algorithms" onclick="showTab('algorithms')">6. Algorithm Design</a>
+        <a href="#programming" onclick="showTab('programming')">7. Programming</a>
+        <a href="#databases" onclick="showTab('databases')">8. Databases</a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <h1>IGCSE Computer Science Study Guide</h1>
+
+        <!-- Data Representation Tab -->
+      <div id="data_representation" class="tab active">
+    <h2>1. Data Representation</h2>
+    <p>Learn about binary, hexadecimal, character sets, and data storage in digital systems.</p>
+    <ul>
+        <li>Binary systems and arithmetic</li>
+        <li>Hexadecimal representation</li>
+        <li>Character encoding (ASCII, Unicode)</li>
+        <li>Data storage: images, sound, and text</li>
+    </ul>
+
+    <!-- Detailed Notes Start -->
+    <div class="study-guide">
+        <h3>Detailed Study Guide</h3>
+
+        <!-- Page 1 -->
+        <details>
+            <summary>Page 1: Introduction to Data Representation</summary>
+            <p>Data representation refers to the methods used to represent information in a computer system.</p>
+            <ul>
+                <li>Computers use binary (0s and 1s) to store and process data.</li>
+                <li>Common systems: binary, decimal, hexadecimal.</li>
+                <li>Why binary? Digital devices work with on/off states, represented as 0s and 1s.</li>
+            </ul>
+        </details>
+
+        <!-- Page 2 -->
+        <details>
+            <summary>Page 2: Binary Numbers</summary>
+            <p>Binary is a base-2 number system used extensively in computing.</p>
+            <ul>
+                <li>Binary uses two digits: 0 and 1.</li>
+                <li>Conversion: Binary to Decimal and Decimal to Binary.</li>
+                <li>Examples:
+                    <ul>
+                        <li>Binary 101 = Decimal 5.</li>
+                        <li>Decimal 10 = Binary 1010.</li>
+                    </ul>
+                </li>
+            </ul>
+        </details>
+
+        <!-- Page 3 -->
+        <details>
+            <summary>Page 3: Binary Arithmetic</summary>
+            <p>Binary arithmetic includes addition, subtraction, multiplication, and division.</p>
+            <ul>
+                <li>Binary addition rules:
+                    <ul>
+                        <li>0 + 0 = 0</li>
+                        <li>1 + 0 = 1</li>
+                        <li>1 + 1 = 10 (carry 1)</li>
+                    </ul>
+                </li>
+                <li>Example:
+                    <pre>
+  1011
++ 1101
+------
+  11000
+                    </pre>
+                </li>
+            </ul>
+        </details>
+
+        <!-- Add more pages here -->
+
+        <!-- Page 24 -->
+        <details>
+            <summary>Page 24: Practical Applications of Hexadecimal</summary>
+            <p>Hexadecimal is used in programming, memory addressing, and color codes.</p>
+            <ul>
+                <li>Examples:
+                    <ul>
+                        <li>Web colors: #FF5733 (hex code).</li>
+                        <li>Memory: Address 0x1A3.</li>
+                    </ul>
+                </li>
+            </ul>
+        </details>
+
+        <!-- Page 25 -->
+        <details>
+            <summary>Page 25: Summary of Data Representation</summary>
+            <p>Key takeaways from Data Representation:</p>
+            <ul>
+                <li>Binary is the foundation of digital systems.</li>
+                <li>Hexadecimal simplifies representation of large binary numbers.</li>
+                <li>Character encoding bridges human-readable text and binary.</li>
+                <li>Understanding data representation is crucial for programming and hardware design.</li>
+            </ul>
+        </details>
+    </div>
+    <!-- Detailed Notes End -->
+</div>
+
+
+        <!-- Communication and Internet Technologies Tab -->
+        <div id="communication" class="tab">
+            <h2>2. Communication and Internet Technologies</h2>
+            <p>Understand networks, data transmission methods, and internet protocols.</p>
+            <ul>
+                <li>Types of networks: LAN, WAN</li>
+                <li>Data transmission methods</li>
+                <li>Network hardware: routers, switches</li>
+                <li>Internet protocols: TCP/IP, HTTP, FTP</li>
+            </ul>
+        </div>
+
+        <!-- Hardware and Software Tab -->
+        <div id="hardware" class="tab">
+            <h2>3. Hardware and Software</h2>
+            <p>Explore the main components of a computer system.</p>
+            <ul>
+                <li>Input and output devices</li>
+                <li>Storage devices and media</li>
+                <li>Operating systems</li>
+                <li>Types of software: application, system, utility</li>
+            </ul>
+        </div>
+
+        <!-- Security Tab -->
+        <div id="security" class="tab">
+            <h2>4. Security</h2>
+            <p>Learn about protecting data and systems from threats.</p>
+            <ul>
+                <li>Cybersecurity threats</li>
+                <li>Encryption techniques</li>
+                <li>Authentication methods</li>
+                <li>Firewalls and anti-malware</li>
+            </ul>
+        </div>
+
+        <!-- Ethics Tab -->
+        <div id="ethics" class="tab">
+            <h2>5. Ethics</h2>
+            <p>Understand the ethical and legal aspects of computer use.</p>
+            <ul>
+                <li>Privacy concerns</li>
+                <li>Copyright and intellectual property</li>
+                <li>Environmental impact of technology</li>
+                <li>Ethical hacking and responsibilities</li>
+            </ul>
+        </div>
+
+        <!-- Algorithm Design Tab -->
+        <div id="algorithms" class="tab">
+            <h2>6. Algorithm Design</h2>
+            <p>Master problem-solving techniques and designing algorithms.</p>
+            <ul>
+                <li>Flowcharts and pseudocode</li>
+                <li>Algorithm complexity</li>
+                <li>Sorting and searching algorithms</li>
+            </ul>
+        </div>
+
+        <!-- Programming Tab -->
+        <div id="programming" class="tab">
+            <h2>7. Programming</h2>
+            <p>Understand programming basics and advanced concepts.</p>
+            <ul>
+                <li>Variables, data types, and operators</li>
+                <li>Control structures: loops, conditionals</li>
+                <li>Functions and procedures</li>
+                <li>Error handling</li>
+            </ul>
+        </div>
+
+        <!-- Databases Tab -->
+        <div id="databases" class="tab">
+            <h2>8. Databases</h2>
+            <p>Learn how data is organized and accessed using databases.</p>
+            <ul>
+                <li>Relational database concepts</li>
+                <li>SQL basics: SELECT, INSERT, UPDATE, DELETE</li>
+                <li>Primary keys and foreign keys</li>
+                <li>Database normalization</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            const tabs = document.querySelectorAll('.tab');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            const selectedTab = document.getElementById(tabId);
+            selectedTab.classList.add('active');
+        }
+    </script>
+</body>
+</html>

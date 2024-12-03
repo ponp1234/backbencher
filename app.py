@@ -114,6 +114,12 @@ def attempts():
     attempts = ExamAttempt.query.filter_by(user_id=current_user.id).order_by(ExamAttempt.attempt_date.desc()).all()
     return render_template("attempts.html", attempts=attempts)
 
+@app.route("/igcsccs")
+@login_required
+def igcsccs():
+    return render_template("igcse_computer_science.html")
+
+
 @app.route("/profile")
 @login_required
 def profile():
