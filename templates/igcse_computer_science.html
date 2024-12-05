@@ -20,6 +20,13 @@
             background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             color: white;
         }
+        
+        .notes {
+            display: flex;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+        }
 
         .sidebar {
             width: 250px;
@@ -47,6 +54,22 @@
             border-radius: 8px;
             transition: background 0.3s ease;
         }
+        
+         .sidebar-button {
+            display: block;
+            padding: 12px 20px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(5px);
+        }
 
         .sidebar a:hover {
             background: rgba(255, 255, 255, 0.2);
@@ -54,6 +77,7 @@
 
         .content {
             margin-left: 270px;
+            background: white
             padding: 40px;
             flex: 1;
         }
@@ -102,6 +126,17 @@
         details p, details ul {
             margin-left: 20px;
         }
+        
+        .fun-fact {
+            background: #fffbcc; /* Light yellow for the fun fact box */
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-weight: bold;
+            color: #856404; /* Dark yellow-brown text */
+            border: 1px solid #ffeeba; /* Border to match the yellow background */
+        }
+
 
         @media (max-width: 768px) {
             body {
@@ -129,6 +164,7 @@
         <h2>Topics</h2>
         <details>
             <summary>1. Data Representation</summary>
+            <a href="#Data" onclick="showTab('Data')">Overview</a>
             <details>
                 <summary>Number Systems</summary>
                 <a href="#computers_binary" onclick="showTab('computers_binary')">Computers & Binary</a>
@@ -169,15 +205,61 @@
         </details>
     </div>
 
+
     <!-- Main Content -->
     <div class="content">
-        <h1>IGCSE Computer Science Study Guide</h1>
-
-        <!-- Data Representation Tab -->
-        <div id="computers_binary" class="tab active">
-            <h2>Computers & Binary</h2>
-            <p>Binary is the foundation of all digital computing.</p>
+    
+    <div id="computers_binary" class="tab">
+    
+    <div class="study-guide">
+        <h1>Computers & Binary</h1>
+        <h2>What is Binary?</h2>
+        <p>
+            Imagine you are talking to your friend using a secret code, where you only say <strong>"yes"</strong> or <strong>"no"</strong>. Computers do the same thing, but their secret code is made of <strong>two numbers: 0 and 1.</strong> This code is called <strong>binary</strong>, and computers use it to understand and store information.
+        </p>
+        <ul>
+            <li><strong>Why Binary?</strong><br>
+                Computers are like giant switches. A switch can only be <strong>on (1)</strong> or <strong>off (0)</strong>, just like a light bulb! Using these two states, computers can combine lots of 0s and 1s to do everything like showing a picture, playing a video, or even solving a math problem.
+            </li>
+        </ul>
+        <div class="fun-fact">
+            <strong>Fun Fact!</strong> A single 0 or 1 in binary is called a <strong>bit</strong>, and eight of them together make a <strong>byte</strong>the building block of computer memory!
         </div>
+    </div>
+
+    <div class="study-guide">
+        <h2>How Binary Works</h2>
+        <p>
+            Think of binary as a secret language for numbers. Here's how it works:
+        </p>
+        <ul>
+            <li><strong>Binary is Like Counting</strong><br>
+                When we count numbers, we use the decimal system (1, 2, 3, ., 9, 10). But in binary, we only have two digits: <strong>0 and 1.</strong> Here's what the first few binary numbers look like:
+                <ul>
+                    <li><strong>0</strong> = 0</li>
+                    <li><strong>1</strong> = 1</li>
+                    <li><strong>10</strong> = 2</li>
+                    <li><strong>11</strong> = 3</li>
+                    <li><strong>100</strong> = 4</li>
+                </ul>
+                So, in binary, <strong>10</strong> doesn't mean ten it means two!
+            </li>
+            <li><strong>Binary in Action</strong><br>
+                Every time you watch a cartoon or play a video game, the computer is reading millions of 0s and 1s to create what you see on the screen. For example:
+              
+            </li>
+        </ul>
+        <div class="fun-fact">
+            <strong>Did You Know?</strong><br>
+            If you write the word "Hi" on a computer, it gets converted into binary!<br>
+            <strong>H = 01001000</strong><br>
+            <strong>i = 01101001</strong>
+        </div>
+    </div>
+
+
+</div>
+      
 
         <div id="number_systems" class="tab">
             <h2>Number Systems</h2>
