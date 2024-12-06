@@ -568,23 +568,360 @@
         </div>
 
         <div id="binary_denary" class="tab">
-            <h2>Converting Between Binary & Denary</h2>
-            <p>Master conversions between binary and decimal numbers.</p>
+                    <section>
+            <h2>Converting Binary to Denary</h2>
+            <p>Binary numbers use only 0s and 1s. Each position in the binary number has a value based on powers of 2. To convert binary to denary, we add up these values wherever there is a 1.</p>
+            <div class="example-box">
+                <h3>Example: Convert 1101 (binary) to denary</h3>
+                <p><strong>Step-by-step explanation:</strong></p>
+                <ol>
+                    <li>Write down the powers of 2 for each position from right to left: 2⁰, 2¹, 2², 2³.</li>
+                    <li>Multiply each binary digit by its corresponding power of 2:
+                        <pre>
+                        1 × 2³ = 8
+                        1 × 2² = 4
+                        0 × 2¹ = 0
+                        1 × 2⁰ = 1
+                        </pre>
+                    </li>
+                    <li>Add the results: 8 + 4 + 0 + 1 = 13.</li>
+                </ol>
+                <p><strong>Answer:</strong> 1101 in binary is 13 in denary.</p>
+            </div>
+            <div class="real-world">
+                <strong>Real-World Usage:</strong> Binary to denary conversion is used in digital clocks. The binary time data in computers is converted to denary to display hours, minutes, and seconds.
+            </div>
+        </section>
+
+        <section>
+            <h2>Converting Denary to Binary</h2>
+            <p>To convert a denary number to binary, divide the number repeatedly by 2 and record the remainders. Read the remainders from bottom to top to get the binary number.</p>
+            <div class="example-box">
+                <h3>Example: Convert 23 (denary) to binary</h3>
+                <p><strong>Step-by-step explanation:</strong></p>
+                <ol>
+                    <li>Divide 23 by 2: Quotient = 11, Remainder = 1.</li>
+                    <li>Divide 11 by 2: Quotient = 5, Remainder = 1.</li>
+                    <li>Divide 5 by 2: Quotient = 2, Remainder = 1.</li>
+                    <li>Divide 2 by 2: Quotient = 1, Remainder = 0.</li>
+                    <li>Divide 1 by 2: Quotient = 0, Remainder = 1.</li>
+                    <li>Write the remainders from bottom to top: 10111.</li>
+                </ol>
+                <p><strong>Answer:</strong> 23 in denary is 10111 in binary.</p>
+            </div>
+            <div class="real-world">
+                <strong>Real-World Usage:</strong> Denary to binary conversion is used in pixel representation for images. The denary color values are converted into binary to store image data.
+            </div>
+        </section>
+
+        <section>
+            <h2>Analytical Thinking and Problem-Solving</h2>
+            <h3>Additional Examples:</h3>
+            <div class="example-box">
+                <h4>Example 1: Convert 1010 (binary) to denary</h4>
+                <p><strong>Step-by-step explanation:</strong></p>
+                <ol>
+                    <li>Write powers of 2: 2³, 2², 2¹, 2⁰.</li>
+                    <li>Multiply each binary digit by its power of 2:
+                        <pre>
+                        1 × 2³ = 8
+                        0 × 2² = 0
+                        1 × 2¹ = 2
+                        0 × 2⁰ = 0
+                        </pre>
+                    </li>
+                    <li>Add the results: 8 + 0 + 2 + 0 = 10.</li>
+                </ol>
+                <p><strong>Answer:</strong> 1010 in binary is 10 in denary.</p>
+            </div>
+            <div class="example-box">
+                <h4>Example 2: Convert 45 (denary) to binary</h4>
+                <p><strong>Step-by-step explanation:</strong></p>
+                <ol>
+                    <li>Divide 45 by 2: Quotient = 22, Remainder = 1.</li>
+                    <li>Divide 22 by 2: Quotient = 11, Remainder = 0.</li>
+                    <li>Divide 11 by 2: Quotient = 5, Remainder = 1.</li>
+                    <li>Divide 5 by 2: Quotient = 2, Remainder = 1.</li>
+                    <li>Divide 2 by 2: Quotient = 1, Remainder = 0.</li>
+                    <li>Divide 1 by 2: Quotient = 0, Remainder = 1.</li>
+                    <li>Read remainders from bottom to top: 101101.</li>
+                </ol>
+                <p><strong>Answer:</strong> 45 in denary is 101101 in binary.</p>
+            </div>
+        </section>
         </div>
 
         <div id="hexadecimal_denary" class="tab">
-            <h2>Converting Between Hexadecimal & Denary</h2>
-            <p>Understand conversions between hexadecimal and decimal.</p>
+            <section>
+            <h2>Converting Hexadecimal to Denary</h2>
+            <p>Hexadecimal numbers use 16 symbols (0-9 for 0 to 9, and A-F for 10 to 15). To convert hexadecimal to denary, multiply each digit by the power of 16 it represents, and add them up.</p>
+            <div class="example-box">
+                <h3>Example: Convert 1A3 (hexadecimal) to denary</h3>
+                <p><strong>Step-by-step explanation:</strong></p>
+                <ol>
+                    <li>Write the powers of 16 for each position: 16², 16¹, 16⁰.</li>
+                    <li>Multiply each digit by its power of 16:
+                        <pre>
+                        1 × 16² = 1 × 256 = 256
+                        A × 16¹ = 10 × 16 = 160
+                        3 × 16⁰ = 3 × 1 = 3
+                        </pre>
+                    </li>
+                    <li>Add the results: 256 + 160 + 3 = 419.</li>
+                </ol>
+                <p><strong>Answer:</strong> 1A3 in hexadecimal is 419 in denary.</p>
+            </div>
+            <div class="real-world">
+                <strong>Real-World Usage:</strong> Hexadecimal to denary conversion is used in computer memory addresses, making it easier for programmers to locate data.
+            </div>
+        </section>
+
+        <section>
+            <h2>Converting Denary to Hexadecimal</h2>
+            <p>To convert a denary number to hexadecimal, divide the number by 16 repeatedly, and record the remainders. Use letters (A-F) for remainders 10-15.</p>
+            <div class="example-box">
+                <h3>Example: Convert 255 (denary) to hexadecimal</h3>
+                <p><strong>Step-by-step explanation:</strong></p>
+                <ol>
+                    <li>Divide 255 by 16: Quotient = 15, Remainder = 15 (F).</li>
+                    <li>Divide 15 by 16: Quotient = 0, Remainder = 15 (F).</li>
+                    <li>Read the remainders from bottom to top: FF.</li>
+                </ol>
+                <p><strong>Answer:</strong> 255 in denary is FF in hexadecimal.</p>
+            </div>
+            <div class="real-world">
+                <strong>Real-World Usage:</strong> Denary to hexadecimal conversion is used in web development for color codes. For example, #FF5733 represents an orange color.
+            </div>
+        </section>
+
+        <section>
+            <h2>Analytical Thinking and Problem-Solving</h2>
+            <h3>Additional Examples:</h3>
+            <div class="example-box">
+                <h4>Example 1: Convert 7B (hexadecimal) to denary</h4>
+                <p><strong>Step-by-step explanation:</strong></p>
+                <ol>
+                    <li>Write powers of 16: 16¹, 16⁰.</li>
+                    <li>Multiply each digit by its power of 16:
+                        <pre>
+                        7 × 16¹ = 7 × 16 = 112
+                        B × 16⁰ = 11 × 1 = 11
+                        </pre>
+                    </li>
+                    <li>Add the results: 112 + 11 = 123.</li>
+                </ol>
+                <p><strong>Answer:</strong> 7B in hexadecimal is 123 in denary.</p>
+            </div>
+            <div class="example-box">
+                <h4>Example 2: Convert 420 (denary) to hexadecimal</h4>
+                <p><strong>Step-by-step explanation:</strong></p>
+                <ol>
+                    <li>Divide 420 by 16: Quotient = 26, Remainder = 4.</li>
+                    <li>Divide 26 by 16: Quotient = 1, Remainder = 10 (A).</li>
+                    <li>Divide 1 by 16: Quotient = 0, Remainder = 1.</li>
+                    <li>Read remainders from bottom to top: 1A4.</li>
+                </ol>
+                <p><strong>Answer:</strong> 420 in denary is 1A4 in hexadecimal.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Fun Facts</h2>
+            <div class="fun-fact">
+                <strong>Fun Fact 1:</strong> The word "hexadecimal" comes from the Greek "hex" (six) and Latin "decimus" (tenth), combining to mean "base-16."
+            </div>
+            <div class="fun-fact">
+                <strong>Fun Fact 2:</strong> Colors on websites, such as #FFFFFF for white and #000000 for black, are all written in hexadecimal.
+            </div>
+            <div class="fun-fact">
+                <strong>Fun Fact 3:</strong> Hexadecimal is easier for humans to read compared to binary because it compresses long binary numbers into shorter strings.
+            </div>
+        </section>
         </div>
 
         <div id="hexadecimal_binary" class="tab">
-            <h2>Converting Between Hexadecimal & Binary</h2>
-            <p>Learn to convert hexadecimal numbers into binary format.</p>
+             <section>
+            <h2>Converting Hexadecimal to Binary</h2>
+            <p>To convert a hexadecimal number to binary, replace each hexadecimal digit with its 4-bit binary equivalent.</p>
+            <div class="example-box">
+                <h3>Example: Convert 1A (hexadecimal) to binary</h3>
+                <p><strong>Step-by-step explanation:</strong></p>
+                <ol>
+                    <li>Write the binary equivalent of each digit:
+                        <pre>
+                        1 = 0001
+                        A = 1010
+                        </pre>
+                    </li>
+                    <li>Combine the binary groups: 0001 1010.</li>
+                </ol>
+                <p><strong>Answer:</strong> 1A in hexadecimal is 00011010 in binary.</p>
+            </div>
+            <div class="real-world">
+                <strong>Real-World Usage:</strong> Hexadecimal to binary conversion is used in programming when writing machine-level code for microcontrollers and processors.
+            </div>
+        </section>
+
+        <section>
+            <h2>Converting Binary to Hexadecimal</h2>
+            <p>To convert a binary number to hexadecimal, group the binary digits into groups of four starting from the right, and replace each group with its hexadecimal equivalent.</p>
+            <div class="example-box">
+                <h3>Example: Convert 11010101 (binary) to hexadecimal</h3>
+                <p><strong>Step-by-step explanation:</strong></p>
+                <ol>
+                    <li>Group the binary digits into sets of four from right to left:
+                        <pre>1101 0101</pre>
+                    </li>
+                    <li>Convert each group to hexadecimal:
+                        <pre>
+                        1101 = D
+                        0101 = 5
+                        </pre>
+                    </li>
+                    <li>Combine the results: D5.</li>
+                </ol>
+                <p><strong>Answer:</strong> 11010101 in binary is D5 in hexadecimal.</p>
+            </div>
+            <div class="real-world">
+                <strong>Real-World Usage:</strong> Binary to hexadecimal conversion is used in debugging computer programs to analyze memory content and system processes.
+            </div>
+        </section>
+
+        <section>
+            <h2>Analytical Thinking and Problem-Solving</h2>
+            <h3>Additional Examples:</h3>
+            <div class="example-box">
+                <h4>Example 1: Convert 2F (hexadecimal) to binary</h4>
+                <p><strong>Step-by-step explanation:</strong></p>
+                <ol>
+                    <li>Write the binary equivalent of each digit:
+                        <pre>
+                        2 = 0010
+                        F = 1111
+                        </pre>
+                    </li>
+                    <li>Combine the binary groups: 0010 1111.</li>
+                </ol>
+                <p><strong>Answer:</strong> 2F in hexadecimal is 00101111 in binary.</p>
+            </div>
+            <div class="example-box">
+                <h4>Example 2: Convert 10101101 (binary) to hexadecimal</h4>
+                <p><strong>Step-by-step explanation:</strong></p>
+                <ol>
+                    <li>Group the binary digits into sets of four from right to left:
+                        <pre>1010 1101</pre>
+                    </li>
+                    <li>Convert each group to hexadecimal:
+                        <pre>
+                        1010 = A
+                        1101 = D
+                        </pre>
+                    </li>
+                    <li>Combine the results: AD.</li>
+                </ol>
+                <p><strong>Answer:</strong> 10101101 in binary is AD in hexadecimal.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Fun Facts</h2>
+            <div class="fun-fact">
+                <strong>Fun Fact 1:</strong> Hexadecimal is called "hex" for short and is often used by programmers because it is easier to read than long binary strings.
+            </div>
+            <div class="fun-fact">
+                <strong>Fun Fact 2:</strong> The maximum value of a single hexadecimal digit (F) is equal to 15 in decimal or 1111 in binary.
+            </div>
+            <div class="fun-fact">
+                <strong>Fun Fact 3:</strong> Hexadecimal is used in web colors like #FF0000 for red because it provides a compact way to represent RGB values.
+            </div>
+        </section>
         </div>
 
         <div id="uses_hexadecimal" class="tab">
-            <h2>Uses of Hexadecimal</h2>
-            <p>Explore how hexadecimal is used in programming and systems.</p>
+              <section>
+            <h2>Where and Why Hexadecimal is Used</h2>
+            <ul>
+                <li><strong>Memory Addresses:</strong> Hexadecimal is used to represent memory locations in computers because it is shorter and easier to understand than binary.</li>
+                <p>
+                    <strong>Explanation:</strong> Computer memory is vast, and each location is uniquely identified using an address. Instead of writing long binary strings like 
+                    <code>0000000011110001</code>, hexadecimal shortens it to something like <code>0F1</code>, making it easier for programmers to debug and analyze.
+                </p>
+
+                <li><strong>Color Codes:</strong> Web developers use hexadecimal to specify colors in HTML and CSS, such as #FF5733 for a shade of orange.</li>
+                <p>
+                    <strong>Explanation:</strong> RGB (Red-Green-Blue) values are used to define colors, and each channel is represented by a hexadecimal number. 
+                    For example, #FF0000 means full red intensity, with no green or blue, making it a compact and precise way to represent colors.
+                </p>
+
+                <li><strong>Error Codes:</strong> Hexadecimal is used in debugging to display error messages and system states.</li>
+                <p>
+                    <strong>Explanation:</strong> When a computer encounters an error, it generates an error code. These codes, often written in hexadecimal, provide details 
+                    about the problem, allowing developers to identify and fix issues efficiently.
+                </p>
+
+                <li><strong>MAC Addresses:</strong> Network devices use hexadecimal for their unique Media Access Control (MAC) addresses, such as 00:1A:2B:3C:4D:5E.</li>
+                <p>
+                    <strong>Explanation:</strong> MAC addresses uniquely identify devices on a network. Written in hexadecimal, they combine 48 bits into a compact form 
+                    for easy reading while maintaining enough combinations to uniquely identify billions of devices.
+                </p>
+
+                <li><strong>Assembly Language:</strong> Hexadecimal is used in low-level programming for machine-level instructions and registers.</li>
+                <p>
+                    <strong>Explanation:</strong> Low-level programming requires direct manipulation of hardware resources like registers and memory. Hexadecimal simplifies 
+                    representing binary machine instructions, making them more readable and less prone to errors for programmers.
+                </p>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Real-World Usage</h2>
+            <div class="real-world">
+                <strong>Web Design:</strong> Hexadecimal is widely used in web design for defining colors. For example, #FFFFFF represents white, and #000000 represents black.
+            </div>
+            <div class="real-world">
+                <strong>Network Hardware:</strong> MAC addresses of devices like routers, switches, and smartphones are written in hexadecimal, making them compact and readable.
+            </div>
+        </section>
+
+        <section>
+            <h2>Problem-Solving Examples</h2>
+            <div class="example-box">
+                <h3>Example 1: Reading Color Codes</h3>
+                <p><strong>Problem:</strong> The hexadecimal color code #FF0000 is used on a web page. What color does this represent?</p>
+                <p><strong>Explanation:</strong></p>
+                <ul>
+                    <li>The code is in the format #RRGGBB.</li>
+                    <li>FF (Red) = 255 in decimal.</li>
+                    <li>00 (Green) = 0 in decimal.</li>
+                    <li>00 (Blue) = 0 in decimal.</li>
+                    <li>The result is maximum red and no green or blue, which represents the color red.</li>
+                </ul>
+                <p><strong>Answer:</strong> #FF0000 represents red.</p>
+            </div>
+            <div class="example-box">
+                <h3>Example 2: MAC Address Structure</h3>
+                <p><strong>Problem:</strong> A MAC address is written as 00:1A:2B:3C:4D:5E. What does each pair represent?</p>
+                <p><strong>Explanation:</strong></p>
+                <ul>
+                    <li>Each pair (e.g., 00, 1A) is a hexadecimal value representing 8 bits (1 byte).</li>
+                    <li>The MAC address is made up of 6 bytes, which uniquely identify a device on a network.</li>
+                </ul>
+                <p><strong>Answer:</strong> Each hexadecimal pair represents a byte of the device's unique hardware address.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Fun Facts</h2>
+            <div class="fun-fact">
+                <strong>Fun Fact 1:</strong> The hexadecimal system is called "hex" because it combines the Greek "hex" (six) and Latin "decimus" (ten), meaning base-16.
+            </div>
+            <div class="fun-fact">
+                <strong>Fun Fact 2:</strong> The color white (#FFFFFF) is made by mixing the maximum intensity of red, green, and blue.
+            </div>
+            <div class="fun-fact">
+                <strong>Fun Fact 3:</strong> The hexadecimal system is so compact that it compresses binary strings into one-fourth of their length.
+            </div>
+        </section>
         </div>
     </div>
 
