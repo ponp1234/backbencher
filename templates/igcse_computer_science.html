@@ -140,7 +140,31 @@
         ul, ol {
             margin-left: 20px;
         }
-
+        
+        .real-world {
+            background-color: #e6f7ff;
+            padding: 10px;
+            margin-top: 10px;
+            border-left: 5px solid #004080;
+            color: #856404; /* Dark yellow-brown text */
+        }
+  
+  
+   .problem-solving {
+            margin-top: 20px;
+            padding: 15px;
+            border-left: 5px solid #004080;
+            background-color: #ffffff;
+            color: #856404; /* Dark yellow-brown text */
+        }
+        .example-box {
+            margin: 10px 0;
+            padding: 10px;
+            border: 1px dashed #003366;
+            background-color: #f0f8ff;
+            color: #856404; /* Dark yellow-brown text */
+        }
+     
 
         @media (max-width: 768px) {
             body {
@@ -397,8 +421,150 @@
       
 
         <div id="number_systems" class="tab">
-            <h2>Number Systems</h2>
-            <p>Learn about binary, decimal, and hexadecimal systems.</p>
+               <main>
+        <section>
+            <h2>What Are Number Systems?</h2>
+            <p>
+                A <span class="highlight">Number System</span> is a way to represent numbers. Computers use different number systems to process, store, and display data. The most common ones include:
+            </p>
+            <ul>
+                <li><strong>Binary (Base 2):</strong> Used internally by computers, consisting of 0s and 1s.</li>
+                <li><strong>Decimal (Base 10):</strong> The standard system used by humans.</li>
+                <li><strong>Hexadecimal (Base 16):</strong> A compact representation of binary data using 0-9 and A-F.</li>
+            </ul>
+        </section>
+
+        <section class="fun-fact">
+            <strong>Fun Fact</strong>
+            
+                Did you know that the <span class="highlight">binary number system</span> was first used in ancient China? The I Ching, a text from 1000 BCE, uses binary-like systems to represent yin and yang.
+            
+        </section>
+        
+        
+         <section>
+            <h2>Binary (Base 2)</h2>
+            <ul>
+                <li><strong>Foundation of Computing:</strong> Binary is the core language of computers because electronic circuits use two states: on (1) and off (0).</li>
+                <li><strong>Base 2 Representation:</strong> Numbers are written using only 0 and 1. For example, 101 in binary equals:
+                    <pre>1 × 2² + 0 × 2¹ + 1 × 2⁰ = 4 + 0 + 1 = 5</pre>
+                </li>
+                <li><strong>Conversions:</strong> Binary numbers can be converted to decimal, hexadecimal, or other bases systematically.</li>
+                <li><strong>Applications:</strong> Used in data storage, communication protocols, and processor logic gates.</li>
+                <li><strong>Size of Data:</strong> Binary representations are longer compared to decimal or hexadecimal. For example, 255 in binary is 11111111.</li>
+            </ul>
+            <div class="real-world">
+                <strong>Real-World Usage:</strong> Binary is used in QR codes. The patterns in a QR code are encoded using binary data to represent text or URLs.
+            </div>
+        </section>
+
+        <section>
+            <h2>Denary (Base 10)</h2>
+            <ul>
+                <li><strong>Base 10 Representation:</strong> Numbers use ten digits (0-9). Each position represents a power of 10. For example, 325 equals:
+                    <pre>3 × 10² + 2 × 10¹ + 5 × 10⁰ = 300 + 20 + 5 = 325</pre>
+                </li>
+                <li><strong>Human-Centric Design:</strong> Denary is widely used because humans have ten fingers, influencing counting systems.</li>
+                <li><strong>Conversions:</strong> Decimal numbers are converted to binary by dividing repeatedly by 2. For example, 10 in decimal is 1010 in binary.</li>
+                <li><strong>Applications:</strong> Used in financial calculations, measurements, and arithmetic operations.</li>
+                <li><strong>Limitations in Computing:</strong> Denary is inefficient for computers since it requires circuits to handle ten states.</li>
+            </ul>
+            <div class="real-world">
+                <strong>Real-World Usage:</strong> Denary is used in currency systems worldwide. For instance, prices in stores are represented in decimal for ease of understanding.
+            </div>
+        </section>
+
+        <section>
+            <h2>Hexadecimal (Base 16)</h2>
+            <ul>
+                <li><strong>Base 16 Representation:</strong> Hexadecimal uses 16 symbols: 0-9 for values 0 to 9, and A-F for values 10 to 15. For example, 1A3 in hexadecimal equals:
+                    <pre>1 × 16² + A × 16¹ + 3 × 16⁰ = 256 + 160 + 3 = 419</pre>
+                </li>
+                <li><strong>Compact Representation:</strong> Each hexadecimal digit represents four binary digits, making it more concise. For example, 11111111 in binary is FF in hexadecimal.</li>
+                <li><strong>Applications:</strong> Hexadecimal is used in memory addresses, color codes, and debugging software.</li>
+                <li><strong>Ease of Conversion:</strong> Conversion between binary and hexadecimal is straightforward. For instance, binary 1010 is A in hexadecimal.</li>
+                <li><strong>Human-Friendly:</strong> Hexadecimal is easier for programmers to read and write than binary for large data sets.</li>
+            </ul>
+            <div class="real-world">
+                <strong>Real-World Usage:</strong> Hexadecimal is used in web design to represent colors. For example, the color red is written as #FF0000 in hexadecimal.
+            </div>
+        </section>
+
+      
+
+        <section class="did-you-know">
+            <h2>Did You Know?</h2>
+            <p>
+                Computers use <span class="highlight">hexadecimal</span> to simplify binary because it groups binary digits into sets of four, making it easier for humans to read. For example:
+            </p>
+            <p><strong>Binary:</strong> 1010 1101 <br><strong>Hexadecimal:</strong> AD</p>
+        </section>
+        
+        <h2>Analytical Thinking and Problem-Solving</h2>
+
+       <section class="problem-solving">
+            <p>
+                Let's practice solving problems with number systems! Think of number systems like different languages for numbers. Computers use <strong>binary</strong> (0s and 1s), but we humans like <strong>decimal</strong> (the numbers you see every day: 0, 1, 2, 3, . 9). Here's how we can solve problems by thinking step by step.
+            </p>
+            
+            <h3>Example 1: Convert Decimal to Binary</h3>
+            <div class="example-box">
+                <p><strong>Question:</strong> What is the binary version of the decimal number 10?</p>
+                <p><strong>Step-by-step explanation:</strong></p>
+                <ol>
+                    <li>In binary, we can only use 0 and 1. To convert, we repeatedly divide the number by 2 and write down the remainder:</li>
+                    <li>10 / 2 = 5 (remainder = 0)</li>
+                    <li>5 / 2 = 2 (remainder = 1)</li>
+                    <li>2 / 2 = 1 (remainder = 0)</li>
+                    <li>1 / 2 = 0 (remainder = 1)</li>
+                    <li>Now, read the remainders from the bottom up: <strong>1010</strong>.</li>
+                </ol>
+                <p><strong>Answer:</strong> 10 in binary is <strong>1010</strong>.</p>
+            </div>
+            
+            <h3>Example 2: Add Binary Numbers</h3>
+            <div class="example-box">
+                <p><strong>Question:</strong> What is the sum of 101 (5 in decimal) and 11 (3 in decimal)?</p>
+                <p><strong>Step-by-step explanation:</strong></p>
+                <ol>
+                    <li>Line up the numbers like in decimal addition:</li>
+                    <pre>
+                        101
+                       +011
+                    </pre>
+                    <li>Add from right to left, just like in decimal:</li>
+                    <ul>
+                        <li>1 + 1 = 10 (write 0, carry 1).</li>
+                        <li>0 + 1 + carry (1) = 10 (write 0, carry 1).</li>
+                        <li>1 + carry (1) = 10 (write 0, carry 1).</li>
+                    </ul>
+                    <li>The result is 1000.</li>
+                </ol>
+                <p><strong>Answer:</strong> 101 + 011 = <strong>1000</strong> (8 in decimal).</p>
+            </div>
+            
+            <h3>Example 3: Convert Decimal to Hexadecimal</h3>
+            <div class="example-box">
+                <p><strong>Question:</strong> What is 255 in hexadecimal?</p>
+                <p><strong>Step-by-step explanation:</strong></p>
+                <ol>
+                    <li>Hexadecimal uses 16 symbols: 0-9 and A-F (where A = 10, B = 11, ., F = 15).</li>
+                    <li>Divide the decimal number by 16 and write the remainders:</li>
+                    <li>255 / 16 = 15 (remainder = 15, which is F).</li>
+                    <li>Since there is no more to divide, the result is <strong>FF</strong>.</li>
+                </ol>
+                <p><strong>Answer:</strong> 255 in hexadecimal is <strong>FF</strong>.</p>
+            </div>
+            
+            <h3>Practice Challenge</h3>
+            <p>Now, try these on your own:</p>
+            <ul>
+                <li>Convert 23 to binary.</li>
+                <li>Add the binary numbers 110 and 101.</li>
+                <li>Convert 128 to hexadecimal.</li>
+            </ul>
+        </section>
+    </main>
         </div>
 
         <div id="binary_denary" class="tab">
