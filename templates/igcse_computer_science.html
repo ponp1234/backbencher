@@ -65,6 +65,19 @@
             border-radius: 10px;
             transition: all 0.3s ease;
         }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        table, th, td {
+            border: 1px solid #004080;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
 
         .sidebar-button:hover {
             background: rgba(255, 255, 255, 0.3);
@@ -201,6 +214,14 @@
                 <a href="#hexadecimal_denary" onclick="showTab('hexadecimal_denary')">Converting Between Hexadecimal & Denary</a>
                 <a href="#hexadecimal_binary" onclick="showTab('hexadecimal_binary')">Converting Between Hexadecimal & Binary</a>
                 <a href="#uses_hexadecimal" onclick="showTab('uses_hexadecimal')">Uses of Hexadecimal</a>
+            </details>
+            <details>
+                <summary>Text, Sound & Images</summary>
+                <a href="#text" onclick="showTab('text')">Text</a>
+                <a href="#sound" onclick="showTab('sound')">Sound</a>
+                <a href="#images" onclick="showTab('images')">Images</a>
+                
+                
             </details>
         </details>
         <details>
@@ -923,6 +944,425 @@
             </div>
         </section>
         </div>
+        
+        <div id="text" class="tab">
+        
+           <section>
+            <h2>What is Data Storage?</h2>
+            <p>Data storage refers to how information is saved in a computer so it can be accessed and used later. Computers store data using binary (0s and 1s), and it can include text, images, videos, and more.</p>
+        </section>
+
+        <section>
+            <h2>Types of Data Storage</h2>
+            <ul>
+                <li><strong>Primary Storage:</strong> This is temporary storage that a computer uses while it is running, such as RAM (Random Access Memory).</li>
+                <li><strong>Secondary Storage:</strong> This is permanent storage for files, such as hard drives (HDD), solid-state drives (SSD), and USB drives.</li>
+                <li><strong>Offline Storage:</strong> These are removable devices, like CDs, DVDs, and Blu-ray discs, used to store data outside the computer.</li>
+            </ul>
+        </section>
+        
+        
+        
+        <section>
+            <ul>
+                <li>Text is converted to binary to be processed by a computer.</li>
+                <li>A character set is a list of all characters and symbols represented by a computer.</li>
+                <li>Each character and symbol has a unique value:</li>
+            </ul>
+            <table>
+                <tr>
+                    <th>Character Set</th>
+                    <th>Code Size</th>
+                    <th>Features</th>
+                </tr>
+                <tr>
+                    <td>ASCII</td>
+                    <td>7-bit</td>
+                    <td>English language only</td>
+                </tr>
+                <tr>
+                    <td>Extended ASCII</td>
+                    <td>8-bit</td>
+                    <td>English language and some non-English symbols</td>
+                </tr>
+                <tr>
+                    <td>Unicode</td>
+                    <td>16/32-bit</td>
+                    <td>Supports multiple languages and symbols</td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>Real-World Usage</h2>
+            <div class="real-world">
+                <strong>Cloud Storage:</strong> Services like Google Drive and Dropbox allow you to store data on the internet, making it accessible from anywhere.
+            </div>
+            <div class="real-world">
+                <strong>Gaming Consoles:</strong> Video games save progress on SSDs or hard drives, so you can continue where you left off.
+            </div>
+            <div class="real-world">
+                <strong>Medical Records:</strong> Hospitals store patient data in large databases, often on SSDs or cloud storage, to ensure quick and secure access.
+            </div>
+        </section>
+
+        <section>
+            <h2>Problem-Solving Examples</h2>
+            <div class="example-box">
+                <h3>Example 1: Measuring File Sizes</h3>
+                <p><strong>Problem:</strong> A text file contains 1000 characters. Each character uses 1 byte. What is the file size in kilobytes (KB)?</p>
+                <p><strong>Explanation:</strong></p>
+                <ol>
+                    <li>1 KB = 1024 bytes.</li>
+                    <li>Total size = 1000 bytes.</li>
+                    <li>File size in KB = 1000 / 1024 ≈ 0.98 KB.</li>
+                </ol>
+                <p><strong>Answer:</strong> The file size is approximately 0.98 KB.</p>
+            </div>
+            <div class="example-box">
+                <h3>Example 2: Choosing Storage</h3>
+                <p><strong>Problem:</strong> You want to store a 2 GB movie. Which type of storage would you use: a USB drive with 1 GB capacity or an external hard drive with 500 GB capacity?</p>
+                <p><strong>Explanation:</strong></p>
+                <ul>
+                    <li>The USB drive cannot hold the 2 GB file because it has only 1 GB of space.</li>
+                    <li>The external hard drive can store the movie because it has 500 GB of space.</li>
+                </ul>
+                <p><strong>Answer:</strong> Use the external hard drive to store the 2 GB movie.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Fun Facts</h2>
+            <div class="fun-fact">
+                <strong>Fun Fact 1:</strong> The first hard drive, created by IBM in 1956, weighed over 1 ton and could store only 5 MB of data!
+            </div>
+            <div class="fun-fact">
+                <strong>Fun Fact 2:</strong> Modern microSD cards can hold more than 1 TB of data and are smaller than a fingernail.
+            </div>
+            <div class="fun-fact">
+                <strong>Fun Fact 3:</strong> Cloud storage servers store millions of terabytes of data and are often located in massive data centers around the world.
+            </div>
+        </section>
+        </div>
+        
+        
+        <div id="sound" class="tab">
+        
+         <section>
+            <h2>How is Sound Stored in Computers?</h2>
+            <p>Sound is stored in computers by converting analog sound waves into digital data using a process called <strong>sampling</strong>. The sound wave is captured at regular intervals (samples) and converted into binary numbers.</p>
+        </section>
+
+        <section>
+            <h2>Key Terms in Sound Storage</h2>
+            <ul>
+                <li><strong>Sampling Rate:</strong> The number of times the sound is sampled per second, measured in Hertz (Hz). Higher rates capture more details.</li>
+                <li><strong>Bit Depth:</strong> The number of bits used to store each sample. Higher bit depth provides better sound quality.</li>
+                <li><strong>File Size:</strong> The size of the sound file depends on the sampling rate, bit depth, and duration of the recording.</li>
+            </ul>
+        </section>
+        
+        <section>
+            <h2>Sound Representation</h2>
+            <ul>
+                <li>A sound wave is sampled for sound to be converted to binary using an ADC.</li>
+                <li>Sampling determines the amplitude of the sound at set intervals, giving an approximate representation of the sound wave.</li>
+                <li><strong>Sample rate:</strong> The number of samples taken per second.</li>
+                <li><strong>Sampling resolution:</strong> The number of bits required per sample (bit depth).</li>
+                <li>Greater sample rates and resolutions improve accuracy but increase file size.</li>
+            </ul>
+        </section>
+        
+         <section>
+            <h2>Musical Instrument Digital Format (MIDI)</h2>
+            <ul>
+                <li>Used for storing music files.</li>
+                <li>A communication protocol that allows electronic musical instruments to interact with each other.</li>
+                <li>Stored as a series of commands, not actual music notes.</li>
+                <li>Uses 8-bit serial transmission (asynchronous).</li>
+                <li>Each MIDI command has a sequence of bytes:
+                    <ul>
+                        <li>The first byte is the <strong>status byte</strong>, which informs the MIDI device what function to perform.</li>
+                        <li>Encoded in the status byte is the MIDI channel (operates on 16 different channels).</li>
+                    </ul>
+                </li>
+                <li>Examples of MIDI commands:
+                    <ul>
+                        <li><strong>Note on/off:</strong> Indicates that a key has been pressed.</li>
+                        <li><strong>Key pressure:</strong> Indicates how hard the key is pressed (controls loudness).</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>MP3</h2>
+            <ul>
+                <li>Uses Audio Compression technology to convert music and other sounds into MP3 format.</li>
+                <li>Compression reduces the normal file size by up to 90%.</li>
+                <li>File compression algorithms use <strong>Perceptual Music Shaping</strong>:
+                    <ul>
+                        <li>Removes sounds that the human ear cannot hear properly.</li>
+                        <li>Removes certain sounds without significantly affecting quality.</li>
+                    </ul>
+                </li>
+                <li>CD files are converted using File Compression Software.</li>
+                <li>Uses a <strong>lossy format</strong>, meaning the original file is lost after compression.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>MP4</h2>
+            <ul>
+                <li>Allows the storage of multimedia files, including:
+                    <ul>
+                        <li>Music</li>
+                        <li>Videos</li>
+                        <li>Photos</li>
+                        <li>Animations</li>
+                    </ul>
+                </li>
+                <li>Videos can be streamed without losing noticeable quality.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Joint Photographic Experts Group (JPEG)</h2>
+            <ul>
+                <li>JPEG is a file format used to reduce photographic file sizes.</li>
+                <li>Reducing picture resolution involves changing the number of pixels per centimeter.</li>
+                <li>Compression reduces file size while balancing quality.</li>
+                <li>JPEG reduces the raw bitmap image size by a factor of 5 to 15.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>File Compression</h2>
+            <h3>Lossless File Compression</h3>
+            <ul>
+                <li>Reconstructs all the original data when the file is uncompressed.</li>
+                <li>Important for files where data loss would be disastrous (e.g., spreadsheets).</li>
+                <li>Uses algorithms to compress data:
+                    <ul>
+                        <li>Repeated patterns or text are grouped into indexes.</li>
+                    </ul>
+                </li>
+                <li><strong>Run-Length Encoding (RLE):</strong>
+                    <ul>
+                        <li>Reduces the size of adjacent, identical data (e.g., repeated colors in an image).</li>
+                        <li>Encodes data as two values: the count of repeats and the data itself.</li>
+                        <li>Effective for long runs of repeated data but less efficient for varied patterns.</li>
+                    </ul>
+                </li>
+            </ul>
+            <h3>Lossy File Compression</h3>
+            <ul>
+                <li>Eliminates unnecessary data bits, as in MP3 and JPEG formats.</li>
+                <li>Cannot reconstruct the original file once compressed.</li>
+                <li>Reduces file quality by:
+                    <ul>
+                        <li>Reducing sample resolution or bit depth (for sound).</li>
+                        <li>Reducing sample rate (for sound).</li>
+                        <li>Reducing image resolution and color depth (for images).</li>
+                    </ul>
+                </li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Real-World Usage</h2>
+            <div class="real-world">
+                <strong>Music Streaming:</strong> Platforms like Spotify and Apple Music use compressed sound formats (e.g., MP3) to store and stream music efficiently.
+            </div>
+            <div class="real-world">
+                <strong>Voice Assistants:</strong> Devices like Alexa and Siri store sound data to understand and respond to voice commands.
+            </div>
+            <div class="real-world">
+                <strong>Film and Game Audio:</strong> Sound effects and dialogues in movies and video games are stored in high-quality audio formats for immersive experiences.
+            </div>
+        </section>
+        
+        
+
+        <section>
+            <h2>Problem-Solving Examples</h2>
+            <div class="example-box">
+                <h3>Example 1: Calculating File Size</h3>
+                <p><strong>Problem:</strong> A sound file has a sampling rate of 44,100 Hz, a bit depth of 16 bits, and a duration of 10 seconds. How much storage space is required?</p>
+                <p><strong>Explanation:</strong></p>
+                <ol>
+                    <li>Calculate the number of samples: 44,100 samples/second × 10 seconds = 441,000 samples.</li>
+                    <li>Calculate the total bits: 441,000 samples × 16 bits = 7,056,000 bits.</li>
+                    <li>Convert to bytes: 7,056,000 ÷ 8 = 882,000 bytes.</li>
+                    <li>Convert to kilobytes: 882,000 ÷ 1024 ≈ 861 KB.</li>
+                </ol>
+                <p><strong>Answer:</strong> The sound file requires approximately 861 KB of storage.</p>
+            </div>
+            <div class="example-box">
+                <h3>Example 2: Comparing Sound Quality</h3>
+                <p><strong>Problem:</strong> Which file has better sound quality: one with a sampling rate of 22,050 Hz and 8-bit depth or one with a sampling rate of 44,100 Hz and 16-bit depth?</p>
+                <p><strong>Explanation:</strong></p>
+                <ul>
+                    <li>The second file has a higher sampling rate, meaning it captures more sound details.</li>
+                    <li>The second file also has a higher bit depth, meaning it can store more precise sound levels.</li>
+                </ul>
+                <p><strong>Answer:</strong> The file with 44,100 Hz and 16-bit depth has better sound quality.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Fun Facts</h2>
+            <div class="fun-fact">
+                <strong>Fun Fact 1:</strong> CD-quality audio uses a sampling rate of 44,100 Hz and a bit depth of 16 bits, which became the standard for digital music.
+            </div>
+            <div class="fun-fact">
+                <strong>Fun Fact 2:</strong> The human ear can hear sounds between 20 Hz and 20,000 Hz, which is why most sampling rates aim to capture this range.
+            </div>
+            <div class="fun-fact">
+                <strong>Fun Fact 3:</strong> Compressed sound formats like MP3 remove parts of the sound that are less likely to be heard by the human ear to save space.
+            </div>
+        </section>
+        </div>
+        
+        
+        <div id="images" class="tab">
+        <section>
+            <h2>How is Image Data Stored in Computers?</h2>
+            <p>Images are stored as a collection of tiny squares called pixels. Each pixel has a specific color, and its color is represented using binary numbers. The more pixels an image has, the higher its resolution and the more storage space it requires.</p>
+        </section>
+
+        <section>
+            <h2>Key Concepts in Image Storage</h2>
+            <ul>
+                <li><strong>Pixels:</strong> The smallest unit of an image. Each pixel is assigned a binary value representing its color.</li>
+                <li><strong>Resolution:</strong> The number of pixels in an image. Higher resolution means more pixels and greater detail.</li>
+                <li><strong>Color Depth:</strong> The number of bits used to represent the color of a pixel. For example, an 8-bit image can represent 256 colors.</li>
+                <li><strong>File Size:</strong> The size of an image file depends on its resolution and color depth.</li>
+            </ul>
+        </section>
+        
+        <section>
+            <h2>Image Representation</h2>
+            <ul>
+                <li>An image is a series of pixels that are converted to binary and processed by computers.</li>
+                <li><strong>Image resolution:</strong> The total number of pixels in the X-Y direction of an image.</li>
+                <li><strong>Color depth:</strong> The number of bits used to represent each color.</li>
+                <li>Higher resolution and color depth improve image quality but increase file size.</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Data Storage and File Compression</h2>
+            <h3>Memory Sizes</h3>
+            <table >
+                <tr>
+                    <th>Name</th>
+                    <th>Size</th>
+                    <th>Bytes</th>
+                </tr>
+                <tr>
+                    <td>1 Kibibyte (1 KiB)</td>
+                    <td>2<sup>10</sup></td>
+                    <td>1,024</td>
+                </tr>
+                <tr>
+                    <td>1 Mebibyte (1 MiB)</td>
+                    <td>2<sup>20</sup></td>
+                    <td>1,048,576</td>
+                </tr>
+                <tr>
+                    <td>1 Gibibyte (1 GiB)</td>
+                    <td>2<sup>30</sup></td>
+                    <td>1,073,741,824</td>
+                </tr>
+                <tr>
+                    <td>1 Tebibyte (1 TiB)</td>
+                    <td>2<sup>40</sup></td>
+                    <td>1,099,511,627,776</td>
+                </tr>
+                <tr>
+                    <td>1 Pebibyte (1 PiB)</td>
+                    <td>2<sup>50</sup></td>
+                    <td>1,125,899,906,842,624</td>
+                </tr>
+                <tr>
+                    <td>1 Exbibyte (1 EiB)</td>
+                    <td>2<sup>60</sup></td>
+                    <td>1,152,921,504,606,846,976</td>
+                </tr>
+            </table>
+            <h3>File Size Calculation</h3>
+            <ul>
+                <li>Image: Resolution (pixels) × Color Depth (bits).</li>
+                <li>Sound: Sample Rate (Hz) × Sampling Resolution (bits) × Duration (seconds).</li>
+            </ul>
+            <h3>Data Compression</h3>
+            <ul>
+                <li>Reduces file size to:
+                    <ul>
+                        <li>Use less bandwidth.</li>
+                        <li>Save storage space.</li>
+                        <li>Shorten transmission times.</li>
+                    </ul>
+                </li>
+                <li><strong>Lossy Compression:</strong> Reduces file size by removing some data (e.g., MP3, JPEG).</li>
+                <li><strong>Lossless Compression:</strong> Compresses files without losing any data (e.g., RLE).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Real-World Usage</h2>
+            <div class="real-world">
+                <strong>Digital Cameras:</strong> Photos captured by digital cameras are stored as binary data, representing millions of pixels.
+            </div>
+            <div class="real-world">
+                <strong>Social Media:</strong> Platforms like Instagram and Snapchat compress image files to save storage while preserving quality.
+            </div>
+            <div class="real-world">
+                <strong>Medical Imaging:</strong> CT scans and MRIs store high-resolution images for detailed analysis by doctors.
+            </div>
+        </section>
+
+        <section>
+            <h2>Problem-Solving Examples</h2>
+            <div class="example-box">
+                <h3>Example 1: Calculating File Size</h3>
+                <p><strong>Problem:</strong> An image has a resolution of 800 × 600 pixels and a color depth of 24 bits. What is the file size in megabytes (MB)?</p>
+                <p><strong>Explanation:</strong></p>
+                <ol>
+                    <li>Calculate the total number of pixels: 800 × 600 = 480,000 pixels.</li>
+                    <li>Calculate the total bits: 480,000 × 24 = 11,520,000 bits.</li>
+                    <li>Convert to bytes: 11,520,000 ÷ 8 = 1,440,000 bytes.</li>
+                    <li>Convert to megabytes: 1,440,000 ÷ 1,048,576 ≈ 1.37 MB.</li>
+                </ol>
+                <p><strong>Answer:</strong> The file size is approximately 1.37 MB.</p>
+            </div>
+            <div class="example-box">
+                <h3>Example 2: Comparing Image Quality</h3>
+                <p><strong>Problem:</strong> Which image has better quality: one with 1024 × 768 resolution and 16-bit color depth or one with 640 × 480 resolution and 24-bit color depth?</p>
+                <p><strong>Explanation:</strong></p>
+                <ul>
+                    <li>The first image has more pixels, so it has higher resolution and detail.</li>
+                    <li>The second image has a higher color depth, so it can display more colors.</li>
+                </ul>
+                <p><strong>Answer:</strong> The first image has better resolution, but the second image has richer colors. The choice depends on the application.</p>
+            </div>
+        </section>
+
+        <section>
+            <h2>Fun Facts</h2>
+            <div class="fun-fact">
+                <strong>Fun Fact 1:</strong> The first digital image was scanned in 1957 and had a resolution of only 176 × 176 pixels.
+            </div>
+            <div class="fun-fact">
+                <strong>Fun Fact 2:</strong> A single image in 4K resolution has over 8 million pixels, requiring a large amount of storage space.
+            </div>
+            <div class="fun-fact">
+                <strong>Fun Fact 3:</strong> Image compression techniques like JPEG reduce file size by discarding some details that are less noticeable to the human eye.
+            </div>
+        </section>
+        </div>
+        
     </div>
 
     <script>
