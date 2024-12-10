@@ -254,6 +254,14 @@ def user_home():
     
     return render_template("user_home.html", exams=exams, attempts=attempts)
 
+@app.route("/access_home")
+@login_required
+def access_home():
+    # Get all past attempts by the current user
+    attempts = ExamAttempt.query.filter_by(user_id=current_user.id).order_by(ExamAttempt.attempt_date.desc()).all()
+    exams = Exam.query.all()  # Fetch all available exams
+    
+    return render_template("access_home.html", exams=exams, attempts=attempts)
 
 import google.generativeai as genai
 from flask_cors import CORS
