@@ -49,6 +49,25 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(60), nullable=False)
     student_class = db.Column(db.String(50), nullable=False)  
 
+class ExamMapping(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    exam_id = db.Column(db.Integer, db.ForeignKey('exam.id'), nullable=False)
+    class_name = db.Column(db.String(50), nullable=False)  # Stores the class name
+
+
+class Learning(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)  # Title of the learning material
+    desc = db.Column(db.Text, nullable=True)           # Description of the learning material
+    code = db.Column(db.String(50), nullable=False)    # Code identifier for the learning material
+
+
+class LearningsMapping(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    learning_id = db.Column(db.Integer, db.ForeignKey('learning.id'), nullable=False)
+    class_name = db.Column(db.String(50), nullable=False)  # Maps to the class
+
+
 
 
 # Exam model (must be defined before Question model)
@@ -250,9 +269,16 @@ def logout():
 def user_home():
     # Get all past attempts by the current user
     attempts = ExamAttempt.query.filter_by(user_id=current_user.id).order_by(ExamAttempt.attempt_date.desc()).all()
-    exams = Exam.query.all()  # Fetch all available exams
+    # Get the current user's student class
+    user_class = current_user.student_class
+    print(user_class)
+   
+    # Fetch exams mapped to the user's student class
+    exams = db.session.query(Exam).join(ExamMapping).filter(ExamMapping.class_name == user_class).all()
     
-    return render_template("user_home.html", exams=exams, attempts=attempts)
+    learnings = db.session.query(Learning).join(LearningsMapping).filter(LearningsMapping.class_name == user_class).all()
+    
+    return render_template("user_home.html", exams=exams, attempts=attempts, learnings=learnings)
 
 @app.route("/access_home")
 @login_required
