@@ -194,7 +194,7 @@
             <div class="exam-info">
                 <h3>{{ learn.title }}</h3>
                 <p>{{ learn.desc }}</p>
-                <a href="{{ url_for(learn.code)}}" class="exam-link">View Study Guide</a>
+                <a href="{{ url_for('learn', code=learn.code) }}" class="exam-link">View Study Guide</a>
             </div>
             
         </div>

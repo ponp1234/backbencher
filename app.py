@@ -67,6 +67,11 @@ class LearningsMapping(db.Model):
     learning_id = db.Column(db.Integer, db.ForeignKey('learning.id'), nullable=False)
     class_name = db.Column(db.String(50), nullable=False)  # Maps to the class
 
+class HTMLMapping(db.Model):
+    id = db.Column(db.Integer, primary_key=True)     # Primary key
+    code = db.Column(db.String(50), nullable=False)  # Unique code identifier
+    html = db.Column(db.String(50), nullable=False)        # HTML 
+
 
 
 
@@ -133,10 +138,25 @@ def attempts():
     attempts = ExamAttempt.query.filter_by(user_id=current_user.id).order_by(ExamAttempt.attempt_date.desc()).all()
     return render_template("attempts.html", attempts=attempts)
 
-@app.route("/igcsccs")
+
+@app.route("/learn/<code>", endpoint="learn")
 @login_required
-def igcsccs():
-    return render_template("igcse_computer_science.html")
+def dynamic_html(code):
+    # Fetch the HTML mapping for the given code
+    mapping = HTMLMapping.query.filter_by(code=code).first()
+
+    if mapping:
+        try:
+            # Render the specified HTML file dynamically
+            return render_template(mapping.html)
+        except Exception:
+            flash(f"HTML file '{mapping.html}' not found.", "danger")
+            return redirect(url_for('home'))
+    else:
+        # Handle the case where the code is not found
+        flash(f"No learning material found for code: {code}", "danger")
+        return redirect(url_for('home'))
+
 
 
 @app.route("/profile")
