@@ -157,6 +157,74 @@
                 grid-template-columns: 1fr;
             }
         }
+        
+        .widget-container {
+         
+
+        }
+
+        #current-time {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        #calendar {
+            border: 1px solid #ddd;
+            padding: 10px;
+            display: inline-block;
+            text-align: center;
+        }
+
+        #calendar table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        #calendar th, #calendar td {
+            border: 1px solid #ddd;
+            padding: 5px;
+            text-align: center;
+        }
+
+        #calendar th {
+            
+        }
+    .cat-container {
+            width: 30%;
+            position: relative;
+        }
+
+        #ascii-cat {
+            font-family: monospace;
+            white-space: pre;
+            color: white;
+            font-size: 12px;
+        } 
+        
+          .scroller {
+            position: relative;
+            overflow: hidden;
+            white-space: nowrap;
+            width: 50%;
+            color: white;
+            font-size: 1.2em;
+            padding: 30px 0;
+        }
+
+        .scroller span {
+            position: absolute;
+            animation: scroll-text 10s linear infinite;
+            white-space: nowrap;
+        }
+
+        @keyframes scroll-text {
+            0% {
+                transform: translateX(100%);
+            }
+            100% {
+                transform: translateX(-100%);
+            }
+        }
     </style>
 </head>
 <body>
@@ -169,7 +237,20 @@
     </div>
 
     <div class="content">
-        <h1>Welcome, {{ current_user.username }}!</h1>
+        <h1>Welcome, {{ current_user.username }}!</h1> 
+               <div class="cat-container">
+            <pre id="ascii-cat"></pre>
+                   <div class="scroller">
+            <span>Welcome back Backbencher !!!!!.Strat your learning.</span>
+        </div>
+        </div>
+ 
+        <div class="widget-container">
+                <div id="current-time"></div>
+                <div id="calendar"></div>
+        
+            </div>
+      
         
         <h2>Explore Available Exams</h2>
         <div class="exam-catalog">
@@ -203,5 +284,120 @@
 </div>
        
     </div>
+    
+<script>
+        // ASCII Cat Frames
+        const catFrames = [
+            `
+        |\\---/|
+        | o_o |
+         \\_^_/
+            `,
+            `
+        |\\---/|
+        | -_- |
+         \\_^_/
+            `,
+            `
+        |\\---/|
+        | >_< |
+         \\_^_/
+            `,
+            `
+        |\\---/|
+        | ^_^ |
+         \\_^_/
+            `
+        ];
+
+        // Animation Variables
+        const catElement = document.getElementById('ascii-cat');
+        let frameIndex = 0;
+
+        // Function to Animate Cat
+        function animateCat() {
+            catElement.innerText = catFrames[frameIndex];
+            frameIndex = (frameIndex + 1) % catFrames.length;
+        }
+
+        // Start Animation
+        setInterval(animateCat, 300); // Change frames every 300ms
+    </script>
+    
+ <script>
+        // Function to update the current time
+        function updateTime() {
+            const currentTimeDiv = document.getElementById('current-time');
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            currentTimeDiv.innerText =  now.toLocaleDateString('en-US', options);
+        }
+
+// Function to generate a simple calendar for the current month
+function generateCalendar() {
+    const calendarDiv = document.getElementById('calendar');
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const today = now.getDate(); // Get the current date
+
+    const monthNames = [
+        "January", "February", "March", "April", "May", "June", "July",
+        "August", "September", "October", "November", "December"
+    ];
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const lastDate = new Date(year, month + 1, 0).getDate();
+
+    let calendarHTML = `<h3>${monthNames[month]} ${year}</h3>`;
+    calendarHTML += `
+        <table>
+            <thead>
+                <tr>
+                    <th>Sun</th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    let day = 1;
+    for (let i = 0; i < 6; i++) {
+        calendarHTML += '<tr>';
+        for (let j = 0; j < 7; j++) {
+            if (i === 0 && j < firstDay || day > lastDate) {
+                calendarHTML += '<td></td>'; // Empty cells
+            } else {
+                if (day === today) {
+                    // Highlight the current date
+                    calendarHTML += `<td style="background-color: #79CCBF; color: white; border-radius: 50%;">${day}</td>`;
+                } else {
+                    calendarHTML += `<td>${day}</td>`;
+                }
+                day++;
+            }
+        }
+        calendarHTML += '</tr>';
+        if (day > lastDate) break;
+    }
+
+    calendarHTML += '</tbody></table>';
+    calendarDiv.innerHTML = calendarHTML;
+}
+
+// Initialize the widget
+document.addEventListener('DOMContentLoaded', () => {
+    updateTime();
+    generateCalendar();
+    setInterval(updateTime, 1000); // Update the time every second
+});
+
+    </script>
+    
 </body>
 </html>
