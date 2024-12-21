@@ -259,7 +259,7 @@
         <div class="question-box">
             <p class="question-text" id="question-text">{{ question.question_text }}</p>
             
-            <form method="POST" action="{{ url_for('exam', exam_id=exam.id, question_number=question_number) }}" class="answer-options">
+            <form id="form"  method="POST" action="{{ url_for('exam', exam_id=exam.id, question_number=question_number) }}" class="answer-options">
                 {% if question.question_type == 'textbox' %}
                     <textarea 
                         class="textbox-answer" 
@@ -318,7 +318,7 @@
                 {% endif %}
                 
                 <button type="button" class="submit-button" id="sb-button" onclick="checkAnswer()">Submit</button>
-                <button type="button" class="next-button" id="next" disabled onclick="goToNextQuestion()">Next</button>
+                <button type="submit" class="next-button" id="next" disabled >Next</button>
                 <button type="button" class="back-button" onclick="goBack()">Back</button>
             </form>
 
@@ -334,6 +334,7 @@
     <script>
     
     function goToNextQuestion() {
+    alert("")
     document.querySelector('form').submit();
 }
 

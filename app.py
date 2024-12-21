@@ -39,7 +39,12 @@ class ExamAttempt(db.Model):
     # Relationships
     user = db.relationship('User', backref='attempts', lazy=True)
     exam = db.relationship('Exam', backref='attempts', lazy=True)
-
+    
+class ToDo(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    task = db.Column(db.String(200), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 
 # User Model
@@ -179,6 +184,7 @@ def exam(exam_id, question_number):
     question = questions[question_number - 1]
 
     if request.method == 'POST':
+        print("Form Data:", request.form)  # Debugging - prints all form data
         if question.question_type == 'fill_in_the_blank':
             # Handle fill-in-the-blank answers
             correct_answers = question.correct_options.split(',')
@@ -194,16 +200,22 @@ def exam(exam_id, question_number):
             # Handle multiple-answer questions
             user_answers = request.form.getlist('answer')
             correct_answers = question.correct_options.split(',')
+            print(user_answers)
+            print(correct_answers)            
             if set(user_answers) == set(correct_answers):
                 session['score'] = session.get('score', 0) + 1
         else:
             # Handle single-answer questions
             user_answer = request.form.get('answer')
+            print(user_answer)
             if user_answer == question.correct_option:
                 session['score'] = session.get('score', 0) + 1
                 
-
+            print("User Answers:", user_answer)
+            print("Correct Answers:", question.correct_option)
+        
         print(session.get('score', 0))
+   
             
         session.modified = True
 
@@ -289,6 +301,8 @@ def logout():
 def user_home():
     # Get all past attempts by the current user
     attempts = ExamAttempt.query.filter_by(user_id=current_user.id).order_by(ExamAttempt.attempt_date.desc()).all()
+    todos = ToDo.query.filter_by(user_id=current_user.id).order_by(ToDo.date.asc()).all()
+    print(todos)
     # Get the current user's student class
     user_class = current_user.student_class
     print(user_class)
@@ -298,7 +312,7 @@ def user_home():
     
     learnings = db.session.query(Learning).join(LearningsMapping).filter(LearningsMapping.class_name == user_class).all()
     
-    return render_template("user_home.html", exams=exams, attempts=attempts, learnings=learnings)
+    return render_template("user_home.html", exams=exams, attempts=attempts, learnings=learnings, todos=todos)
 
 @app.route("/access_home")
 @login_required
@@ -412,6 +426,53 @@ def check_gemini():
             'error': f"Server error: {str(e)}"
         }), 500
 
+
+@app.route('/add_todo', methods=['POST'])
+@login_required
+def add_todo():
+    task = request.form['task']
+    date_str = request.form['date']  # This is a string
+    try:
+        date = datetime.strptime(date_str, "%Y-%m-%d").date()  # Convert to datetime.date
+    except ValueError:
+        flash("Invalid date format. Please use YYYY-MM-DD.", "danger")
+        return redirect(url_for('user_home'))
+
+    new_todo = ToDo(task=task, date=date, user_id=current_user.id)
+    db.session.add(new_todo)
+    db.session.commit()
+    return redirect(url_for('user_home'))
+
+@app.route('/update_todo/<int:todo_id>', methods=['POST'])
+@login_required
+def update_todo(todo_id):
+    todo = ToDo.query.get_or_404(todo_id)
+    if todo.user_id != current_user.id:
+        abort(403)
+
+    task = request.form['task']
+    date_str = request.form.get('date')  # Optional date update
+    if date_str:
+        try:
+            todo.date = datetime.strptime(date_str, "%Y-%m-%d").date()
+        except ValueError:
+            flash("Invalid date format. Please use YYYY-MM-DD.", "danger")
+            return redirect(url_for('user_home'))
+
+    todo.task = task
+    db.session.commit()
+    return redirect(url_for('user_home'))
+
+
+@app.route('/delete_todo/<int:todo_id>', methods=['POST'])
+@login_required
+def delete_todo(todo_id):
+    todo = ToDo.query.get_or_404(todo_id)
+    if todo.user_id != current_user.id:
+        abort(403)
+    db.session.delete(todo)
+    db.session.commit()
+    return redirect(url_for('user_home'))
 
 if __name__ == '__main__':
     with app.app_context():
