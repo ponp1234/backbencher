@@ -129,9 +129,18 @@
     <div class="content">
         <div class="result-container">
             <h1 class="score">Your Score: {{ score }} out of {{ total }}</h1>
-
+            <p class="percentage">You scored {{ "%.2f" % ((score / total) * 100) }}%</p>
             
-           
+            {% if score / total >= 0.8 %}
+                <p class="performance">Excellent Job! </p>
+                <p>You're doing great. Keep up the fantastic work!</p>
+            {% elif score / total >= 0.5 %}
+                <p class="performance">Good Effort! </p>
+                <p>You're halfway there. A little more practice will make you even better!</p>
+            {% else %}
+                <p class="performance">Keep Trying! </p>
+                <p>Don't give up! Review the concepts and try again.</p>
+            {% endif %}
         </div>
     </div>
 </body>

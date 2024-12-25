@@ -124,6 +124,15 @@ def register():
     
     return render_template('register.html')
 
+@app.route('/countdown')
+@login_required
+def countdown():
+    return render_template('countdown.html')
+
+@app.route('/game')
+@login_required
+def game():
+    return render_template('game.html')
 
 @app.route("/login", methods=['GET', 'POST'])
 def login():

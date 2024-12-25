@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Countdown Timer with Roaming Cat</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            overflow: hidden;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 1em;
+            cursor: pointer;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-button:hover {
+            background: #0056b3;
+        }
+
+        .container {
+            text-align: center;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+
+        .timer {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .time-details {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2em;
+        }
+
+        .time-details span {
+            margin: 0 10px;
+        }
+
+        .current-time {
+            color: blue;
+        }
+
+        .form-container {
+            margin-bottom: 20px;
+        }
+
+        input {
+            padding: 10px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #45a049;
+        }
+
+        button.stop-button {
+            background: #ff6b6b;
+        }
+
+        button.stop-button:hover {
+            background: #e63946;
+        }
+
+        button.reset-button {
+            background: #007bff;
+        }
+
+        button.reset-button:hover {
+            background: #0056b3;
+        }
+
+        .cat-container {
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .cat {
+            position: absolute;
+            bottom: 0;
+            font-family: monospace;
+            white-space: pre;
+            color: black;
+            font-size: 16px;
+            animation: roam 10s linear infinite;
+        }
+
+        @keyframes roam {
+            0% {
+                transform: translateX(-100%);
+            }
+            50% {
+                transform: translateX(50%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+    </style>
+</head>
+<body>
+    <a href="{{ url_for('user_home') }}" class="back-button">Back to Classroom</a>
+
+    <div class="container">
+        <div class="form-container">
+            <label for="hours">Set Timer:</label>
+            <input type="number" id="hours" min="0" placeholder="Hours">
+            <input type="number" id="minutes" min="0" placeholder="Minutes">
+            <button onclick="startCountdown()">Start</button>
+            <button class="stop-button" onclick="stopCountdown()">Stop</button>
+            <button class="reset-button" onclick="resetCountdown()">Reset</button>
+        </div>
+        <div class="timer" id="countdown-timer">00:00:00</div>
+        <div class="time-details">
+            <div>
+                <strong>Start:</strong> <span id="start-time">--:-- --</span>
+            </div>
+            <div>
+                <strong>End:</strong> <span id="end-time">--:-- --</span>
+            </div>
+            <div>
+                <strong class="current-time">Current Time:</strong> <span id="current-time">--:-- --</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="cat-container">
+        <div class="cat" id="ascii-cat">
+            |\\---/|  
+            | o_o |  
+             \\_^_/   
+        </div>
+    </div>
+
+    <script>
+        let countdownInterval;
+        let remainingTime = 0;
+
+        function startCountdown() {
+            const hours = parseInt(document.getElementById('hours').value, 10) || 0;
+            const minutes = parseInt(document.getElementById('minutes').value, 10) || 0;
+
+            if (hours < 0 || minutes < 0) {
+                alert("Please enter valid hours and minutes.");
+                return;
+            }
+
+            const totalMinutes = hours * 60 + minutes;
+            const startTime = new Date();
+            const endTime = new Date(startTime.getTime() + (remainingTime > 0 ? remainingTime : totalMinutes * 60000));
+
+            document.getElementById('start-time').textContent = formatTime(startTime);
+            document.getElementById('end-time').textContent = formatTime(endTime);
+
+            clearInterval(countdownInterval);
+
+            countdownInterval = setInterval(() => {
+                const currentTime = new Date();
+                document.getElementById('current-time').textContent = formatTime(currentTime);
+
+                const timeLeft = Math.max(0, endTime - currentTime);
+                remainingTime = timeLeft;
+
+                const hrs = Math.floor(timeLeft / (1000 * 60 * 60));
+                const mins = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((timeLeft % (1000 * 60)) / 1000);
+
+                document.getElementById('countdown-timer').textContent =
+                    `${String(hrs).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    alert("Time's up!");
+                }
+            }, 1000);
+        }
+
+        function stopCountdown() {
+            clearInterval(countdownInterval);
+        }
+
+        function resetCountdown() {
+            clearInterval(countdownInterval);
+            remainingTime = 0;
+            document.getElementById('countdown-timer').textContent = "00:00:00";
+            document.getElementById('start-time').textContent = "--:-- --";
+            document.getElementById('end-time').textContent = "--:-- --";
+            document.getElementById('current-time').textContent = "--:-- --";
+            document.getElementById('hours').value = "";
+            document.getElementById('minutes').value = "";
+        }
+
+        function formatTime(date) {
+            const hours = date.getHours();
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const period = hours >= 12 ? 'PM' : 'AM';
+            const formattedHours = hours % 12 || 12;
+            return `${formattedHours}:${minutes} ${period}`;
+        }
+
+        setInterval(() => {
+            document.getElementById('current-time').textContent = formatTime(new Date());
+        }, 1000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2D Monkey Jump Game</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f8f9fa; /* Light grey */
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            background: linear-gradient(to bottom, #ffffff, #d1d1d1); /* White to light grey gradient */
+            width: 100%;
+            height: 100vh;
+        }
+
+        .menu {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 10;
+        }
+
+        .menu button {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #6c757d; /* Grey */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .menu button:hover {
+            background-color: #5a6268;
+        }
+
+        .score {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="menu">
+        <button onclick="window.location.href='/user_home'">Back to User Home</button>
+    </div>
+    <div class="score" id="score">Score: 0</div>
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        // Monkey sprite (player)
+        const monkey = new Image();
+        monkey.src = 'static/monkey.png'; // Replace with your own monkey sprite URL
+
+        const player = {
+            x: 50,
+            y: canvas.height - 100,
+            width: 50,
+            height: 50,
+            dx: 0,
+            dy: 0,
+            speed: 5,
+            gravity: 0.5,
+            isJumping: false
+        };
+
+        const obstacles = [];
+        let frameCount = 0;
+        let score = 0;
+
+        // Controls
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'ArrowRight') player.dx = player.speed;
+            if (e.code === 'ArrowLeft') player.dx = -player.speed;
+            if (e.code === 'Space' && !player.isJumping) {
+                player.dy = -12;
+                player.isJumping = true;
+            }
+        });
+
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') player.dx = 0;
+        });
+
+        // Create obstacles
+        function createObstacle() {
+            const size = Math.random() * 50 + 30;
+            obstacles.push({
+                x: canvas.width,
+                y: canvas.height - size,
+                width: size,
+                height: size,
+                speed: 5
+            });
+        }
+
+        // Update game objects
+        function update() {
+            // Move player
+            player.x += player.dx;
+            player.y += player.dy;
+
+            // Gravity
+            if (player.y + player.height < canvas.height) {
+                player.dy += player.gravity;
+            } else {
+                player.y = canvas.height - player.height;
+                player.dy = 0;
+                player.isJumping = false;
+            }
+
+            // Update obstacles
+            obstacles.forEach((obstacle, index) => {
+                obstacle.x -= obstacle.speed;
+
+                // Remove off-screen obstacles
+                if (obstacle.x + obstacle.width < 0) {
+                    obstacles.splice(index, 1);
+                    score += 10; // Increase score
+                    document.getElementById('score').textContent = `Score: ${score}`;
+                }
+
+                // Collision detection
+                if (
+                    player.x < obstacle.x + obstacle.width &&
+                    player.x + player.width > obstacle.x &&
+                    player.y < obstacle.y + obstacle.height &&
+                    player.y + player.height > obstacle.y
+                ) {
+                    alert(`Game Over! Final Score: ${score}`);
+                    window.location.href = '/user_home';
+                }
+            });
+
+            // Spawn obstacles
+            frameCount++;
+            if (frameCount % 120 === 0) {
+                createObstacle();
+            }
+        }
+
+// Function to generate a random color
+function getRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+}
+        
+// Function to draw the background with sand and sky
+function drawBackground() {
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, '#87CEEB'); // Sky blue
+    gradient.addColorStop(1, '#87CEEB'); // Sand yellow
+
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+}
+
+
+        // Draw game objects
+function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawBackground();
+    // Draw player (cat)
+    ctx.drawImage(monkey, player.x, player.y, player.width, player.height);
+
+    // Draw obstacles as high-story buildings
+    // Draw obstacles as colorful high-story buildings
+obstacles.forEach(obstacle => {
+    const buildingColor = getRandomColor(); // Random color for each building
+    ctx.fillStyle = buildingColor; // Apply random color
+    ctx.fillRect(obstacle.x, canvas.height - obstacle.height, obstacle.width, obstacle.height);
+
+    // Add details to make them look like buildings
+    ctx.fillStyle = '#ffffff'; // White for windows
+    for (let i = 0; i < Math.floor(obstacle.height / 20); i++) {
+        ctx.fillRect(
+            obstacle.x + 5,
+            canvas.height - (i * 20) - 15,
+            obstacle.width - 10,
+            10
+        ); // Draw windows
+    }
+});
+    
+}
+
+
+        // Game loop
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+    </script>
+</body>
+</html>
