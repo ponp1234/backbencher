@@ -318,7 +318,7 @@
                 {% endif %}
                 
                 <button type="button" class="submit-button" id="sb-button" onclick="checkAnswer()">Submit</button>
-                <button type="submit" class="next-button" id="next" disabled >Next</button>
+                <button type="button" class="next-button" id="next" onclick="submitAnswer()">Next</button>
                 <button type="button" class="back-button" onclick="goBack()">Back</button>
             </form>
 
@@ -333,8 +333,62 @@
     <!-- JavaScript to Update Current Time and Fetch AI Response -->
     <script>
     
+    async function submitAnswer() {
+    const question = document.getElementById('question-text').textContent;
+    const form = document.querySelector('.answer-options');
+    const questionType = "{{ question.question_type }}"; // Use backend-provided question type
+
+    let payload = { question }; // Start with the question text
+
+    try {
+        // Gather answers based on question type
+        if (questionType === "fill_in_the_blank") {
+            const blanks = Array.from(form.querySelectorAll('input[type="text"]'))
+                .map((input) => input.value.trim());
+            payload.answers = blanks;
+
+        } else if (questionType === "multiple") {
+            const selectedOptions = Array.from(form.querySelectorAll('input[type="checkbox"]:checked'))
+                .map((checkbox) => checkbox.value);
+            payload.answers = selectedOptions;
+
+        } else if (questionType === "single") {
+            const selectedOption = form.querySelector('input[type="radio"]:checked');
+            payload.answer = selectedOption ? selectedOption.value : null;
+        }
+
+        // Send JSON data via POST
+        const response = await fetch(`/exam/{{ exam.id }}/{{ question_number }}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        // Process response
+        const data = await response.json();
+        console.log("Server Response:", data);
+
+        if (response.ok && data.next_question) {
+            // Navigate to the next question
+            window.location.href = `/exam/{{ exam.id }}/${data.next_question}`;
+        } else if (data.message === "Exam completed") {
+            // Navigate to the result page
+            // alert(data.score || "");
+             window.location.href = "/result/"+data.score+"/"+data.total_questions;
+        } else {
+            alert(data.error || "An error occurred while processing your answer.");
+        }
+    } catch (error) {
+        console.error("Error submitting answer:", error);
+        alert("Failed to submit your answer. Please try again.");
+    }
+}
+
+    
     function goToNextQuestion() {
-    alert("")
+
     document.querySelector('form').submit();
 }
 

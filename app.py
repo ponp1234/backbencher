@@ -174,6 +174,10 @@ def profile():
 def settings():
     return render_template("settings.html")
 
+@app.route("/result/<int:score>/<int:total>")
+@login_required
+def result(score, total):
+    return render_template("result.html", score=score, total=total)
 
 
 @app.route("/exam/<int:exam_id>/<int:question_number>", methods=['GET', 'POST'])
@@ -184,63 +188,81 @@ def exam(exam_id, question_number):
     question = questions[question_number - 1]
 
     if request.method == 'POST':
-        print("Form Data:", request.form)  # Debugging - prints all form data
-        if question.question_type == 'fill_in_the_blank':
-            # Handle fill-in-the-blank answers
-            correct_answers = question.correct_options.split(',')
-            user_correct_count = 0
-            for i in range(1, question.blanks + 1):
-                user_answer = request.form.get(f"blank{i}")
-                if user_answer and user_answer.strip().lower() == correct_answers[i - 1].strip().lower():
-                    user_correct_count += 1
-            # Full score if all blanks are correct
-            if user_correct_count == question.blanks:
-                session['score'] = session.get('score', 0) + 1
-        elif question.question_type == 'multiple':
-            # Handle multiple-answer questions
-            user_answers = request.form.getlist('answer')
-            correct_answers = question.correct_options.split(',')
-            print(user_answers)
-            print(correct_answers)            
-            if set(user_answers) == set(correct_answers):
-                session['score'] = session.get('score', 0) + 1
-        else:
-            # Handle single-answer questions
-            user_answer = request.form.get('answer')
-            print(user_answer)
-            if user_answer == question.correct_option:
-                session['score'] = session.get('score', 0) + 1
+        try:
+            # Parse JSON data
+            data = request.get_json()
+            print("Received JSON Data:", data)  # Debugging - print the received JSON
+            
+            question_type = question.question_type
+            score_increment = 0  # Initialize score increment
+
+            if question_type == 'fill_in_the_blank':
+                # Handle fill-in-the-blank answers
+                correct_answers = question.correct_options.split(',')
+                user_answers = data.get('answers', [])
+                if len(user_answers) != question.blanks:
+                    return jsonify({'error': 'Number of answers does not match the number of blanks'}), 400
                 
-            print("User Answers:", user_answer)
-            print("Correct Answers:", question.correct_option)
-        
-        print(session.get('score', 0))
-   
-            
-        session.modified = True
+                user_correct_count = sum(
+                    1 for i, user_answer in enumerate(user_answers)
+                    if user_answer.strip().lower() == correct_answers[i].strip().lower()
+                )
+                if user_correct_count == question.blanks:
+                    score_increment = 1
 
-        # If it's the last question, show the results
-        if question_number == len(questions):
-            final_score = session.get('score', 0)
-            
-            # Save attempt to the database
-            attempt = ExamAttempt(
-                user_id=current_user.id,
-                exam_id=exam_id,
-                score=final_score,
-                total_questions=len(questions),
-                attempt_date=datetime.utcnow()
-            )
-            db.session.add(attempt)
-            db.session.commit()   
-            
-            session.pop('score', None)
-            return render_template('result.html', score=final_score, total=len(questions))
+            elif question_type == 'multiple':
+                # Handle multiple-answer questions
+                user_answers = data.get('answers', [])
+                correct_answers = question.correct_options.split(',')
+                if set(user_answers) == set(correct_answers):
+                    score_increment = 1
 
-        # Redirect to the next question
-        return redirect(url_for('exam', exam_id=exam_id, question_number=question_number + 1))
+            elif question_type == 'single':
+                # Handle single-answer questions
+                user_answer = data.get('answer')
+                if user_answer == question.correct_option:
+                    score_increment = 1
+
+            # Update score
+            session['score'] = session.get('score', 0) + score_increment
+            session.modified = True
+
+            # If it's the last question, show the results
+            if question_number == len(questions):
+                final_score = session.get('score', 0)
+
+                # Save attempt to the database
+                attempt = ExamAttempt(
+                    user_id=current_user.id,
+                    exam_id=exam_id,
+                    score=final_score,
+                    total_questions=len(questions),
+                    attempt_date=datetime.utcnow()
+                )
+                db.session.add(attempt)
+                db.session.commit()
+
+                session.pop('score', None)
+                return jsonify({'message': 'Exam completed', 'score': final_score, 'total_questions': len(questions)})
+
+            # Redirect to the next question
+            return jsonify({'message': 'Question processed', 'next_question': question_number + 1})
+
+        except Exception as e:
+            print("Error:", str(e))
+            return jsonify({'error': 'Invalid JSON data or processing error', 'details': str(e)}), 400
+
+    # GET request - render the question page
+    return render_template(
+        'exam_question.html',
+        exam=exam,
+        question=question,
+        question_number=question_number,
+        total_questions=len(questions)
+    )
 
     return render_template('exam_question.html', exam=exam, question=question, question_number=question_number, total_questions=len(questions))
+
 
 
 @app.route("/check-answer", methods=['POST'])
