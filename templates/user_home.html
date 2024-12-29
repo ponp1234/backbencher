@@ -378,7 +378,9 @@
         <!-- To-Do Form -->
         <div class="todo-container">
             <form class="todo-form" method="POST" action="/add_todo">
+                <label for="task" class="form-label">Task</label>
                 <input type="text" name="task" placeholder="Enter a task" required>
+                <label for="date" class="form-label">Due Date</label>
                 <input type="date" name="date" value="{{ today }}" required>
                 <button type="submit">Add Task</button>
             </form>
