@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backbench AI-Powered Your Learning Partner</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            margin: 0;
+        }
+
+        /* Header Section */
+        .header {
+            background-color: #ffffff;
+            padding: 20px 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header img {
+            width: 120px;
+            height: auto;
+        }
+
+        .header a {
+            text-decoration: none;
+            font-size: 14px;
+            color: #333;
+            margin-left: 20px;
+            font-weight: bold;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            background-color: #e6f7ff;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .hero img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 2.5em;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .hero p {
+            font-size: 1.2em;
+            color: #555;
+            margin-bottom: 30px;
+        }
+
+        .hero button {
+            padding: 10px 30px;
+            font-size: 16px;
+            background-color: #0078d7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .hero button:hover {
+            background-color: #0056a1;
+        }
+
+        /* Navigation Section */
+        .navigation {
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-around;
+            padding: 15px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .navigation a {
+            text-decoration: none;
+            color: #0078d7;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .navigation i {
+            font-size: 20px;
+        }
+
+        /* Section Cards */
+        .cards {
+            padding: 40px 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card img {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* Footer Section */
+        .footer {
+            background-color: #ffffff;
+            border-top: 1px solid #ddd;
+            padding: 20px 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            text-align: center;
+        }
+
+        .footer h4 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .footer a {
+            display: block;
+            font-size: 14px;
+            color: #0078d7;
+            text-decoration: none;
+            margin-bottom: 5px;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        .social {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .social a {
+            margin: 0 10px;
+            font-size: 20px;
+            color: #555;
+            text-decoration: none;
+        }
+
+        .social a:hover {
+            color: #0078d7;
+        }
+
+        .back-to-top {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .back-to-top a {
+            font-size: 14px;
+            color: #0078d7;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-to-top a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <img src="https://via.placeholder.com/120x40?text=Backbench" alt="Backbench Logo">
+        <div>
+            <a href="#">Home</a>
+            <a href="#">Courses</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero">
+         <i class="fa-solid fa-graduation-cap"></i>
+        <h1>Welcome to Backbench</h1>
+        <p>Empowering students from Primary, IGCSE, and IB with tailored learning solutions.</p>
+        <button  onclick="window.location.href='{{ url_for('login') }}'">Begin Your Backbench Journey</button>
+    </div>
+
+    <!-- Navigation Section -->
+    <div class="navigation">
+        <a href="#">
+            <i class="fas fa-book"></i>
+            <span>IGCSE</span>
+        </a>
+        <a href="#">
+            <i class="fas fa-graduation-cap"></i>
+            <span>IB</span>
+        </a>
+        <a href="#">
+            <i class="fas fa-child"></i>
+            <span>Primary</span>
+        </a>
+        <a href="#">
+            <i class="fas fa-laptop"></i>
+            <span>Online Courses</span>
+        </a>
+    </div>
+
+    <!-- Cards Section -->
+    <div class="cards">
+        <div class="card">
+            <img src="https://via.placeholder.com/100?text=Math" alt="Mathematics">
+            <h3>Mathematics</h3>
+            <p>Master concepts with interactive lessons for IGCSE, IB, and Primary levels.</p>
+        </div>
+        <div class="card">
+            <img src="https://via.placeholder.com/100?text=Science" alt="Science">
+            <h3>Science</h3>
+            <p>Explore Physics, Chemistry, and Biology through engaging content.</p>
+        </div>
+        <div class="card">
+            <img src="https://via.placeholder.com/100?text=English" alt="English">
+            <h3>English</h3>
+            <p>Improve your language skills with our curated IGCSE and IB modules.</p>
+        </div>
+        <div class="card">
+            <img src="https://via.placeholder.com/100?text=Computer" alt="Computer Science">
+            <h3>Computer Science</h3>
+            <p>Learn coding, algorithms, and IT concepts with hands-on practice.</p>
+        </div>
+    </div>
+
+    <!-- Footer Section -->
+    <div class="footer">
+        <div>
+            <h4>Explore</h4>
+            <a href="#">IGCSE Courses</a>
+            <a href="#">IB Courses</a>
+            <a href="#">Primary Courses</a>
+        </div>
+        <div>
+            <h4>About Us</h4>
+            <a href="#">Our Story</a>
+            <a href="#">Careers</a>
+        </div>
+        <div>
+            <h4>Support</h4>
+            <a href="#">Contact Us</a>
+            <a href="#">FAQs</a>
+        </div>
+    </div>
+
+    <!-- Social Links -->
+    <div class="social">
+        <a href="#"><i class="fab fa-facebook"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+    </div>
+
+    <!-- Back to Top -->
+    <div class="back-to-top">
+        <a href="#top">Back to top</a>
+    </div>
+</body>
+</html>

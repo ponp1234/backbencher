@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Exam Question</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gojs/2.2.14/go.js"></script>
     <style>
         * {
             box-sizing: border-box;
@@ -238,6 +239,7 @@
     <!-- Sidebar Navigation Menu -->
     <div class="sidebar">
         <div class="sidebar-logo">
+        
             <h2>Backbench</h2>
         </div>
         <a href="{{ url_for('user_home') }}">My Classroom</a>
@@ -254,79 +256,79 @@
         <div id="current-time"></div>
     </div>
 
-    <!-- Question Content in a Full-screen Box -->
-    <div class="question-container">
-        <div class="question-box">
-            <p class="question-text" id="question-text">{{ question.question_text }}</p>
-            
-            <form id="form"  method="POST" action="{{ url_for('exam', exam_id=exam.id, question_number=question_number) }}" class="answer-options">
-                {% if question.question_type == 'textbox' %}
-                    <textarea 
-                        class="textbox-answer" 
-                        name="textbox_answer" 
-                        id="textbox_answer" 
-                        placeholder="Type your answer here..."
-                        required
-                    ></textarea>
-                {% elif question.question_type == 'fill_in_the_blank' %}
-                    {% for i in range(1, question.blanks + 1) %}
-                        <label for="blank{{ i }}">Answer {{ i }}:</label>
-                        <input type="text" name="blank{{ i }}" id="blank{{ i }}" required>
-                    {% endfor %}
-                {% elif question.question_type == 'multiple' %}
-                    {% if question.option_a %}
-                        <label>
-                            <input type="checkbox" name="answer" value="option_a"> {{ question.option_a }}
-                        </label>
-                    {% endif %}
-                    {% if question.option_b %}
-                        <label>
-                            <input type="checkbox" name="answer" value="option_b"> {{ question.option_b }}
-                        </label>
-                    {% endif %}
-                    {% if question.option_c %}
-                        <label>
-                            <input type="checkbox" name="answer" value="option_c"> {{ question.option_c }}
-                        </label>
-                    {% endif %}
-                    {% if question.option_d %}
-                        <label>
-                            <input type="checkbox" name="answer" value="option_d"> {{ question.option_d }}
-                        </label>
-                    {% endif %}
-                {% else %}
-                    {% if question.option_a %}
-                        <label>
-                            <input type="radio" name="answer" value="option_a" required> {{ question.option_a }}
-                        </label>
-                    {% endif %}
-                    {% if question.option_b %}
-                        <label>
-                            <input type="radio" name="answer" value="option_b"> {{ question.option_b }}
-                        </label>
-                    {% endif %}
-                    {% if question.option_c %}
-                        <label>
-                            <input type="radio" name="answer" value="option_c"> {{ question.option_c }}
-                        </label>
-                    {% endif %}
-                    {% if question.option_d %}
-                        <label>
-                            <input type="radio" name="answer" value="option_d"> {{ question.option_d }}
-                        </label>
-                    {% endif %}
+<div class="question-container">
+    <div class="question-box">
+        <!-- Use the |safe filter to allow rendering of HTML content -->
+        <div class="question-text" id="question-text">{{ question.question_text | safe }}</div>
+        
+        <form id="form" method="POST" action="{{ url_for('exam', exam_id=exam.id, question_number=question_number) }}" class="answer-options">
+            {% if question.question_type == 'textbox' %}
+                <textarea 
+                    class="textbox-answer" 
+                    name="textbox_answer" 
+                    id="textbox_answer" 
+                    placeholder="Type your answer here..."
+                    required
+                ></textarea>
+            {% elif question.question_type == 'fill_in_the_blank' %}
+                {% for i in range(1, question.blanks + 1) %}
+                    <label for="blank{{ i }}">Answer {{ i }}:</label>
+                    <input type="text" name="blank{{ i }}" id="blank{{ i }}" required>
+                {% endfor %}
+            {% elif question.question_type == 'multiple' %}
+                {% if question.option_a %}
+                    <label>
+                        <input type="checkbox" name="answer" value="option_a"> {{ question.option_a }}
+                    </label>
                 {% endif %}
-                
-                <button type="button" class="submit-button" id="sb-button" onclick="checkAnswer()">Submit</button>
-                <button type="button" class="next-button" id="next" onclick="submitAnswer()">Next</button>
-                <button type="button" class="back-button" onclick="goBack()">Back</button>
-            </form>
+                {% if question.option_b %}
+                    <label>
+                        <input type="checkbox" name="answer" value="option_b"> {{ question.option_b }}
+                    </label>
+                {% endif %}
+                {% if question.option_c %}
+                    <label>
+                        <input type="checkbox" name="answer" value="option_c"> {{ question.option_c }}
+                    </label>
+                {% endif %}
+                {% if question.option_d %}
+                    <label>
+                        <input type="checkbox" name="answer" value="option_d"> {{ question.option_d }}
+                    </label>
+                {% endif %}
+            {% else %}
+                {% if question.option_a %}
+                    <label>
+                        <input type="radio" name="answer" value="option_a" required> {{ question.option_a }}
+                    </label>
+                {% endif %}
+                {% if question.option_b %}
+                    <label>
+                        <input type="radio" name="answer" value="option_b"> {{ question.option_b }}
+                    </label>
+                {% endif %}
+                {% if question.option_c %}
+                    <label>
+                        <input type="radio" name="answer" value="option_c"> {{ question.option_c }}
+                    </label>
+                {% endif %}
+                {% if question.option_d %}
+                    <label>
+                        <input type="radio" name="answer" value="option_d"> {{ question.option_d }}
+                    </label>
+                {% endif %}
+            {% endif %}
+            
+            <button type="button" class="submit-button" id="sb-button" onclick="checkAnswer()">Submit</button>
+            <button type="button" class="next-button" id="next" onclick="submitAnswer()">Next</button>
+            <button type="button" class="back-button" onclick="goBack()">Back</button>
+        </form>
 
-            <!-- AI Assistance Button and Response Box -->
-            <button class="ai-button" onclick="getAIResponse()" id="ai-button" disabled>Ask AI for Help</button>
-            <div class="ai-response" id="ai-response"></div>
-        </div>
+        <!-- AI Assistance Button and Response Box -->
+        <button class="ai-button" onclick="getAIResponse()" id="ai-button" disabled>Ask AI for Help</button>
+        <div class="ai-response" id="ai-response"></div>
     </div>
+</div>
 
     <!-- JavaScript to Update Current Time -->
   

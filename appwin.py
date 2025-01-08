@@ -509,5 +509,4 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Creates database tables if they don't exist
 
-    context = (r'/home/bb/exam/ssl/bb.pem', r'/home/bb/exam/ssl/bb.key')
-    app.run(host='0.0.0.0', port=443, debug=True, ssl_context=context)
+    app.run(host='0.0.0.0', port=443, debug=True)

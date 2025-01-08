@@ -3,217 +3,151 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2D Monkey Jump Game</title>
+    <title>Tic Tac Toe</title>
     <style>
         body {
             margin: 0;
             font-family: Arial, sans-serif;
-            background: #f8f9fa; /* Light grey */
-            overflow: hidden;
-        }
-
-        canvas {
-            display: block;
-            background: linear-gradient(to bottom, #ffffff, #d1d1d1); /* White to light grey gradient */
-            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             height: 100vh;
+            background: #f0f0f0;
         }
 
-        .menu {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            z-index: 10;
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 5px;
         }
 
-        .menu button {
+        .cell {
+            width: 100px;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 36px;
+            font-weight: bold;
+            background: #ffffff;
+            border: 2px solid #cccccc;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .cell.taken {
+            cursor: not-allowed;
+        }
+
+        .info {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 20px;
+        }
+
+        .restart {
+            margin-top: 10px;
             padding: 10px 20px;
             font-size: 16px;
-            background-color: #6c757d; /* Grey */
+            background-color: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
 
-        .menu button:hover {
-            background-color: #5a6268;
-        }
-
-        .score {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 20px;
-            font-weight: bold;
-            background: rgba(255, 255, 255, 0.7);
-            padding: 10px;
-            border-radius: 5px;
+        .restart:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
-    <div class="menu">
+<div class="menu">
         <button onclick="window.location.href='/user_home'">Back to User Home</button>
     </div>
-    <div class="score" id="score">Score: 0</div>
-    <canvas id="gameCanvas"></canvas>
+    <div>
+        <div class="game-container" id="gameBoard"></div>
+        <div class="info" id="info">Player X's turn</div>
+        <button class="restart" id="restartButton">Restart Game</button>
+    </div>
 
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
+        const gameBoard = document.getElementById('gameBoard');
+        const info = document.getElementById('info');
+        const restartButton = document.getElementById('restartButton');
 
-        // Monkey sprite (player)
-        const monkey = new Image();
-        monkey.src = 'static/monkey.png'; // Replace with your own monkey sprite URL
+        let currentPlayer = 'X';
+        let gameActive = true;
+        const boardState = ['', '', '', '', '', '', '', '', ''];
 
-        const player = {
-            x: 50,
-            y: canvas.height - 100,
-            width: 50,
-            height: 50,
-            dx: 0,
-            dy: 0,
-            speed: 5,
-            gravity: 0.5,
-            isJumping: false
-        };
+        // Winning combinations
+        const winningCombinations = [
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
 
-        const obstacles = [];
-        let frameCount = 0;
-        let score = 0;
-
-        // Controls
-        document.addEventListener('keydown', (e) => {
-            if (e.code === 'ArrowRight') player.dx = player.speed;
-            if (e.code === 'ArrowLeft') player.dx = -player.speed;
-            if (e.code === 'Space' && !player.isJumping) {
-                player.dy = -12;
-                player.isJumping = true;
-            }
-        });
-
-        document.addEventListener('keyup', (e) => {
-            if (e.code === 'ArrowRight' || e.code === 'ArrowLeft') player.dx = 0;
-        });
-
-        // Create obstacles
-        function createObstacle() {
-            const size = Math.random() * 50 + 30;
-            obstacles.push({
-                x: canvas.width,
-                y: canvas.height - size,
-                width: size,
-                height: size,
-                speed: 5
+        // Create the game board
+        function createBoard() {
+            gameBoard.innerHTML = '';
+            boardState.forEach((cell, index) => {
+                const cellElement = document.createElement('div');
+                cellElement.classList.add('cell');
+                cellElement.dataset.index = index;
+                cellElement.addEventListener('click', handleCellClick);
+                gameBoard.appendChild(cellElement);
             });
         }
 
-        // Update game objects
-        function update() {
-            // Move player
-            player.x += player.dx;
-            player.y += player.dy;
+        // Handle cell click
+        function handleCellClick(event) {
+            const cell = event.target;
+            const index = cell.dataset.index;
 
-            // Gravity
-            if (player.y + player.height < canvas.height) {
-                player.dy += player.gravity;
+            if (boardState[index] !== '' || !gameActive) return;
+
+            boardState[index] = currentPlayer;
+            cell.textContent = currentPlayer;
+            cell.classList.add('taken');
+
+            if (checkWin()) {
+                info.textContent = `Player ${currentPlayer} wins!`;
+                gameActive = false;
+            } else if (boardState.every(cell => cell !== '')) {
+                info.textContent = 'It\'s a draw!';
+                gameActive = false;
             } else {
-                player.y = canvas.height - player.height;
-                player.dy = 0;
-                player.isJumping = false;
+                currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+                info.textContent = `Player ${currentPlayer}'s turn`;
             }
+        }
 
-            // Update obstacles
-            obstacles.forEach((obstacle, index) => {
-                obstacle.x -= obstacle.speed;
-
-                // Remove off-screen obstacles
-                if (obstacle.x + obstacle.width < 0) {
-                    obstacles.splice(index, 1);
-                    score += 10; // Increase score
-                    document.getElementById('score').textContent = `Score: ${score}`;
-                }
-
-                // Collision detection
-                if (
-                    player.x < obstacle.x + obstacle.width &&
-                    player.x + player.width > obstacle.x &&
-                    player.y < obstacle.y + obstacle.height &&
-                    player.y + player.height > obstacle.y
-                ) {
-                    alert(`Game Over! Final Score: ${score}`);
-                    window.location.href = '/user_home';
-                }
+        // Check for a win
+        function checkWin() {
+            return winningCombinations.some(combination => {
+                return combination.every(index => boardState[index] === currentPlayer);
             });
-
-            // Spawn obstacles
-            frameCount++;
-            if (frameCount % 120 === 0) {
-                createObstacle();
-            }
         }
 
-// Function to generate a random color
-function getRandomColor() {
-    const letters = '0123456789ABCDEF';
-    let color = '#';
-    for (let i = 0; i < 6; i++) {
-        color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-}
-        
-// Function to draw the background with sand and sky
-function drawBackground() {
-    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
-    gradient.addColorStop(0, '#87CEEB'); // Sky blue
-    gradient.addColorStop(1, '#87CEEB'); // Sand yellow
-
-    ctx.fillStyle = gradient;
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-}
-
-
-        // Draw game objects
-function draw() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    drawBackground();
-    // Draw player (cat)
-    ctx.drawImage(monkey, player.x, player.y, player.width, player.height);
-
-    // Draw obstacles as high-story buildings
-    // Draw obstacles as colorful high-story buildings
-obstacles.forEach(obstacle => {
-    const buildingColor = getRandomColor(); // Random color for each building
-    ctx.fillStyle = buildingColor; // Apply random color
-    ctx.fillRect(obstacle.x, canvas.height - obstacle.height, obstacle.width, obstacle.height);
-
-    // Add details to make them look like buildings
-    ctx.fillStyle = '#ffffff'; // White for windows
-    for (let i = 0; i < Math.floor(obstacle.height / 20); i++) {
-        ctx.fillRect(
-            obstacle.x + 5,
-            canvas.height - (i * 20) - 15,
-            obstacle.width - 10,
-            10
-        ); // Draw windows
-    }
-});
-    
-}
-
-
-        // Game loop
-        function loop() {
-            update();
-            draw();
-            requestAnimationFrame(loop);
+        // Restart the game
+        function restartGame() {
+            boardState.fill('');
+            currentPlayer = 'X';
+            gameActive = true;
+            info.textContent = `Player X's turn`;
+            createBoard();
         }
 
-        loop();
+        restartButton.addEventListener('click', restartGame);
+
+        // Initialize the game
+        createBoard();
     </script>
 </body>
 </html>
