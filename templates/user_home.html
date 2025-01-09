@@ -342,6 +342,106 @@
         filter: brightness(0) saturate(100%) invert(35%) sepia(75%) saturate(419%) hue-rotate(184deg) brightness(93%) contrast(93%);
     }
 
+       .todo-container {
+            margin-top: 40px;
+        }
+
+        .todo-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .todo-table th, .todo-table td {
+            text-align: left;
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .todo-table th {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .todo-table td {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .todo-table tr:hover td {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            margin-bottom: 20px;
+        }
+
+        .modal-content input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .modal-content button {
+            padding: 10px 20px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .modal-content .submit-button {
+            background: #4caf50;
+            color: white;
+        }
+
+        .modal-content .cancel-button {
+            background: #f44336;
+            color: white;
+        }
+
+        .modal-content .submit-button:hover {
+            background: #45a049;
+        }
+
+        .modal-content .cancel-button:hover {
+            background: #e53935;
+        }
+
+        .add-task-btn {
+            padding: 12px 20px;
+            background: #0078d7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .add-task-btn:hover {
+            background: #0056a1;
+        }
         
     </style>
 </head>
@@ -361,10 +461,7 @@
             <pre id="ascii-cat"></pre>
                   
         </div>
-        
-         <div >
-            <span>Welcome back Backbencher</span>
-        </div>
+    
  
         <div class="widget-container">
                 <div id="current-time"></div>
@@ -376,14 +473,22 @@
 
         <!-- To-Do Form -->
         <div class="todo-container">
-            <form class="todo-form" method="POST" action="/add_todo">
-                <label for="task" class="form-label">Task</label>
-                <input type="text" name="task" placeholder="Enter a task" required>
-                <label for="date" class="form-label">Due Date</label>
-                <input type="date" name="date" value="{{ today }}" required>
-                <button type="submit">Add Task</button>
-            </form>
+            <!-- Button to open modal -->
+        <button class="add-task-btn" onclick="openModal()">Add Task</button>
 
+        <!-- Modal for adding tasks -->
+<div id="taskModal" class="modal">
+    <div class="modal-content">
+        <h3>Add New Task</h3>
+        <!-- Form Submission -->
+        <form class="todo-form" method="POST" action="/add_todo">
+            <input type="text" id="taskName" name="task" placeholder="Task Name" required>
+            <input type="date" id="taskDate" name="date" required>
+            <button type="submit" class="submit-button">Add Task</button>
+            <button type="button" class="cancel-button" onclick="closeModal()">Cancel</button>
+        </form>
+    </div>
+</div>
             <!-- Display To-Do List -->
             <table  class="todo-table">
         <thead>
@@ -393,7 +498,7 @@
                 <th></th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="todoList">
             {% for todo in todos %}
             <tr>
                 <td>{{ todo.task }}</td>
@@ -490,13 +595,29 @@
         // Start Animation
         setInterval(animateCat, 300); // Change frames every 300ms
     </script>
+ 
+ <script>
+        // Open Modal
+        function openModal() {
+            document.getElementById('taskModal').style.display = 'flex';
+        }
+
+        // Close Modal
+        function closeModal() {
+            document.getElementById('taskModal').style.display = 'none';
+        }
+
+       document.querySelector('.todo-form').addEventListener('submit', function () {
+    closeModal();
+});
+    </script>
     
  <script>
         // Function to update the current time
         function updateTime() {
             const currentTimeDiv = document.getElementById('current-time');
             const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            const options = {  hour: '2-digit', minute: '2-digit', second: '2-digit' };
             currentTimeDiv.innerText =  now.toLocaleDateString('en-US', options);
         }
 
