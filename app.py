@@ -178,6 +178,14 @@ def dynamic_html(code):
 def profile():
     return render_template("profile.html")
 
+
+
+@app.route("/task")
+@login_required
+def task():
+    todos = ToDo.query.filter_by(user_id=current_user.id).order_by(ToDo.date.asc()).all()
+    return render_template("task.html", todos=todos)
+
 @app.route("/settings")
 @login_required
 def settings():
@@ -333,7 +341,6 @@ def user_home():
     # Get all past attempts by the current user
     attempts = ExamAttempt.query.filter_by(user_id=current_user.id).order_by(ExamAttempt.attempt_date.desc()).all()
     todos = ToDo.query.filter_by(user_id=current_user.id).order_by(ToDo.date.asc()).all()
-    print(todos)
     # Get the current user's student class
     user_class = current_user.student_class
     print(user_class)
@@ -492,7 +499,7 @@ def update_todo(todo_id):
 
     todo.task = task
     db.session.commit()
-    return redirect(url_for('user_home'))
+    return redirect(url_for('task'))
 
 
 @app.route('/delete_todo/<int:todo_id>', methods=['POST'])
@@ -503,7 +510,7 @@ def delete_todo(todo_id):
         abort(403)
     db.session.delete(todo)
     db.session.commit()
-    return redirect(url_for('user_home'))
+    return redirect(url_for('task'))
 
 if __name__ == '__main__':
     with app.app_context():

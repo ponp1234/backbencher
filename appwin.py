@@ -472,7 +472,7 @@ def add_todo():
     new_todo = ToDo(task=task, date=date, user_id=current_user.id)
     db.session.add(new_todo)
     db.session.commit()
-    return redirect(url_for('user_home'))
+    return redirect(url_for('task'))
 
 @app.route('/update_todo/<int:todo_id>', methods=['POST'])
 @login_required
@@ -492,8 +492,13 @@ def update_todo(todo_id):
 
     todo.task = task
     db.session.commit()
-    return redirect(url_for('user_home'))
+    return redirect(url_for('task'))
 
+@app.route("/task")
+@login_required
+def task():
+    todos = ToDo.query.filter_by(user_id=current_user.id).order_by(ToDo.date.asc()).all()
+    return render_template("task.html", todos=todos)
 
 @app.route('/delete_todo/<int:todo_id>', methods=['POST'])
 @login_required
@@ -503,7 +508,7 @@ def delete_todo(todo_id):
         abort(403)
     db.session.delete(todo)
     db.session.commit()
-    return redirect(url_for('user_home'))
+    return redirect(url_for('task'))
 
 if __name__ == '__main__':
     with app.app_context():
