@@ -162,7 +162,7 @@
         .widget-container {
          display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 20px;
+            gap: 5px;
             margin-bottom: 40px;
 
         }
@@ -177,7 +177,7 @@
             padding: 10px;
             display: inline-block;
             text-align: center;
-            background: linear-gradient(135deg, #056bf1 0%, #e6e6e6 100%);
+            background: linear-gradient(135deg, #87CEEB, #1E90FF)
         }
 
         #calendar table {
@@ -427,6 +427,77 @@
             background: #0056a1;
         }
         
+        #current-time-widget {
+    width: 300px;
+    height: 150px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #87CEEB, #1E90FF);
+    color: white;
+    text-align: center;
+    padding: 10px;
+    font-family: Arial, sans-serif;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+#current-time-widget .time {
+    font-size: 40px;
+    font-weight: bold;
+}
+
+#current-time-widget .period {
+    font-size: 20px;
+    vertical-align: super;
+}
+
+#current-time-widget .date {
+    font-size: 18px;
+    margin-top: 5px;
+}
+
+#current-time-widget .weather {
+    margin-top: 15px;
+}
+
+#current-time-widget .temperature {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+#current-time-widget .location {
+    font-size: 16px;
+    margin-top: 5px;
+}
+
+#current-time-widget .condition {
+    font-size: 14px;
+    margin-top: 3px;
+}
+
+#current-time-widget::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    width: 50px;
+    height: 50px;
+    background: url('path_to_sun_icon.png') no-repeat center/contain; /* Replace with your sunny icon */
+    opacity: 0.8;
+}
+
+#current-time-widget::after {
+    content: '';
+    position: absolute;
+    bottom: 10px;
+    right: 10px;
+    width: 50px;
+    height: 50px;
+    background: url('path_to_cloud_icon.png') no-repeat center/contain; /* Replace with your cloud icon */
+    opacity: 0.8;
+}
+
+        
     </style>
 </head>
 <body>
@@ -444,16 +515,25 @@
         <h1>Welcome, {{ current_user.username }}!</h1> 
                <div class="cat-container">
             <pre id="ascii-cat"></pre>
-            
-            
-                  
+                             
         </div>
-          <div id="current-time"></div>
+
     
  
         <div class="widget-container">
+        
+        <div id="current-time-widget">
+    <div class="time">10:41 <span class="period">PM</span></div>
+    <div class="date">Fri, 6 Jun</div>
+    <div class="weather">
+        <div class="temperature">27C</div>
+        <div class="location">Washington</div>
+        <div class="condition">Partly sunny</div>
+    </div>
+</div>
+
               
-                <div id="calendar"></div>
+        <div id="calendar"></div>
         
          
 
@@ -464,6 +544,7 @@
         <thead>
             <tr>
                 <th>Today Active Tasks</th>
+                <th></th>
 
             </tr>
         </thead>
@@ -471,6 +552,15 @@
             {% for todo in todos %}
             <tr>
                 <td>{{ todo.task }}</td>
+                <td>
+                {% if todo.date == current_date %}
+                    <span style="color: green; font-weight: bold;">Today</span>
+                {% elif todo.date == tomorrow_date %}
+                    <span style="color: orange; font-weight: bold;">Tomorrow</span>
+                {% else %}
+                     <span style="background-color: #79CCBF; color: white; border-radius: 10%;">{{ todo.date.strftime('%d-%m-%Y') }}</span>
+                {% endif %}
+            </td>
                
             </tr>
             {% endfor %}
@@ -629,6 +719,37 @@ document.addEventListener('DOMContentLoaded', () => {
     generateCalendar();
     setInterval(updateTime, 1000); // Update the time every second
 });
+
+
+function updateTime() {
+    const widget = document.getElementById('current-time-widget');
+    const now = new Date();
+
+    // Format time
+    const hours = now.getHours() % 12 || 12;
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const period = now.getHours() >= 12 ? 'PM' : 'AM';
+
+    // Format date
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const day = days[now.getDay()];
+    const date = now.getDate();
+    const month = months[now.getMonth()];
+
+    // Update widget
+    widget.querySelector('.time').innerHTML = `${hours}:${minutes} <span class="period">${period}</span>`;
+    widget.querySelector('.date').textContent = `${day}, ${date} ${month}`;
+    widget.querySelector('.temperature').textContent = '27C'; // Example temperature
+
+}
+
+// Initialize the widget
+document.addEventListener('DOMContentLoaded', () => {
+    updateTime();
+    setInterval(updateTime, 1000); // Update every second
+});
+
 
     </script>
     

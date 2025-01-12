@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from datetime import datetime
+from datetime import datetime, timedelta
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '12345'
@@ -340,7 +341,13 @@ def logout():
 def user_home():
     # Get all past attempts by the current user
     attempts = ExamAttempt.query.filter_by(user_id=current_user.id).order_by(ExamAttempt.attempt_date.desc()).all()
-    todos = ToDo.query.filter_by(user_id=current_user.id).order_by(ToDo.date.asc()).all()
+    todos_all = ToDo.query.filter_by(user_id=current_user.id).order_by(ToDo.date.asc()).all()
+    today = datetime.now().date()
+    tomorrow = today + timedelta(days=1)
+
+    # Filter tasks for today and tomorrow
+    todos = [todo for todo in today if todo["due_date"].date() in {today, tomorrow}]
+    
     # Get the current user's student class
     user_class = current_user.student_class
     print(user_class)

@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register</title>
     <style>
-        /* Same styles as before */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -32,22 +31,6 @@
             text-align: center;
             margin-bottom: 20px;
             color: #333;
-        }
-        .alert {
-            padding: 10px;
-            margin-bottom: 15px;
-            border-radius: 5px;
-            text-align: center;
-        }
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
         }
         input, select {
             width: 100%;
@@ -80,47 +63,33 @@
             background-color: #b0b0b0;
             cursor: not-allowed;
         }
-        p {
+        .terms-container {
+    margin-bottom: 20px;
+    font-size: 0.9em;
+    display: flex;
+    align-items: center;
+    gap: 8px; /* Space between checkbox and text */
+}
+
+.terms-container input {
+    margin: 0;
+    width: auto;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+        .captcha-container {
+            margin-bottom: 20px;
             text-align: center;
-            color: #666;
-        }
-        a {
-            color: #2575fc;
-            text-decoration: none;
-            font-weight: 500;
-        }
-        a:hover {
-            text-decoration: underline;
         }
     </style>
+    <!-- Add reCAPTCHA script -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 </head>
 <body>
     <div class="register-container">
         <h2>Register</h2>
-        
-        <!-- Flash Messages for Success or Error -->
-        {% with messages = get_flashed_messages(with_categories=True) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                    {% if category == 'success' %}
-                        <script>
-                            document.addEventListener("DOMContentLoaded", function() {
-                                const button = document.getElementById("register-button");
-                                button.disabled = true; // Disable the button
-                                // Redirect to login page after 3 seconds
-                                setTimeout(function() {
-                                    window.location.href = "{{ url_for('login') }}";
-                                }, 3000);
-                            });
-                        </script>
-                    {% endif %}
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
-
-        <!-- Registration Form -->
-        <form method="POST">
+        <form method="POST" onsubmit="return validateForm()">
             <div>
                 <label for="username">Who :</label>
                 <input type="text" id="username" name="username" placeholder="Username" required>
@@ -133,16 +102,49 @@
                 <label for="student_class">Class</label>
                 <select id="student_class" name="student_class" required>
                     <option value="">Select Class</option>
-                    <option value="IGCSE">IGCSE-9</option>
-                    <option value="IGCSE">IGCSE-10</option>
+                    <option value="IGCSE-9">IGCSE-9</option>
+                    <option value="IGCSE-10">IGCSE-10</option>
                     <option value="Primary 4">Primary 4</option>
                     <option value="Primary 5">Primary 5</option>
                     <option value="Primary 6">Primary 6</option>
                 </select>
             </div>
+            
+            <!-- Terms and Conditions -->
+            <div class="terms-container">
+                <input type="checkbox" id="terms" name="terms">
+                <label for="terms">I agree to the <a href="#" target="_blank">Terms and Conditions</a>.</label>
+            </div>
+
+            <!-- Google reCAPTCHA -->
+            <div class="captcha-container">
+                <div class="g-recaptcha" data-sitekey="6LeFubUqAAAAAPn64vDDM-F7_vBfr89IeRed7Xb1"></div>
+            </div>
+
             <button type="submit" id="register-button">Register</button>
             <p>Already have an account? <a href="{{ url_for('login') }}">Login here</a>.</p>
         </form>
     </div>
+
+    <script>
+        function validateForm() {
+            // Check if terms and conditions checkbox is checked
+            const termsCheckbox = document.getElementById('terms');
+            if (!termsCheckbox.checked) {
+                alert("You must agree to the Terms and Conditions.");
+                return false;
+            }
+
+            // Check if reCAPTCHA is completed
+            const recaptchaResponse = document.getElementsByName("g-recaptcha-response")[0].value;
+            if (!recaptchaResponse) {
+                alert("Please complete the CAPTCHA verification.");
+                return false;
+            }
+
+            // If all validations pass
+            return true;
+        }
+    </script>
 </body>
 </html>
