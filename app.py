@@ -345,9 +345,13 @@ def user_home():
     today = datetime.now().date()
     tomorrow = today + timedelta(days=1)
 
-    # Filter tasks for today and tomorrow
-    todos = [todo for todo in today if todo["due_date"].date() in {today, tomorrow}]
+    # Filter To-Do items by date
+    todos = ToDo.query.filter(
+        ToDo.user_id == current_user.id,
+        ToDo.date.in_([today, tomorrow])  # Filter for today and tomorrow
+    ).order_by(ToDo.date.asc()).all()
     
+    print(todos)
     # Get the current user's student class
     user_class = current_user.student_class
     print(user_class)
