@@ -517,7 +517,22 @@ def delete_todo(todo_id):
         abort(403)
     db.session.delete(todo)
     db.session.commit()
+
     return redirect(url_for('task'))
+
+# Change class route
+@app.route('/change_class', methods=['POST'])
+@login_required
+def change_class():
+    new_class = request.form.get('class')
+    if new_class:
+        current_user.student_class = new_class  # Update the `student_class` field
+        db.session.commit()
+        flash('Class updated successfully!', 'success')
+    else:
+        flash('Please select a valid class.', 'error')
+    return redirect(url_for('settings'))
+
 
 if __name__ == '__main__':
     with app.app_context():
