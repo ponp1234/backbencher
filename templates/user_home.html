@@ -518,6 +518,72 @@
         }
 
         
+        
+.card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.badge {
+    background-color: #d6d6ff;
+    color: #5a5aff;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.icons {
+    display: flex;
+    gap: 10px;
+}
+
+.icons i {
+    font-size: 18px;
+    cursor: pointer;
+}
+
+.course-title {
+    font-size: 18px;
+    color: #333333;
+    margin: 0;
+}
+
+.course-description {
+    font-size: 14px;
+    color: #555555;
+    line-height: 1.5;
+}
+
+.course-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 14px;
+    color: #666666;
+}
+
+.difficulty {
+    background-color: #f0f0f0;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.duration {
+    font-size: 14px;
+}
     </style>
 </head>
 <body>
@@ -593,32 +659,54 @@
         </div>
         
      <h3>Available Learnings</h3>
+   
+     <div class="exam-catalog"> 
             {% for learn in learnings %}
-    <div class="exam-catalog">
-        <div class="exam-card">
-        <svg width="64px" height="64px" viewBox="0 0 81.92 81.92" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M67.352 7.79H14.432c-1.08 0 -1.956 0.876 -1.956 1.956v34.558c0 0.097 0.041 0.178 0.056 0.27 0.061 0.912 0.734 1.697 1.666 1.829l5.263 0.739c4.035 0.581 8.942 1.289 13.435 1.773v2.593H14.947c-1.08 0 -1.956 0.876 -1.956 1.956v18.886c0 1.08 0.876 1.956 1.956 1.956h52.176c1.08 0 1.956 -0.876 1.956 -1.956V53.465c0 -1.08 -0.876 -1.956 -1.956 -1.956H48.22v-2.486c4.606 -0.469 9.741 -1.228 13.904 -1.839l5.487 -0.78c0.994 -0.143 1.707 -1.024 1.676 -2.008 0 -0.031 0.02 -0.056 0.02 -0.092V9.746c0 -1.08 -0.876 -1.956 -1.956 -1.956" fill="#27323A"/><path d="M16.903 55.421h48.263V70.394H16.903z" fill="#F4CE73"/><path d="M36.808 51.508v-2.232c1.574 0.117 3.047 0.194 4.31 0.194 0.958 0 2.048 -0.051 3.189 -0.122v2.16zm28.587 -8.743 -3.841 0.545c-6.43 0.948 -15.228 2.247 -20.435 2.247 -5.288 0 -14.423 -1.325 -21.092 -2.288l-3.638 -0.51V11.702h49.007v31.063z" fill="#FFFFFF"/><path d="M47.94 63.873h13.089c1.08 0 1.956 -0.876 1.956 -1.956 0 -1.08 -0.876 -1.956 -1.956 -1.956H47.94c-1.08 0 -1.956 0.876 -1.956 1.956 0 1.08 0.876 1.956 1.956 1.956M39.152 43.29c0 -0.963 0.784 -1.748 1.747 -1.748 0.958 0 1.742 0.785 1.742 1.748 0 0.958 -0.785 1.742 -1.742 1.742 -0.963 0 -1.748 -0.785 -1.748 -1.742m-19.09 -29.891c-0.718 0 -1.304 0.581 -1.304 1.304V39.505c0 0.724 0.586 1.304 1.304 1.304h41.67c0.718 0 1.304 -0.581 1.304 -1.304V14.703c0 -0.723 -0.586 -1.304 -1.304 -1.304z" fill="#27323A"/><path d="M60.428 16.008v22.193h-39.062v-22.193z" fill="#79CCBF"/></svg>
-            <div class="exam-info">
-                <h3>{{ learn.title }}</h3>
-                <p>{{ learn.desc }}</p>
-                <a href="{{ url_for('learn', code=learn.code) }}" class="exam-link">View Study Guide</a>
-            </div>
-            
-        </div>
-    </div>
+    
+                 <div class="card">
+                   <div class="card-header">
+                       <span class="badge">COURSE</span>
+                       <span class="icons">
+                           <i class="calendar-icon"></i>
+                           <i class="bookmark-icon"></i>
+                       </span>
+                   </div>
+                   <h2 class="course-title">{{ learn.title }}</h2>
+                   <p class="course-description">
+                       Skills you'll gain:{{ learn.desc }}
+                   </p>
+                   <a href="{{ url_for('learn', code=learn.code) }}" class="exam-link">View Study Guide</a>
+                   <div class="course-meta">
+                       <span class="difficulty">Intermediate</span>
+                       <span class="duration">26 h</span>
+                   </div>
+               </div>
+               
      {% endfor %}
-      
+      </div>
         
         <h3>Available Exams</h3>
         <div class="exam-catalog">
             {% for exam in exams %}
-            <div class="exam-card">
-                <svg width="64px" height="64px" viewBox="0 0 81.92 81.92" class="icon" version="1.1" xmlns="http://www.w3.org/2000/svg"><path d="M73.368 42.448c0 -2.07 -0.738 -3.817 -2.127 -5.054 -1.856 -1.664 -4.581 -2.08 -6.453 -1.747 -0.65 0.114 -1.399 0.385 -2.158 0.775 0.208 -1.279 0.4 -2.574 0.551 -3.895 0.047 -0.4 -0.317 -1.212 -1.134 -1.212H11.145c-0.744 0 -1.154 0.879 -1.102 1.305C11.488 44.938 15.448 55.582 21.156 62.232H11.766c-0.824 0 -1.594 0.309 -2.142 0.845 -0.642 0.601 -0.978 1.443 -0.918 2.311 0.262 3.827 7.916 6.77 13.677 7.555 0.593 0.523 1.739 1.344 3.759 1.344h21.953c2.147 0 3.304 -0.92 3.757 -1.344 5.756 -0.782 13.412 -3.725 13.672 -7.516 0.075 -0.853 -0.242 -1.698 -0.894 -2.342 -0.58 -0.551 -1.344 -0.853 -2.155 -0.853H52.237c1.519 -1.661 4.436 -3.351 7.524 -5.137 6.375 -3.676 13.607 -7.841 13.607 -14.647m-16.462 12.458c1.991 -3.947 3.603 -8.528 4.758 -13.545 1.003 -1.258 2.595 -2.205 3.65 -2.392 1.112 -0.187 2.839 0.094 3.863 0.998 0.661 0.588 0.983 1.399 0.983 2.48 0 4.809 -6.338 8.465 -11.938 11.689 -0.447 0.26 -0.879 0.515 -1.315 0.77" fill="#27323A"/><path d="M27.389 27.158c15.141 0 18.843 -2.579 18.843 -5.616 0 -3.411 -3.596 -4.412 -7.155 -7.529 -0.759 -0.666 4.305 -4.932 3.297 -4.932 -1.204 0 -11.242 1.23 -11.242 5.805 0 2.746 4.368 2.6 4.368 5.616 0 2.81 -5.337 5.998 -8.111 6.655" fill="#FFFFFF"/><path d="M27.389 28.489c-0.676 0 -1.243 -0.507 -1.323 -1.178 -0.078 -0.671 0.359 -1.292 1.016 -1.448 2.797 -0.663 7.087 -3.655 7.087 -5.361 0 -0.733 -0.473 -1.102 -1.635 -1.828 -1.154 -0.723 -2.732 -1.711 -2.732 -3.788 0 -5.805 10.924 -7.136 12.573 -7.136 0.528 0 1.131 0.367 1.344 0.85 0.444 1.006 -0.221 1.736 -1.68 3.335 -0.395 0.431 -1.029 1.128 -1.42 1.633 0.801 0.647 1.596 1.198 2.371 1.734 2.353 1.63 4.573 3.169 4.573 6.239 0 4.805 -6.221 6.947 -20.174 6.947m12.089 -17.689c-3.016 0.619 -7.014 1.981 -7.014 4.087 0 0.52 0.351 0.824 1.482 1.529 1.217 0.762 2.886 1.807 2.886 4.087 0 1.895 -1.547 3.72 -3.476 5.155 7.498 -0.465 11.546 -1.885 11.546 -4.115 0 -1.607 -1.113 -2.446 -3.426 -4.05 -1.001 -0.694 -2.135 -1.479 -3.273 -2.477 -0.27 -0.237 -0.51 -0.741 -0.53 -1.097 -0.05 -0.889 0.608 -1.778 1.807 -3.117" fill="#27323A"/><path d="M59.946 66.225c-1.898 1.087 -5.239 2.387 -9.141 2.826 -0.364 0.042 -0.712 0.182 -1.001 0.406l-0.445 0.359c-0.291 0.278 -0.504 0.478 -1.263 0.478H26.143c-0.754 0 -0.97 -0.203 -1.409 -0.603l-0.289 -0.226a2.003 2.003 0 0 0 -1.009 -0.413c-3.978 -0.447 -7.376 -1.788 -9.242 -2.826z" fill="#79CCBF"/><path d="m49.146 59.679 -0.439 0.413c-0.382 0.429 -0.785 0.819 -1.191 1.193l-2.394 2.296H28.101l-1.417 -1.349 -0.941 -0.897c-5.454 -5.189 -9.502 -14.567 -11.301 -26.027h44.324c-0.026 0.159 -2.108 15.62 -9.619 24.37" fill="#F4CE73"/></svg>
-                <div class="exam-info">
-                    <h3>{{ exam.title }}</h3>
-                    <p>Skills you'll gain: {{ exam.skills }}</p>
-                    <a href="{{ url_for('exam', exam_id=exam.id, question_number=1) }}" class="exam-link">Start Exam</a>
-                </div>
-            </div>
+                <div class="card">
+                   <div class="card-header">
+                       <span class="badge">EXAM</span>
+                       <span class="icons">
+                           <i class="calendar-icon"></i>
+                           <i class="bookmark-icon"></i>
+                       </span>
+                   </div>
+                   <h2 class="course-title">{{ exam.title }}</h2>
+                   <p class="course-description">
+                       Skills you'll gain: {{ exam.skills }}
+                   </p>
+                   <a href="{{ url_for('exam', exam_id=exam.id, question_number=1) }}" class="exam-link">Start Exam</a>
+                   <div class="course-meta">
+                       <span class="difficulty">Intermediate</span>
+                       <span class="duration">26 h</span>
+                   </div>
+               </div>
+            
             {% endfor %}
         </div>
       
