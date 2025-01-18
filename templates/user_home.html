@@ -172,6 +172,7 @@
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 5px;
             margin-bottom: 40px;
+             font-size: 14px;
 
         }
 
@@ -661,8 +662,8 @@
      <h3>Available Learnings</h3>
    
      <div class="exam-catalog"> 
+     {% if learnings %}
             {% for learn in learnings %}
-    
                  <div class="card">
                    <div class="card-header">
                        <span class="badge">COURSE</span>
@@ -681,12 +682,15 @@
                        <span class="duration">26 h</span>
                    </div>
                </div>
-               
      {% endfor %}
+     {% else %}
+        <p>No Learnings</p>
+    {% endif %}
       </div>
         
         <h3>Available Exams</h3>
         <div class="exam-catalog">
+        {% if exams %}
             {% for exam in exams %}
                 <div class="card">
                    <div class="card-header">
@@ -703,11 +707,15 @@
                    <a href="{{ url_for('exam', exam_id=exam.id, question_number=1) }}" class="exam-link">Start Exam</a>
                    <div class="course-meta">
                        <span class="difficulty">Intermediate</span>
-                       <span class="duration">26 h</span>
+                       <span class="duration">1 h</span>
                    </div>
                </div>
             
             {% endfor %}
+            
+        {% else %}
+        <p>No Exams</p>
+        {% endif %}
         </div>
       
         
