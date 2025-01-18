@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Home </title>
+    <style>
+    
+          * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #006093;
+            padding: 20px;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-button {
+            display: block;
+            padding: 12px 20px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(5px);
+        }
+
+        .content {
+            flex: 1;
+            padding: 40px;
+            color: black;
+            background: #ecf0f1;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+       
+        
+         /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            }
+        }
+    
+           .calculator {
+            max-width: 300px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #25978c 0%, #e6e6e6 100%);
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .calculator-display {
+            margin-bottom: 20px;
+        }
+
+        #calc-display {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.5em;
+            text-align: right;
+            border: none;
+            border-radius: 5px;
+            background: #f9f9f9;
+            color: #333;
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .calculator-buttons button {
+            padding: 15px;
+            font-size: 1.2em;
+            background: #ffffff;
+            border: none;
+            border-radius: 5px;
+            box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .calculator-buttons button:hover {
+            background: #ff6b6b;
+            color: white;
+            transform: scale(1.05);
+           * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: #006093;
+            padding: 20px;
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-button {
+            display: block;
+            padding: 12px 20px;
+            margin: 10px 0;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateX(5px);
+        }
+
+        .content {
+            flex: 1;
+            padding: 40px;
+            color: black;
+            background: #ecf0f1;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            font-size: 1em;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #006093;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #004b6d;
+        }
+
+        .current-class {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .flash-message {
+            color: green;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        
+         /* Responsive Design */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                border-right: none;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+    <center> <img src="static/logo.png" alt="Backbench Logo"></center>
+            <a href="{{ url_for('user_home') }}" class="sidebar-button">Classroom</a>
+            <a href="{{ url_for('attempts') }}" class="sidebar-button">Past Exam Attempts</a>
+            <a href="{{ url_for('settings') }}" class="sidebar-button">Settings</a>
+        <a href="{{ url_for('logout') }}" class="sidebar-button">Bye</a>
+    </div>
+    
+   <div class="content">
+   
+    <h1></h1>
+        
+        <!-- Display Current Class -->
+        <h1 >
+            Calculator
+        </h1>
+   
+     <div class="calculator">
+        <div class="calculator-display">
+            <input type="text" id="calc-display" disabled />
+        </div>
+        <div class="calculator-buttons">
+            <!-- Row 1 -->
+            <button onclick="appendValue('7')">7</button>
+            <button onclick="appendValue('8')">8</button>
+            <button onclick="appendValue('9')">9</button>
+            <button onclick="setOperator('/')">÷</button>
+            <!-- Row 2 -->
+            <button onclick="appendValue('4')">4</button>
+            <button onclick="appendValue('5')">5</button>
+            <button onclick="appendValue('6')">6</button>
+            <button onclick="setOperator('*')">×</button>
+            <!-- Row 3 -->
+            <button onclick="appendValue('1')">1</button>
+            <button onclick="appendValue('2')">2</button>
+            <button onclick="appendValue('3')">3</button>
+            <button onclick="setOperator('-')">−</button>
+            <!-- Row 4 -->
+            <button onclick="appendValue('0')">0</button>
+            <button onclick="appendValue('.')">.</button>
+            <button onclick="calculateResult()">=</button>
+            <button onclick="setOperator('+')">+</button>
+            <!-- Row 5: Scientific Operations -->
+            <button onclick="performOperation('sqrt')">√</button>
+            <button onclick="performOperation('pow')">x²</button>
+            <button onclick="performOperation('log')">log</button>
+            <button onclick="clearDisplay()">C</button>
+        </div>
+    </div>
+
+    </div>
+    <script>
+        let currentInput = '';
+        let operator = '';
+        let previousValue = '';
+
+        function appendValue(value) {
+            currentInput += value;
+            document.getElementById('calc-display').value = currentInput;
+        }
+
+        function setOperator(op) {
+            if (currentInput === '') return;
+            operator = op;
+            previousValue = currentInput;
+            currentInput = '';
+        }
+
+        function calculateResult() {
+            if (currentInput === '' || previousValue === '' || operator === '') return;
+            let result;
+            const current = parseFloat(currentInput);
+            const previous = parseFloat(previousValue);
+
+            switch (operator) {
+                case '+':
+                    result = previous + current;
+                    break;
+                case '-':
+                    result = previous - current;
+                    break;
+                case '*':
+                    result = previous * current;
+                    break;
+                case '/':
+                    result = previous / current;
+                    break;
+                default:
+                    return;
+            }
+
+            currentInput = result.toString();
+            document.getElementById('calc-display').value = result;
+            operator = '';
+            previousValue = '';
+        }
+
+        function performOperation(operation) {
+            if (currentInput === '') return;
+            let result;
+            const current = parseFloat(currentInput);
+
+            switch (operation) {
+                case 'sqrt':
+                    result = Math.sqrt(current);
+                    break;
+                case 'pow':
+                    result = Math.pow(current, 2);
+                    break;
+                case 'log':
+                    result = Math.log10(current);
+                    break;
+                default:
+                    return;
+            }
+
+            currentInput = result.toString();
+            document.getElementById('calc-display').value = result;
+        }
+
+        function clearDisplay() {
+            currentInput = '';
+            operator = '';
+            previousValue = '';
+            document.getElementById('calc-display').value = '';
+        }
+    </script>
+</body>
+</html>

@@ -6,6 +6,7 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 from datetime import datetime
 from datetime import datetime, timedelta
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '12345'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site6.db'
@@ -13,6 +14,24 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+
+
+
+
+class WalletTransaction(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    date = db.Column(db.DateTime, default=datetime.utcnow)
+    transaction_type = db.Column(db.String(50), nullable=False)  # 'Initial', 'Allowance', 'Spending'
+    amount = db.Column(db.Float, nullable=False)
+    description = db.Column(db.String(200), nullable=True)  # Optional description
+
+    # Relationship
+    user = db.relationship('User', backref='wallet_transactions', lazy=True)
+
+
+
 
 
 class Question(db.Model):
@@ -54,6 +73,7 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
     student_class = db.Column(db.String(50), nullable=False)  
+    wallet_balance = db.Column(db.Float, default=0.0)  # New field to store total balance
 
 class ExamMapping(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -79,6 +99,51 @@ class HTMLMapping(db.Model):
     html = db.Column(db.String(50), nullable=False)        # HTML 
 
 
+    @app.route('/wallet', methods=['GET', 'POST'])
+    @login_required
+    def wallet():
+        if request.method == 'POST':
+            transaction_type = request.form.get('transaction_type')
+            amount = float(request.form.get('amount'))
+            description = request.form.get('description', '')
+            
+            if transaction_type == 'Initial':
+                # Set initial money
+                current_user.wallet_balance = amount
+                description = 'Set Initial Money'
+            elif transaction_type == 'Allowance':
+                # Add daily allowance
+                current_user.wallet_balance += amount
+                description = 'Added Daily Allowance'
+            elif transaction_type == 'Spending':
+                # Deduct spending
+                if amount > current_user.wallet_balance:
+                    flash("Insufficient balance!", "danger")
+                    return redirect(url_for('wallet'))
+                current_user.wallet_balance -= amount
+                description = f"Spent on {description}"
+    
+            # Save transaction
+            transaction = WalletTransaction(
+                user_id=current_user.id,
+                transaction_type=transaction_type,
+                amount=amount,
+                description=description
+            )
+            db.session.add(transaction)
+            db.session.commit()
+    
+            flash(f"Transaction successful! New Balance: ${current_user.wallet_balance:.2f}", "success")
+            return redirect(url_for('wallet'))
+        
+        # Fetch transactions
+        transactions = (WalletTransaction.query
+                    .filter_by(user_id=current_user.id)
+                    .order_by(WalletTransaction.date.desc())
+                    .limit(20)
+                    .all())
+        return render_template('wallet.html', transactions=transactions, balance=current_user.wallet_balance)
+
 
 
 # Exam model (must be defined before Question model)
@@ -99,6 +164,8 @@ def home():
 @app.route("/help")
 def help():
     return render_template("help.html")
+
+
 
 
 @app.route("/register", methods=['GET', 'POST'])
@@ -533,6 +600,11 @@ def change_class():
         flash('Please select a valid class.', 'error')
     return redirect(url_for('settings'))
 
+
+@app.route("/calc")
+@login_required
+def calc():
+    return render_template("calc.html")
 
 if __name__ == '__main__':
     with app.app_context():

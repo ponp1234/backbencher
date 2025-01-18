@@ -598,6 +598,8 @@
             <a href="{{ url_for('user_home') }}" class="sidebar-button">Classroom</a>
             <a href="{{ url_for('attempts') }}" class="sidebar-button">Past Exam Attempts</a>
              <a href="{{ url_for('task') }}" class="sidebar-button">Task</a>
+              <a href="{{ url_for('calc') }}" class="sidebar-button">Calculator</a>
+              <a href="{{ url_for('wallet') }}" class="sidebar-button">Wallet</a>
             <a href="{{ url_for('countdown') }}" class="sidebar-button">Timer</a>
             <a href="{{ url_for('settings') }}" class="sidebar-button">Settings</a>
         <a href="{{ url_for('logout') }}" class="sidebar-button">Bye</a>
@@ -718,7 +720,9 @@
         {% endif %}
         </div>
       
-        
+        <div style="margin-top: 20px; font-size: 0.9em;">
+        <p>&copy; 2025 Backbench. All rights reserved.</p>
+    </div>
 
 
 
@@ -872,4 +876,6 @@ document.addEventListener('DOMContentLoaded', () => {
     </script>
     
 </body>
+
+
 </html>
