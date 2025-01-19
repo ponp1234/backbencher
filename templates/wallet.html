@@ -6,6 +6,85 @@
     <title>Wallet Management</title>
     <style>
     
+    
+     .wallet-container {
+            background: #ffffff;
+            border-radius: 15px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            padding: 30px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        .card-image {
+            background: #006093;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .card-image img {
+            max-width: 100%;
+            border-radius: 10px;
+        }
+
+        .balance {
+            font-size: 5em;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #16a085;
+        }
+
+        .balance-label {
+            font-size: 1em;
+            color: #888;
+            margin-bottom: 20px;
+        }
+
+        .wallet-sections {
+            margin-top: 20px;
+        }
+
+        .wallet-section {
+            background: #f9f9f9;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 1.1em;
+        }
+
+        .wallet-section span {
+            font-weight: bold;
+        }
+
+        .allowance-info {
+            margin-top: 20px;
+            font-size: 0.9em;
+            color: #555;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #0078d7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background: #0056a1;
+        }
+        
+        
+    
      * {
             box-sizing: border-box;
             margin: 0;
@@ -200,6 +279,39 @@
         tr:hover td {
             background: #f1f1f1;
         }
+        
+        
+           .options {
+        display: flex;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .option-button {
+        display: inline-block;
+        padding: 10px 20px;
+        background: #0078d7;
+        color: white;
+        text-align: center;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1em;
+        transition: background 0.3s ease;
+    }
+
+    .option-button:hover {
+        background: #0056a1;
+    }
+
+    input[type="radio"] {
+        display: none;
+    }
+
+    input[type="radio"]:checked + .option-button {
+        background: #16a085;
+    }
+        
     </style>
 </head>
 <body>
@@ -214,27 +326,39 @@
    <div class="content">
    
     <h1></h1>
+    
+    
     <div class="wallet-container">
-        <h1>Wallet Management</h1>
-        <div class="balance">Total Balance: $<span id="balance"> {{ balance }}</span></div>
+       
+            <img src="static/card.png" alt="Card Image">
+        
+        <div class="balance"> {{ balance }}</div>
+        <div class="balance-label">Balance</div>
+
+    
  
         
         <form method="POST">
-    <div class="form-group">
-        <label for="transaction_type">Transaction Type</label>
-        <select id="transaction_type" name="transaction_type" required>
-            <option value="Initial">Set Initial Money</option>
-            <option value="Allowance">Add Daily Allowance</option>
-            <option value="Spending">Deduct for Spending</option>
-        </select>
+   <div class="form-group">
+    <label for="transaction_type">Transaction Type</label>
+    <div class="options">
+        <input type="radio" id="initial" name="transaction_type" value="Initial" required>
+        <label for="initial" class="option-button">Set Initial Money</label>
+
+        <input type="radio" id="allowance" name="transaction_type" value="Allowance">
+        <label for="allowance" class="option-button">Add Daily Allowance</label>
+
+        <input type="radio" id="spending" name="transaction_type" value="Spending">
+        <label for="spending" class="option-button">Deduct for Spending</label>
     </div>
+</div>
     <div class="form-group">
         <label for="amount">Amount</label>
         <input type="number" id="amount" name="amount" step="0.01" required>
     </div>
     <div class="form-group">
         <label for="description">Description (Optional for Spending)</label>
-        <input type="text" id="description" name="description" placeholder="E.g., Groceries, Entertainment">
+        <input type="text" id="description" name="description" placeholder="E.g., Food, Entertainment">
     </div>
     <button type="submit">Submit</button>
 </form>
@@ -245,18 +369,19 @@
         <thead>
             <tr>
                 <th>Date</th>
-                <th>Type</th>
                 <th>Amount</th>
-                <th>Description</th>
             </tr>
         </thead>
         <tbody>
             {% for transaction in transactions %}
             <tr>
                 <td>{{ transaction.date }}</td>
-                <td>{{ transaction.transaction_type }}</td>
-                <td>${{ transaction.amount }}</td>
-                <td>{{ transaction.description }}</td>
+                <td>${{ transaction.amount }}
+                 <div class="allowance-info">
+                  {{ transaction.description }}
+                 </div>
+                </td>
+            
             </tr>
             {% endfor %}
         </tbody>
