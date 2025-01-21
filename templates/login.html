@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <link rel="icon" href="static/logo.png" type="image/icon type">
     <title>Backbench - Login</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
     <style>
@@ -256,6 +257,8 @@
                     <p>New to Backbench? <a href="{{ url_for('register') }}">Join the Adventure!</a></p>
                 </div>
             </form>
+            </br>
+            <center><p>&copy; 2025 Backbench. All rights reserved.</p></center>
              <!-- Flash Messages for Success or Error -->
           {% with messages = get_flashed_messages(with_categories=True) %}
               {% if messages %}
@@ -277,6 +280,10 @@
               {% endif %}
           {% endwith %}
         </div>
+        
+        
     </div>
+    
 </body>
+
 </html>
