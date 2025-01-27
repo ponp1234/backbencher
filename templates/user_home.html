@@ -43,10 +43,10 @@
         <div class="input-group">
           <div class="input-group-prepend hover-cursor" id="navbar-search-icon">
             <span class="input-group-text" id="search">
-              <i class="icon-search"></i>
+             
             </span>
           </div>
-          <input type="text" class="form-control" id="navbar-search-input" placeholder="Search now" aria-label="search" aria-describedby="search">
+        
         </div>
       </li>
     </ul>
@@ -224,13 +224,14 @@
 </nav>
         <!-- partial -->
        
+              <div class="main-panel">
           <div class="content-wrapper">
             <div class="row">
               <div class="col-md-12 grid-margin">
                 <div class="row">
                   <div class="col-12 col-xl-8 mb-4 mb-xl-0">
                     <h3 class="font-weight-bold">Welcome {{ current_user.username }}</h3>
-                    <h6 class="font-weight-normal mb-0">All systems are running smoothly! You have <span class="text-primary">3 unread alerts!</span></h6>
+                    <h6 class="font-weight-normal mb-0">All systems are running smoothly! You have <span class="text-primary">0 unread alerts!</span></h6>
                   </div>
                   <div class="col-12 col-xl-4">
                     <div class="justify-content-end d-flex">
@@ -249,16 +250,114 @@
                 </div>
               </div>
             </div>
-           
-              
+            <div class="row">
+              <div class="col-md-6 grid-margin stretch-card">
+                <div class="card tale-bg">
+                  <div class="card-people mt-auto">
+                    <img src="static/assets/images/dashboard/people.svg" alt="people">
+                    <div class="weather-info">
+                      <div class="d-flex">
+                        <div>
+                          <h2 class="mb-0 font-weight-normal"><i class="icon-sun me-2"></i>31<sup>C</sup></h2>
+                        </div>
+                        <div class="ms-2">
+                          <h4 class="location font-weight-normal">Chicago</h4>
+                          <h6 class="font-weight-normal">Illinois</h6>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 grid-margin transparent">
+                <div class="row">
+            
+                 
+                </div>
+                <div class="row">
+                 
+                  
+                </div>
+              </div>
             </div>
+            
+            
+            
+<div class="row">
+      <h3>Available Learnings</h3>
+     <div class="exam-catalog"> 
+     {% if learnings %}
+            {% for learn in learnings %}
+                 <div class="card">
+                   <div class="card-header">
+                       <span class="badge">COURSE</span>
+                       <span class="icons">
+                           <i class="calendar-icon"></i>
+                           <i class="bookmark-icon"></i>
+                       </span>
+                   </div>
+                        <img src="static/math.png" alt="5 Terre" style="width:100%">
+                   <h2 class="course-title">{{ learn.title }}</h2>
+                   <p class="course-description">
+                       Skills you'll gain:{{ learn.desc }}
+                   </p>
+                   <a href="{{ url_for('learn', code=learn.code) }}" class="exam-link">View Study Guide</a>
+                   <div class="course-meta">
+                       <span class="difficulty">Intermediate</span>
+                       <span class="duration">26 h</span>
+                   </div>
+               </div>
+     {% endfor %}
+     {% else %}
+        <p>No Learnings</p>
+    {% endif %}
+      </div>
+        
+        <h3>Available Exams</h3>
+        <div class="exam-catalog">
+        {% if exams %}
+            {% for exam in exams %}
+                <div class="card">
+                   <div class="card-header">
+                       <span class="badge">EXAM</span>
+                       <span class="icons">
+                           <i class="calendar-icon"></i>
+                           <i class="bookmark-icon"></i>
+                       </span>
+                   </div>
+                        <img src="static/exam.png" alt="5 Terre" style="width:100%">
+                   <h2 class="course-title">{{ exam.title }}</h2>
+                   <p class="course-description">
+                       Skills you'll gain: {{ exam.skills }}
+                   </p>
+                            
+                   <a href="{{ url_for('exam', exam_id=exam.id, question_number=1) }}" class="btn btn-primary btn-icon-text">Start Exam</a>
+                   <div class="course-meta">
+                       <span class="difficulty">Intermediate</span>
+                       <span class="duration">1 h</span>
+                   </div>
+               </div>
+            
+            {% endfor %}
+            
+        {% else %}
+        <p>No Exams</p>
+        {% endif %}
+        </div>
+      
+ </div>            
+            
+            
+   
+         
+         
           </div>
           <!-- content-wrapper ends -->
           <!-- partial:partials/_footer.html -->
           <footer class="footer">
   <div class="d-sm-flex justify-content-center justify-content-sm-between">
-    <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2023. Premium <a href="https://www.bootstrapdash.com/" target="_blank">Bootstrap admin template</a> from BootstrapDash. All rights reserved.</span>
-    <span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center">Hand-crafted & made with <i class="ti-heart text-danger ms-1"></i></span>
+ <span class="text-muted text-center text-sm-left d-block d-sm-inline-block">Copyright © 2025 Backbench. All rights reserved.</span>
+  
   </div>
 </footer>
           <!-- partial -->
