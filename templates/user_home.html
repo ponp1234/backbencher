@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Collapsible Sidebar</title>
+    <title>Responsive Collapsible Sidebar</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
@@ -15,8 +15,48 @@
 
         body {
             min-height: 100vh;
+            position: relative;
         }
 
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #006093;
+            padding: 0 1rem;
+            z-index: 1000;
+            align-items: center;
+        }
+
+        .mobile-header .menu-trigger {
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        .mobile-header .logo-section {
+            display: flex;
+            align-items: center;
+            margin-left: 1rem;
+        }
+
+        .mobile-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .mobile-header h2 {
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        /* Sidebar */
         .sidebar {
             position: fixed;
             top: 0;
@@ -26,10 +66,23 @@
             background: #071952;
             transition: all 0.3s ease;
             overflow-y: auto;
+            z-index: 1001;
         }
 
         .sidebar.collapsed {
             width: 80px;
+        }
+
+        /* Overlay for mobile */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
         }
 
         /* Logo Section */
@@ -93,7 +146,6 @@
             font-size: 0.875rem;
             padding: 0 0.75rem;
             margin-bottom: 0.5rem;
-            transition: opacity 0.3s ease;
         }
 
         .sidebar.collapsed .section-title {
@@ -134,12 +186,67 @@
         .nav-link span {
             margin-left: 0.75rem;
             font-size: 0.875rem;
-            transition: opacity 0.3s ease;
             white-space: nowrap;
         }
 
         .sidebar.collapsed .nav-link span {
             display: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.expanded {
+            margin-left: 80px;
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .mobile-header {
+                display: flex;
+            }
+
+            .sidebar {
+                left: -260px;
+                top: 60px;
+                height: calc(100% - 60px);
+            }
+
+            .sidebar.mobile-active {
+                left: 0;
+            }
+
+            .toggle-btn {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                margin-top: 60px;
+                padding: 15px;
+            }
+
+            .main-content.expanded {
+                margin-left: 0;
+            }
+
+            .overlay.active {
+                display: block;
+            }
+
+            .sidebar.collapsed {
+                width: 260px;
+            }
+
+            .sidebar.collapsed .logo-container h2,
+            .sidebar.collapsed .section-title,
+            .sidebar.collapsed .nav-link span {
+                display: block;
+            }
         }
 
         /* Custom Scrollbar */
@@ -155,20 +262,22 @@
             background: rgba(255, 255, 255, 0.2);
             border-radius: 3px;
         }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 260px;
-            padding: 20px;
-            transition: margin-left 0.3s ease;
-        }
-
-        .main-content.expanded {
-            margin-left: 80px;
-        }
     </style>
 </head>
 <body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <i class="fas fa-bars menu-trigger" onclick="toggleMobileMenu()"></i>
+        <div class="logo-section">
+            <img src="static/logo2.png" alt="Logo">
+            <h2>Backbench</h2>
+        </div>
+    </div>
+
+    <!-- Overlay for mobile -->
+    <div class="overlay" id="overlay" onclick="toggleMobileMenu()"></div>
+
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <!-- Logo Section -->
         <div class="logo-container">
@@ -176,7 +285,7 @@
             <h2>Backbench</h2>
         </div>
 
-        <!-- Toggle Button -->
+        <!-- Toggle Button (hidden on mobile) -->
         <div class="toggle-btn" onclick="toggleSidebar()">
             <i class="fas fa-chevron-left" id="toggle-icon"></i>
         </div>
@@ -263,9 +372,12 @@
 
     <div class="main-content" id="main-content">
         <!-- Your page content goes here -->
+        <h1>Welcome to Backbench</h1>
+        <p>This is your dashboard content.</p>
     </div>
 
     <script>
+        // For desktop sidebar toggle
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('main-content');
@@ -282,6 +394,24 @@
                 toggleIcon.classList.add('fa-chevron-left');
             }
         }
+
+        // For mobile menu toggle
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            
+            sidebar.classList.toggle('mobile-active');
+            overlay.classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking a link (optional)
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleMobileMenu();
+                }
+            });
+        });
     </script>
 </body>
 </html>
