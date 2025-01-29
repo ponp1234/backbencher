@@ -419,7 +419,7 @@ def user_home():
     
     learnings = db.session.query(Learning).join(LearningsMapping).filter(LearningsMapping.class_name == user_class).all()
     
-    return render_template("dashboard.html", exams=exams, attempts=attempts, learnings=learnings, todos=todos)
+    return render_template("user_home.html", exams=exams, attempts=attempts, learnings=learnings, todos=todos)
 
 
 @app.route("/dashboard")
