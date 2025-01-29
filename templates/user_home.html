@@ -822,6 +822,41 @@
         }
 
         
+          /* Welcome Section */
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-section h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+         :root {
+            --primary-color: #006093;
+            --secondary-color: #f8f9fa;
+            --accent-color: #ff6b6b;
+            --text-color: #333;
+            --border-color: #e0e0e0;
+        }
+
+        
     </style>
 </head>
 <body>
@@ -952,7 +987,13 @@
     <div class="main-content" id="main-content">
         <!-- Your page content goes here -->
         
-         <h1>Welcome, {{ current_user.username }}!</h1> 
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="welcome-content">
+                <h1>Welcome back, {{ current_user.username }}! </h1>
+                <p>Ready to continue your learning journey?</p>
+            </div>
+        </div>
         
         
      <h3>Available Learnings</h3>
