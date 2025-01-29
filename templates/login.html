@@ -3,77 +3,777 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <link rel="icon" href="static/logo.png" type="image/icon type">
-    <title>Backbench - Login</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <title>Responsive Collapsible Sidebar</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
-            box-sizing: border-box;
             margin: 0;
             padding: 0;
+            box-sizing: border-box;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
         body {
-            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             min-height: 100vh;
-            display: flex;
+            position: relative;
         }
 
-        /* Sidebar Styles */
-        .sidebar {
-            width: 250px;
-            background: #006093;
-            backdrop-filter: blur(10px);
-            padding: 20px;
-            border-right: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .sidebar-logo {
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .sidebar-logo img {
-            width: 60px;
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
             height: 60px;
-            border-radius: 50%;
-            margin-bottom: 15px;
+            background: #071952;
+            padding: 0 1rem;
+            z-index: 1000;
+            align-items: center;
         }
 
-        .sidebar-logo h2 {
+        .mobile-header .menu-trigger {
             color: white;
-            font-size: 1.5em;
-            margin-bottom: 5px;
+            font-size: 1.5rem;
+            cursor: pointer;
         }
 
-        .sidebar-button {
-            display: block;
-            padding: 12px 20px;
-            margin: 10px 0;
-            background: rgba(255, 255, 255, 0.2);
+        .mobile-header .logo-section {
+            display: flex;
+            align-items: center;
+            margin-left: 1rem;
+        }
+
+        .mobile-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 0.5rem;
+        }
+
+        .mobile-header h2 {
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 260px;
+            background: #071952;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+            z-index: 1001;
+        }
+
+        .sidebar.collapsed {
+            width: 80px;
+        }
+
+        /* Overlay for mobile */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        /* Logo Section */
+        .logo-container {
+            padding: 2rem 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-container img {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: white;
+            padding: 2px;
+        }
+
+        .logo-container h2 {
+            color: white;
+            margin-top: 0.5rem;
+            font-size: 1.25rem;
+            transition: opacity 0.3s ease;
+        }
+
+        .sidebar.collapsed .logo-container h2 {
+            display: none;
+        }
+
+        /* Toggle Button */
+        .toggle-btn {
+            position: absolute;
+            top: 38px;
+            right: -12px;
+            width: 24px;
+            height: 24px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .toggle-btn i {
+            color: #006093;
+            font-size: 12px;
+        }
+
+        /* Navigation Section */
+        .nav-sections {
+            padding: 1.5rem 1rem;
+        }
+
+        .section {
+            margin-bottom: 1.5rem;
+        }
+
+        .section-title {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.875rem;
+            padding: 0 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar.collapsed .section-title {
+            display: none;
+        }
+
+        .nav-links {
+            list-style: none;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
             color: white;
             text-decoration: none;
-            border-radius: 10px;
-            transition: all 0.3s ease;
+            border-radius: 0.5rem;
+            transition: background-color 0.2s ease;
         }
 
-        .sidebar-button:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateX(5px);
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.2);
         }
 
-        /* Main Content Styles */
-        .main-content {
-            flex: 1;
+        .nav-link i {
+            width: 24px;
+            height: 24px;
             display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-link:hover i {
+            transform: scale(1.1);
+        }
+
+        .nav-link span {
+            margin-left: 0.75rem;
+            font-size: 0.875rem;
+            white-space: nowrap;
+        }
+
+        .sidebar.collapsed .nav-link span {
+            display: none;
+        }
+
+        /* Main Content */
+        .main-content {
+            margin-left: 260px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+            justify-content: center;
+             align-items: center;
+        }
+        
+        
+        .in {
+         margin-left: 280px;
+        }
+
+        .main-content.expanded {
+            margin-left: 80px;
+        }
+
+        /* Mobile Responsive Styles */
+        @media (max-width: 768px) {
+            .mobile-header {
+                display: flex;
+            }
+
+            .sidebar {
+                left: -260px;
+                top: 60px;
+                height: calc(100% - 60px);
+            }
+
+            .sidebar.mobile-active {
+                left: 0;
+            }
+
+            .toggle-btn {
+                display: none;
+            }
+
+            .main-content {
+                margin-left: 0;
+                margin-top: 60px;
+                padding: 15px;
+            }
+
+            .main-content.expanded {
+                margin-left: 0;
+            }
+
+            .overlay.active {
+                display: block;
+            }
+
+            .sidebar.collapsed {
+                width: 260px;
+            }
+
+            .sidebar.collapsed .logo-container h2,
+            .sidebar.collapsed .section-title,
+            .sidebar.collapsed .nav-link span {
+                display: block;
+            }
+        }
+
+        /* Custom Scrollbar */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 3px;
+        }
+        
+        
+        
+         .user-profile {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1001;
+        }
+
+        .user-profile-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-profile-info:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-avatar i {
+            color: #006093;
+            font-size: 1.2rem;
+        }
+
+        .user-name {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .logout-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem;
+            display: none;
+        }
+
+        .logout-dropdown.active {
+            display: block;
+        }
+
+        .logout-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            color: #333;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .logout-button:hover {
+            background-color: #f5f5f5;
+        }
+
+        .logout-button i {
+            font-size: 0.9rem;
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .user-profile {
+                top: 0;
+                right: 1rem;
+                height: 60px;
+                padding: 0;
+                align-items: center;
+            }
+
+            .user-name {
+                display: none; /* Hide username on mobile */
+            }
+
+            .user-profile-info {
+                padding: 0.25rem;
+                background: transparent;
+            }
+
+            .logout-dropdown {
+                top: 50px;
+                right: 0;
+            }
+        }
+
+        /* Add to existing mobile header styles */
+        .mobile-header {
+            justify-content: space-between;
+        }
+
+        .mobile-header .left-section {
+            display: flex;
+            align-items: center;
+        }
+        
+        
+        
+                
+        
+.card {
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.badge {
+    background-color: #d6d6ff;
+    color: #5a5aff;
+    font-weight: bold;
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.icons {
+    display: flex;
+    gap: 10px;
+}
+
+.icons i {
+    font-size: 18px;
+    cursor: pointer;
+}
+
+
+ 
+
+        
+ 
+ 
+            .content {
+                padding: 20px;
+            }
+
+     
+        
+          /* Welcome Section */
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
             justify-content: center;
             align-items: center;
-            padding: 20px;
-            background: #ffffff;
         }
 
-        .login-container {
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-section h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+         :root {
+            --primary-color: #006093;
+            --secondary-color: #f8f9fa;
+            --accent-color: #ff6b6b;
+            --text-color: #333;
+            --border-color: #e0e0e0;
+        }
+
+
+
+        
+    </style>
+</head>
+<body>
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+     <div class="left-section">
+        <i class="fas fa-bars menu-trigger" onclick="toggleMobileMenu()"></i>
+            <div class="logo-section">
+                <img src="static/logo2.png" alt="Logo">
+                <h2>Backbench</h2>
+            </div>
+     
+       </div>    
+    </div>
+    
+    <!-- User Profile -->
+    <div class="user-profile">
+        <div class="user-profile-info" onclick="toggleDropdown()">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <span class="user-name">Guest</span>
+            
+        </div>
+    </div>
+
+    <!-- Overlay for mobile -->
+    <div class="overlay" id="overlay" onclick="toggleMobileMenu()"></div>
+
+    <!-- Sidebar -->
+    <div class="sidebar" id="sidebar">
+        <!-- Logo Section -->
+        <div class="logo-container">
+            <img src="static/logo2.png" alt="Logo">
+            <h2>Backbench</h2>
+        </div>
+
+        <!-- Toggle Button (hidden on mobile) -->
+        <div class="toggle-btn" onclick="toggleSidebar()">
+            <i class="fas fa-chevron-left" id="toggle-icon"></i>
+        </div>
+
+        <!-- Navigation Sections -->
+        <div class="nav-sections">
+            <!-- Main Section -->
+            <div class="section">
+                <h3 class="section-title">Main</h3>
+                <ul class="nav-links">
+                    <li><a href="{{ url_for('home') }}" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a></li>
+                    <li><a href="{{ url_for('help') }}" class="nav-link">
+                        <i class="fas fa-book-open"></i>
+                        <span>Help</span>
+                    </a></li>
+                   
+                </ul>
+            </div>
+
+           
+
+           
+        </div>
+    </div>
+
+    <div class="main-content" id="main-content">
+        <!-- Your page content goes here -->
+        
+        <div class="welcome-section">
+            <div class="welcome-content">
+                <h1>Welcome back, {{ current_user.username }}! </h1>
+                <p>Ready to continue your learning journey?</p>
+            </div>
+        </div>
+        
+       <div class="in">
+          <!-- Login Form -->
+        <div class="login-container">
+            <div class="login-header">
+                <h1>Welcome Back!</h1>
+                <p>Ready to continue your learning adventure?</p>
+            </div>
+            <form method="POST">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="login-button">Login!</button>
+                <div class="register-link">
+                    <p>New to Backbench? <a href="{{ url_for('register') }}">Sign Up BB!</a></p>
+                </div>
+            </form>
+            </br>
+            <center><p>&copy; 2025 Backbench. All rights reserved.</p></center>
+             <!-- Flash Messages for Success or Error -->
+          {% with messages = get_flashed_messages(with_categories=True) %}
+              {% if messages %}
+                  {% for category, message in messages %}
+                      <div class="alert alert-{{ category }}">{{ message }}</div>
+                      {% if category == 'success' %}
+                          <script>
+                              document.addEventListener("DOMContentLoaded", function() {
+                                  const button = document.getElementById("login-button");
+                                  button.disabled = true; // Disable the button
+                                  // Redirect to login page after 3 seconds
+                                  setTimeout(function() {
+                                      window.location.href = "{{ url_for('login') }}";
+                                  }, 1000);
+                              });
+                          </script>
+                      {% endif %}
+                  {% endfor %}
+              {% endif %}
+          {% endwith %}
+        </div>
+     
+      
+        </div>
+        
+    </div>
+
+    <script>
+        // For desktop sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const mainContent = document.getElementById('main-content');
+            const toggleIcon = document.getElementById('toggle-icon');
+            
+            sidebar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            
+            if (sidebar.classList.contains('collapsed')) {
+                toggleIcon.classList.remove('fa-chevron-left');
+                toggleIcon.classList.add('fa-chevron-right');
+            } else {
+                toggleIcon.classList.remove('fa-chevron-right');
+                toggleIcon.classList.add('fa-chevron-left');
+            }
+        }
+
+        // For mobile menu toggle
+        function toggleMobileMenu() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('overlay');
+            
+            sidebar.classList.toggle('mobile-active');
+            overlay.classList.toggle('active');
+        }
+
+        // Close mobile menu when clicking a link (optional)
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 768) {
+                    toggleMobileMenu();
+                }
+            });
+        });
+    </script>
+    
+     <script>
+        // Function to update the current time
+        function updateTime() {
+            const currentTimeDiv = document.getElementById('current-time');
+            const now = new Date();
+            const options = {  hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            currentTimeDiv.innerText =  now.toLocaleDateString('en-UK', options);
+        }
+
+// Function to generate a simple calendar for the current month
+function generateCalendar() {
+    const calendarDiv = document.getElementById('calendar');
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const today = now.getDate(); // Get the current date
+
+    const monthNames = [
+        "January", "February", "March", "April", "May", "June", "July",
+        "August", "September", "October", "November", "December"
+    ];
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const lastDate = new Date(year, month + 1, 0).getDate();
+
+    let calendarHTML = `<h3>${monthNames[month]} ${year}</h3>`;
+    calendarHTML += `
+        <table>
+            <thead>
+                <tr>
+                    <th>Sun</th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    let day = 1;
+    for (let i = 0; i < 6; i++) {
+        calendarHTML += '<tr>';
+        for (let j = 0; j < 7; j++) {
+            if (i === 0 && j < firstDay || day > lastDate) {
+                calendarHTML += '<td></td>'; // Empty cells
+            } else {
+                if (day === today) {
+                    // Highlight the current date
+                    calendarHTML += `<td style="background-color: #79CCBF; color: white; border-radius: 50%;">${day}</td>`;
+                } else {
+                    calendarHTML += `<td>${day}</td>`;
+                }
+                day++;
+            }
+        }
+        calendarHTML += '</tr>';
+        if (day > lastDate) break;
+    }
+
+    calendarHTML += '</tbody></table>';
+    calendarDiv.innerHTML = calendarHTML;
+}
+
+// Initialize the widget
+document.addEventListener('DOMContentLoaded', () => {
+    updateTime();
+    generateCalendar();
+    setInterval(updateTime, 1000); // Update the time every second
+});
+
+
+function updateTime() {
+    const widget = document.getElementById('current-time-widget');
+    const now = new Date();
+
+    // Format time
+    const hours = now.getHours() % 12 || 12;
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const period = now.getHours() >= 12 ? 'PM' : 'AM';
+
+    // Format date
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const day = days[now.getDay()];
+    const date = now.getDate();
+    const month = months[now.getMonth()];
+
+    // Update widget
+    widget.querySelector('.time').innerHTML = `${hours}:${minutes} <span class="period">${period}</span>`;
+    widget.querySelector('.date').textContent = `${day}, ${date} ${month}`;
+    widget.querySelector('.temperature').textContent = ''; // Example temperature
+
+}
+
+// Initialize the widget
+document.addEventListener('DOMContentLoaded', () => {
+    updateTime();
+    setInterval(updateTime, 1000); // Update every second
+});
+
+
+        // Previous JavaScript remains the same
+        // Add new function for dropdown toggle
+        function toggleDropdown() {
+            const dropdown = document.getElementById('logoutDropdown');
+            dropdown.classList.toggle('active');
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const profile = document.querySelector('.user-profile-info');
+                if (!profile.contains(event.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+        }
+
+        // Stop event propagation when clicking dropdown
+        document.querySelector('.logout-dropdown').addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+ 
+
+    </script>
+    
+    <style>
+       .login-container {
             background: white;
             border-radius: 20px;
             padding: 40px;
@@ -180,29 +880,8 @@
             bottom: 20px;
             left: 20px;
         }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-20px); }
-        }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
-
-            .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-            }
-
-            .character-decoration {
-                display: none;
-            }
-        }
         
+         
           .alert {
             padding: 10px;
             margin-bottom: 15px;
@@ -219,71 +898,8 @@
             color: #721c24;
             border: 1px solid #f5c6cb;
         }        
-    </style>
-</head>
-<body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-logo">
-            <img src="static/logo.png" alt="Backbench Logo">
-          
-        </div>
-        <a href="{{ url_for('home') }}" class="sidebar-button">Home</a>
-        <a href="{{ url_for('help') }}" class="sidebar-button">Help</a>
-    </div>
-    
-   
-    <!-- Main Content -->
-    <div class="main-content">
-        <!-- Decorative Characters -->
 
-        <!-- Login Form -->
-        <div class="login-container">
-            <div class="login-header">
-                <h1>Welcome Back!</h1>
-                <p>Ready to continue your learning adventure?</p>
-            </div>
-            <form method="POST">
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" placeholder="Enter your username" required>
-                </div>
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                </div>
-                <button type="submit" class="login-button">Start Adventure!</button>
-                <div class="register-link">
-                    <p>New to Backbench? <a href="{{ url_for('register') }}">Join the Adventure!</a></p>
-                </div>
-            </form>
-            </br>
-            <center><p>&copy; 2025 Backbench. All rights reserved.</p></center>
-             <!-- Flash Messages for Success or Error -->
-          {% with messages = get_flashed_messages(with_categories=True) %}
-              {% if messages %}
-                  {% for category, message in messages %}
-                      <div class="alert alert-{{ category }}">{{ message }}</div>
-                      {% if category == 'success' %}
-                          <script>
-                              document.addEventListener("DOMContentLoaded", function() {
-                                  const button = document.getElementById("login-button");
-                                  button.disabled = true; // Disable the button
-                                  // Redirect to login page after 3 seconds
-                                  setTimeout(function() {
-                                      window.location.href = "{{ url_for('login') }}";
-                                  }, 1000);
-                              });
-                          </script>
-                      {% endif %}
-                  {% endfor %}
-              {% endif %}
-          {% endwith %}
-        </div>
-        
-        
-    </div>
+    </style>
     
 </body>
-
 </html>
