@@ -265,6 +265,124 @@
         
         
         
+         .user-profile {
+            position: fixed;
+            top: 0;
+            right: 0;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            z-index: 1001;
+        }
+
+        .user-profile-info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .user-profile-info:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-avatar i {
+            color: #006093;
+            font-size: 1.2rem;
+        }
+
+        .user-name {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .logout-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 0.5rem;
+            display: none;
+        }
+
+        .logout-dropdown.active {
+            display: block;
+        }
+
+        .logout-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            color: #333;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+            white-space: nowrap;
+        }
+
+        .logout-button:hover {
+            background-color: #f5f5f5;
+        }
+
+        .logout-button i {
+            font-size: 0.9rem;
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .user-profile {
+                top: 0;
+                right: 1rem;
+                height: 60px;
+                padding: 0;
+                align-items: center;
+            }
+
+            .user-name {
+                display: none; /* Hide username on mobile */
+            }
+
+            .user-profile-info {
+                padding: 0.25rem;
+                background: transparent;
+            }
+
+            .logout-dropdown {
+                top: 50px;
+                right: 0;
+            }
+        }
+
+        /* Add to existing mobile header styles */
+        .mobile-header {
+            justify-content: space-between;
+        }
+
+        .mobile-header .left-section {
+            display: flex;
+            align-items: center;
+        }
+        
         
         
                 
@@ -712,6 +830,22 @@
         <i class="fas fa-bars menu-trigger" onclick="toggleMobileMenu()"></i>
         
     </div>
+    
+    <!-- User Profile -->
+    <div class="user-profile">
+        <div class="user-profile-info" onclick="toggleDropdown()">
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <span class="user-name">John Doe</span>
+            <div class="logout-dropdown" id="logoutDropdown">
+                <a href="/logout" class="logout-button">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </div>
+        </div>
+    </div>
 
     <!-- Overlay for mobile -->
     <div class="overlay" id="overlay" onclick="toggleMobileMenu()"></div>
@@ -1077,6 +1211,27 @@ document.addEventListener('DOMContentLoaded', () => {
     setInterval(updateTime, 1000); // Update every second
 });
 
+
+        // Previous JavaScript remains the same
+        // Add new function for dropdown toggle
+        function toggleDropdown() {
+            const dropdown = document.getElementById('logoutDropdown');
+            dropdown.classList.toggle('active');
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const profile = document.querySelector('.user-profile-info');
+                if (!profile.contains(event.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+        }
+
+        // Stop event propagation when clicking dropdown
+        document.querySelector('.logout-dropdown').addEventListener('click', function(event) {
+            event.stopPropagation();
+        });
+ 
 
     </script>
     
