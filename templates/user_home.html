@@ -810,7 +810,7 @@
         .exam-link {
             display: inline-block;
             padding: 10px 20px;
-            background: #ff6b6b;
+            background: #0D9276;
             color: white;
             text-decoration: none;
             border-radius: 8px;
@@ -865,7 +865,7 @@
      <div class="left-section">
         <i class="fas fa-bars menu-trigger" onclick="toggleMobileMenu()"></i>
             <div class="logo-section">
-                <img src="static/logo2.png" alt="Logo">
+                <a href="{{ url_for('home') }}"><img src="static/logo2.png"  alt="Logo"> </a>
                 <h2>Backbench</h2>
             </div>
      
@@ -895,7 +895,7 @@
     <div class="sidebar" id="sidebar">
         <!-- Logo Section -->
         <div class="logo-container">
-            <img src="static/logo2.png" alt="Logo">
+            <a href="{{ url_for('user_home') }}"><img src="static/logo2.png"  alt="Logo"> </a>
             <h2>Backbench</h2>
         </div>
 
@@ -918,9 +918,13 @@
                         <i class="fas fa-book-open"></i>
                         <span>My Courses</span>
                     </a></li>
+                    <li><a href="{{ url_for('papers') }}" class="nav-link">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Past Papers</span>
+                    </a></li>
                     <li><a href="{{ url_for('attempts') }}" class="nav-link">
                         <i class="fas fa-calendar"></i>
-                        <span>Pass Attempts</span>
+                        <span>Past Attempts</span>
                     </a></li>
                 </ul>
             </div>
@@ -937,10 +941,7 @@
                         <i class="fas fa-tasks"></i>
                         <span>Assignments</span>
                     </a></li>
-                    <li><a href="#" class="nav-link">
-                        <i class="fas fa-graduation-cap"></i>
-                        <span>Progress</span>
-                    </a></li>
+                    
                     <li><a href="#" class="nav-link">
                         <i class="fas fa-trophy"></i>
                         <span>Achievements</span>
@@ -1026,36 +1027,7 @@
     {% endif %}
       </div>
         
-        <h3>Available Exams</h3>
-        <div class="exam-catalog">
-        {% if exams %}
-            {% for exam in exams %}
-                <div class="card">
-                   <div class="card-header">
-                       <span class="badge">EXAM</span>
-                       <span class="icons">
-                           <i class="calendar-icon"></i>
-                           <i class="bookmark-icon"></i>
-                       </span>
-                   </div>
-                        <img src="static/exam.png" alt="5 Terre" style="width:100%">
-                   <h2 class="course-title">{{ exam.title }}</h2>
-                   <p class="course-description">
-                       Skills you'll gain: {{ exam.skills }}
-                   </p>
-                   <a href="{{ url_for('exam', exam_id=exam.id, question_number=1) }}" class="exam-link">Start Exam</a>
-                   <div class="course-meta">
-                       <span class="difficulty">Intermediate</span>
-                       <span class="duration">1 h</span>
-                   </div>
-               </div>
-            
-            {% endfor %}
-            
-        {% else %}
-        <p>No Exams</p>
-        {% endif %}
-        </div>
+       
       
         <div style="margin-top: 20px; font-size: 0.9em;">
         <p>&copy; 2025 Backbench. All rights reserved.</p>

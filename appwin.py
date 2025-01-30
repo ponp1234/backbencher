@@ -422,6 +422,34 @@ def user_home():
     return render_template("user_home.html", exams=exams, attempts=attempts, learnings=learnings, todos=todos)
 
 
+@app.route("/papers")
+@login_required
+def papers():
+    # Get all past attempts by the current user
+    # Define today's and tomorrow's dates
+    today = datetime.now().date()
+    tomorrow = today + timedelta(days=1)
+    
+    # Filter To-Do items by date
+    todos = ToDo.query.filter(
+        ToDo.user_id == current_user.id,
+        ToDo.date.in_([today, tomorrow])  # Filter for today and tomorrow
+    ).order_by(ToDo.date.asc()).all()
+    
+    print(todos)
+    # Get the current user's student class
+    user_class = current_user.student_class
+    print(user_class)
+   
+    # Fetch exams mapped to the user's student class
+    exams = db.session.query(Exam).join(ExamMapping).filter(ExamMapping.class_name == user_class).all()
+    
+    learnings = db.session.query(Learning).join(LearningsMapping).filter(LearningsMapping.class_name == user_class).all()
+    
+    return render_template("papers.html", exams=exams, attempts=attempts, learnings=learnings, todos=todos)
+
+
+
 @app.route("/dashboard")
 @login_required
 def dashboard():
@@ -638,4 +666,7 @@ if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Creates database tables if they don't exist
 
+    #context = (r'/home/bb/exam/ssl/bb.pem', r'/home/bb/exam/ssl/bb.key')
+    #app.run(host='0.0.0.0', port=443, debug=True, ssl_context=context)
+    
     app.run(host='0.0.0.0', port=443, debug=True)
