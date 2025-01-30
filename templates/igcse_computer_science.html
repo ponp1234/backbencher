@@ -30,7 +30,7 @@
 
         .sidebar {
             width: 250px;
-            background: #006093;
+            background: #071952;
             backdrop-filter: blur(10px);
             padding: 20px;
             border-right: 1px solid rgba(255, 255, 255, 0.2);
@@ -134,7 +134,7 @@
         }
 
         summary:hover {
-            color: #ff5252;
+            color: #96E9C6;
         }
 
         details p, details ul {
@@ -206,56 +206,14 @@
             margin-bottom: 40px;
         }
 
-        .exam-card {
-            background: white;
-            border-radius: 15px;
-            padding: 20px;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .exam-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        .exam-info {
-            flex: 1;
-        }
-
-        .exam-info h3 {
-            color: #2c3e50;
-            margin-bottom: 10px;
-        }
-
-        .exam-info p {
-            color: #666;
-            margin-bottom: 15px;
-            font-size: 0.9em;
-        }
-
-        .exam-link {
-            display: inline-block;
-            padding: 10px 20px;
-            background: #ff6b6b;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            transition: background 0.3s ease;
-        }
-
-        .exam-link:hover {
-            background: #ff5252;
-        }
+      
     </style>
 </head>
 <body>
     <!-- Sidebar Menu -->
     <div class="sidebar">
-      <center><img src="../static/logo.png" alt="Backbench Logo"></center>
-        <a href="{{ url_for('user_home') }}" class="sidebar-button">Back to Classroom</a>
+    
+        <a href="{{ url_for('user_home') }}" class="sidebar-button">Back to Learnigs</a>
         <h2>Topics</h2>
         <details>
             <summary>1. Data Representation</summary>
