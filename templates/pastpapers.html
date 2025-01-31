@@ -810,7 +810,7 @@
         .exam-link {
             display: inline-block;
             padding: 10px 20px;
-            background: #ff6b6b;
+            background: #0D9276;
             color: white;
             text-decoration: none;
             border-radius: 8px;
@@ -822,6 +822,41 @@
         }
 
         
+          /* Welcome Section */
+        .welcome-section {
+            background: linear-gradient(135deg, var(--primary-color), #0056b3);
+            color: white;
+            padding: 2rem;
+            border-radius: 15px;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .welcome-section h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .welcome-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+         :root {
+            --primary-color: #006093;
+            --secondary-color: #f8f9fa;
+            --accent-color: #ff6b6b;
+            --text-color: #333;
+            --border-color: #e0e0e0;
+        }
+
+        
     </style>
 </head>
 <body>
@@ -830,7 +865,7 @@
      <div class="left-section">
         <i class="fas fa-bars menu-trigger" onclick="toggleMobileMenu()"></i>
             <div class="logo-section">
-                <img src="static/logo2.png" alt="Logo">
+                <a href="{{ url_for('home') }}"><img src="static/logo2.png"  alt="Logo"> </a>
                 <h2>Backbench</h2>
             </div>
      
@@ -860,7 +895,7 @@
     <div class="sidebar" id="sidebar">
         <!-- Logo Section -->
         <div class="logo-container">
-            <img src="static/logo2.png" alt="Logo">
+            <a href="{{ url_for('user_home') }}"><img src="static/logo2.png"  alt="Logo"> </a>
             <h2>Backbench</h2>
         </div>
 
@@ -891,7 +926,7 @@
                         <i class="fas fa-graduation-cap"></i>
                         <span>Exam Practice</span>
                     </a></li>
-                    <li><a href="{{ url_for('papers') }}" class="nav-link">
+                    <li><a href="{{ url_for('pastpapers') }}" class="nav-link">
                         <i class="fas fa-graduation-cap"></i>
                         <span>Past Papers</span>
                     </a></li>
@@ -910,10 +945,11 @@
                         <i class="fas fa-tasks"></i>
                         <span>Assignments</span>
                     </a></li>
-                    <li><a href="#" class="nav-link">
+                    <li><a  href="{{ url_for('attempts') }}" class="nav-link">
                         <i class="fas fa-graduation-cap"></i>
                         <span>Progress</span>
                     </a></li>
+                    
                     <li><a href="#" class="nav-link">
                         <i class="fas fa-trophy"></i>
                         <span>Achievements</span>
@@ -960,30 +996,44 @@
     <div class="main-content" id="main-content">
         <!-- Your page content goes here -->
         
-  
+        <!-- Welcome Section -->
+        <div class="welcome-section">
+            <div class="welcome-content">
+                <h1>Welcome back, {{ current_user.username }}! </h1>
+                <p>Ready to continue your learning journey?</p>
+            </div>
+        </div>
         
-   <h2>Your Past Exam Attempts</h2>
-        <table class="attempts-table">
-            <thead>
-                <tr>
-                    <th>Exam</th>
-                    <th>Score</th>
-                    <th>Total Questions</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for attempt in attempts %}
-                <tr>
-                    <td>{{ attempt.exam.title }}</td>
-                    <td>{{ attempt.score }}</td>
-                    <td>{{ attempt.total_questions }}</td>
-                    <td>{{ attempt.attempt_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-   
+        
+        <h3>Available Past Papers</h3>
+        <div class="exam-catalog">
+        {% if exams %}
+            {% for exam in exams %}
+                <div class="card">
+                   <div class="card-header">
+                       <span class="badge">PAST PAPER</span>
+                       <span class="icons">
+                           <i class="calendar-icon"></i>
+                           <i class="bookmark-icon"></i>
+                       </span>
+                   </div>
+                        <img src="static/cslink.png" alt="5 Terre" style="width:100%">
+                   <h2 class="course-title">Computer Sceince Paper 2B</h2>
+                  
+                   <a href="https://www.cambridgeinternational.org/Images/675876-2023-specimen-paper-2b.pdf" class="exam-link">Specimen Paper</a>
+                    <a href="https://www.cambridgeinternational.org/Images/675879-2023-specimen-paper-2b-mark-scheme.pdf" class="exam-link">Mark Schemes</a>
+              <div class="course-meta">
+                       <span class="difficulty">2023</span>
+                       <span class="duration">0478/02</span>
+                   </div>
+               </div>
+            
+            {% endfor %}
+            
+        {% else %}
+        <p>No Papers</p>
+        {% endif %}
+        </div>
       
         <div style="margin-top: 20px; font-size: 0.9em;">
         <p>&copy; 2025 Backbench. All rights reserved.</p>
@@ -1031,9 +1081,110 @@
         });
     </script>
     
-    
-     <!-- Add to your existing JavaScript -->
-    <script>
+     <script>
+        // Function to update the current time
+        function updateTime() {
+            const currentTimeDiv = document.getElementById('current-time');
+            const now = new Date();
+            const options = {  hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            currentTimeDiv.innerText =  now.toLocaleDateString('en-UK', options);
+        }
+
+// Function to generate a simple calendar for the current month
+function generateCalendar() {
+    const calendarDiv = document.getElementById('calendar');
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const today = now.getDate(); // Get the current date
+
+    const monthNames = [
+        "January", "February", "March", "April", "May", "June", "July",
+        "August", "September", "October", "November", "December"
+    ];
+
+    const firstDay = new Date(year, month, 1).getDay();
+    const lastDate = new Date(year, month + 1, 0).getDate();
+
+    let calendarHTML = `<h3>${monthNames[month]} ${year}</h3>`;
+    calendarHTML += `
+        <table>
+            <thead>
+                <tr>
+                    <th>Sun</th>
+                    <th>Mon</th>
+                    <th>Tue</th>
+                    <th>Wed</th>
+                    <th>Thu</th>
+                    <th>Fri</th>
+                    <th>Sat</th>
+                </tr>
+            </thead>
+            <tbody>
+    `;
+
+    let day = 1;
+    for (let i = 0; i < 6; i++) {
+        calendarHTML += '<tr>';
+        for (let j = 0; j < 7; j++) {
+            if (i === 0 && j < firstDay || day > lastDate) {
+                calendarHTML += '<td></td>'; // Empty cells
+            } else {
+                if (day === today) {
+                    // Highlight the current date
+                    calendarHTML += `<td style="background-color: #79CCBF; color: white; border-radius: 50%;">${day}</td>`;
+                } else {
+                    calendarHTML += `<td>${day}</td>`;
+                }
+                day++;
+            }
+        }
+        calendarHTML += '</tr>';
+        if (day > lastDate) break;
+    }
+
+    calendarHTML += '</tbody></table>';
+    calendarDiv.innerHTML = calendarHTML;
+}
+
+// Initialize the widget
+document.addEventListener('DOMContentLoaded', () => {
+    updateTime();
+    generateCalendar();
+    setInterval(updateTime, 1000); // Update the time every second
+});
+
+
+function updateTime() {
+    const widget = document.getElementById('current-time-widget');
+    const now = new Date();
+
+    // Format time
+    const hours = now.getHours() % 12 || 12;
+    const minutes = now.getMinutes().toString().padStart(2, '0');
+    const period = now.getHours() >= 12 ? 'PM' : 'AM';
+
+    // Format date
+    const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const day = days[now.getDay()];
+    const date = now.getDate();
+    const month = months[now.getMonth()];
+
+    // Update widget
+    widget.querySelector('.time').innerHTML = `${hours}:${minutes} <span class="period">${period}</span>`;
+    widget.querySelector('.date').textContent = `${day}, ${date} ${month}`;
+    widget.querySelector('.temperature').textContent = ''; // Example temperature
+
+}
+
+// Initialize the widget
+document.addEventListener('DOMContentLoaded', () => {
+    updateTime();
+    setInterval(updateTime, 1000); // Update every second
+});
+
+
         // Previous JavaScript remains the same
         // Add new function for dropdown toggle
         function toggleDropdown() {
@@ -1053,357 +1204,9 @@
         document.querySelector('.logout-dropdown').addEventListener('click', function(event) {
             event.stopPropagation();
         });
+ 
+
     </script>
-    
-   
-    
-    
-    <script>
-        // Clock functionality
-        function updateClock() {
-            const now = new Date();
-            const timeElement = document.getElementById('clock');
-            const dateElement = document.getElementById('date');
-            
-            // Update time
-            timeElement.textContent = now.toLocaleTimeString('en-US', { 
-                hour12: false,
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            
-            // Update date
-            dateElement.textContent = now.toLocaleDateString('en-US', { 
-                weekday: 'long',
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-        }
-
-        // Update clock every second
-        setInterval(updateClock, 1000);
-        updateClock(); // Initial call
-
-        // Calendar functionality
-        function generateCalendar() {
-            const now = new Date();
-            const currentMonth = now.getMonth();
-            const currentYear = now.getFullYear();
-            const firstDay = new Date(currentYear, currentMonth, 1);
-            const lastDay = new Date(currentYear, currentMonth + 1, 0);
-            
-            const calendarGrid = document.getElementById('calendar-grid');
-            const currentMonthElement = document.getElementById('current-month');
-            
-            // Set current month/year in header
-            currentMonthElement.textContent = now.toLocaleDateString('en-US', { 
-                month: 'long',
-                year: 'numeric'
-            });
-            
-            // Add weekday headers
-            const weekdays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            weekdays.forEach(day => {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day';
-                dayElement.textContent = day;
-                calendarGrid.appendChild(dayElement);
-            });
-            
-            // Add blank days for start of month
-            for (let i = 0; i < firstDay.getDay(); i++) {
-                const blankDay = document.createElement('div');
-                blankDay.className = 'calendar-day';
-                calendarGrid.appendChild(blankDay);
-            }
-            
-            // Add days of month
-            for (let day = 1; day <= lastDay.getDate(); day++) {
-                const dayElement = document.createElement('div');
-                dayElement.className = 'calendar-day';
-                if (day === now.getDate()) {
-                    dayElement.className += ' today';
-                }
-                dayElement.textContent = day;
-                calendarGrid.appendChild(dayElement);
-            }
-        }
-
-        // Generate calendar on load
-        generateCalendar();
-
-        // Task checkbox functionality
-        document.querySelectorAll('.task-checkbox').forEach(checkbox => {
-            checkbox.addEventListener('click', () => {
-                checkbox.classList.toggle('checked');
-                const taskTime = checkbox.nextElementSibling.querySelector('.task-time');
-                if (checkbox.classList.contains('checked')) {
-                    taskTime.textContent = 'Completed';
-                }
-            });
-        });
-    </script>
-    
-     <style>
-        :root {
-            --primary-color: #006093;
-            --secondary-color: #f8f9fa;
-            --accent-color: #ff6b6b;
-            --text-color: #333;
-            --border-color: #e0e0e0;
-        }
-
-       
-   
-
-        .dashboard-container {
-            padding: 2rem;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Welcome Section */
-        .welcome-section {
-            background: linear-gradient(135deg, var(--primary-color), #0056b3);
-            color: white;
-            padding: 2rem;
-            border-radius: 15px;
-            margin-bottom: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .welcome-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .welcome-section h1 {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .welcome-section p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-
-        /* Clock Widget */
-        .clock-widget {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            margin-bottom: 1.5rem;
-        }
-
-        .time {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
-        }
-
-        .date {
-            color: #666;
-            font-size: 1.1rem;
-        }
-
-        /* Dashboard Grid */
-        .dashboard-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
-        }
-
-        /* Calendar Widget */
-        .calendar-widget {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .calendar-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            text-align: center;
-        }
-
-        .calendar-day {
-            padding: 0.5rem;
-            border-radius: 5px;
-        }
-
-        .calendar-day.today {
-            background-color: var(--primary-color);
-            color: white;
-        }
-
-        /* Tasks Widget */
-        .tasks-widget {
-            background: white;
-            padding: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-
-        .tasks-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .task-list {
-            list-style: none;
-        }
-
-        .task-item {
-            display: flex;
-            align-items: center;
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .task-item:last-child {
-            border-bottom: none;
-        }
-
-        .task-checkbox {
-            margin-right: 1rem;
-            width: 20px;
-            height: 20px;
-            border-radius: 4px;
-            border: 2px solid var(--border-color);
-            cursor: pointer;
-        }
-
-        .task-checkbox.checked {
-            background-color: var(--primary-color);
-            border-color: var(--primary-color);
-            position: relative;
-        }
-
-        .task-checkbox.checked::after {
-            content: '';
-            color: white;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        .task-content {
-            flex: 1;
-        }
-
-        .task-title {
-            margin-bottom: 0.25rem;
-            font-weight: 500;
-        }
-
-        .task-time {
-            font-size: 0.875rem;
-            color: #666;
-        }
-
-       
-
-            .welcome-section {
-                padding: 1.5rem;
-            }
-
-            .welcome-section h1 {
-                font-size: 1.5rem;
-            }
-
-            .time {
-                font-size: 2rem;
-            }
-        }
-        
-          .attempts-table {
-            width: 100%;
-            border-collapse: collapse;
-            background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
-        }
-
-        .attempts-table thead {
-            background: #071952;
-            color: white;
-        }
-
-        .attempts-table th {
-            padding: 15px 20px;
-            text-align: left;
-            font-weight: 500;
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-
-        .attempts-table td {
-            padding: 12px 20px;
-            border-bottom: 1px solid #e0e0e0;
-            font-size: 14px;
-            color: #333;
-        }
-
-        .attempts-table tbody tr:hover {
-            background-color: #f5f5f5;
-            transition: background-color 0.2s ease;
-        }
-
-        .attempts-table tbody tr:last-child td {
-            border-bottom: none;
-        }
-
-        /* Score column styling */
-        .attempts-table td:nth-child(2) {
-            font-weight: 600;
-            color: #071952;
-        }
-
-        /* Date column styling */
-        .attempts-table td:last-child {
-            color: #666;
-        }
-
-        /* Responsive styles */
-        @media (max-width: 768px) {
-            .attempts-table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-
-            .attempts-table th, 
-            .attempts-table td {
-                padding: 12px 15px;
-            }
-
-            .attempts-table thead {
-                display: table-header-group;
-            }
-        }
-        
-    </style>
     
 </body>
 </html>

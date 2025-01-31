@@ -910,25 +910,25 @@
             <div class="section">
                 <h3 class="section-title">Main</h3>
                 <ul class="nav-links">
-                    <li><a href="{{ url_for('dashboard') }}" class="nav-link">
+                     <li><a href="{{ url_for('dashboard') }}" class="nav-link">
                         <i class="fas fa-home"></i>
                         <span>Dashboard</span>
                     </a></li>
+                    <li><a href="{{ url_for('task') }}" class="nav-link">
+                        <i class="fas fa-calendar"></i>
+                        <span>Tasks</span>
+                    </a></li>
                     <li><a href="{{ url_for('user_home') }}" class="nav-link">
                         <i class="fas fa-book-open"></i>
-                        <span>My Courses</span>
+                        <span>My Learnings</span>
                     </a></li>
                      <li><a href="{{ url_for('papers') }}" class="nav-link">
                         <i class="fas fa-graduation-cap"></i>
                         <span>Exam Practice</span>
                     </a></li>
-                    <li><a href="{{ url_for('papers') }}" class="nav-link">
+                    <li><a href="{{ url_for('pastpapers') }}" class="nav-link">
                         <i class="fas fa-graduation-cap"></i>
                         <span>Past Papers</span>
-                    </a></li>
-                    <li><a href="{{ url_for('attempts') }}" class="nav-link">
-                        <i class="fas fa-calendar"></i>
-                        <span>Past Attempts</span>
                     </a></li>
                 </ul>
             </div>
@@ -944,6 +944,10 @@
                     <li><a href="#" class="nav-link">
                         <i class="fas fa-tasks"></i>
                         <span>Assignments</span>
+                    </a></li>
+                    <li><a  href="{{ url_for('attempts') }}" class="nav-link">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Progress</span>
                     </a></li>
                     
                     <li><a href="#" class="nav-link">
@@ -1001,7 +1005,7 @@
         </div>
         
         
-        <h3>Available Past Papers</h3>
+        <h3>Available Exams</h3>
         <div class="exam-catalog">
         {% if exams %}
             {% for exam in exams %}

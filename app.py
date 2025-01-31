@@ -590,6 +590,34 @@ def check_gemini():
         }), 500
 
 
+@app.route("/pastpapers")
+@login_required
+def pastpapers():
+    # Get all past attempts by the current user
+    # Define today's and tomorrow's dates
+    today = datetime.now().date()
+    tomorrow = today + timedelta(days=1)
+    
+    # Filter To-Do items by date
+    todos = ToDo.query.filter(
+        ToDo.user_id == current_user.id,
+        ToDo.date.in_([today, tomorrow])  # Filter for today and tomorrow
+    ).order_by(ToDo.date.asc()).all()
+    
+    print(todos)
+    # Get the current user's student class
+    user_class = current_user.student_class
+    print(user_class)
+   
+    # Fetch exams mapped to the user's student class
+    exams = db.session.query(Exam).join(ExamMapping).filter(ExamMapping.class_name == user_class).all()
+    
+    learnings = db.session.query(Learning).join(LearningsMapping).filter(LearningsMapping.class_name == user_class).all()
+    
+    return render_template("pastpapers.html", exams=exams, attempts=attempts, learnings=learnings, todos=todos)
+
+
+
 @app.route('/add_todo', methods=['POST'])
 @login_required
 def add_todo():

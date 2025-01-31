@@ -830,7 +830,7 @@
      <div class="left-section">
         <i class="fas fa-bars menu-trigger" onclick="toggleMobileMenu()"></i>
             <div class="logo-section">
-                <img src="static/logo2.png" alt="Logo">
+                <a href="{{ url_for('dashboard') }}"><img src="static/logo2.png"  alt="Logo"> </a>
                 <h2>Backbench</h2>
             </div>
      
@@ -860,7 +860,7 @@
     <div class="sidebar" id="sidebar">
         <!-- Logo Section -->
         <div class="logo-container">
-            <img src="static/logo2.png" alt="Logo">
+            <a href="{{ url_for('dashboard') }}"><img src="static/logo2.png"  alt="Logo"> </a>
             <h2>Backbench</h2>
         </div>
 
@@ -891,7 +891,7 @@
                         <i class="fas fa-graduation-cap"></i>
                         <span>Exam Practice</span>
                     </a></li>
-                    <li><a href="{{ url_for('papers') }}" class="nav-link">
+                    <li><a href="{{ url_for('pastpapers') }}" class="nav-link">
                         <i class="fas fa-graduation-cap"></i>
                         <span>Past Papers</span>
                     </a></li>

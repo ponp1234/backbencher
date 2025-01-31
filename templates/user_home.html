@@ -865,7 +865,7 @@
      <div class="left-section">
         <i class="fas fa-bars menu-trigger" onclick="toggleMobileMenu()"></i>
             <div class="logo-section">
-                <a href="{{ url_for('home') }}"><img src="static/logo2.png"  alt="Logo"> </a>
+               <a href="{{ url_for('dashboard') }}"><img src="static/logo2.png"  alt="Logo"> </a>
                 <h2>Backbench</h2>
             </div>
      
@@ -895,7 +895,7 @@
     <div class="sidebar" id="sidebar">
         <!-- Logo Section -->
         <div class="logo-container">
-            <a href="{{ url_for('user_home') }}"><img src="static/logo2.png"  alt="Logo"> </a>
+            <a href="{{ url_for('dashboard') }}"><img src="static/logo2.png"  alt="Logo"> </a>
             <h2>Backbench</h2>
         </div>
 
@@ -910,25 +910,25 @@
             <div class="section">
                 <h3 class="section-title">Main</h3>
                 <ul class="nav-links">
-                    <li><a href="{{ url_for('dashboard') }}" class="nav-link">
+                      <li><a href="{{ url_for('dashboard') }}" class="nav-link">
                         <i class="fas fa-home"></i>
                         <span>Dashboard</span>
                     </a></li>
+                    <li><a href="{{ url_for('task') }}" class="nav-link">
+                        <i class="fas fa-calendar"></i>
+                        <span>Tasks</span>
+                    </a></li>
                     <li><a href="{{ url_for('user_home') }}" class="nav-link">
                         <i class="fas fa-book-open"></i>
-                        <span>My Courses</span>
+                        <span>My Learnings</span>
                     </a></li>
                      <li><a href="{{ url_for('papers') }}" class="nav-link">
                         <i class="fas fa-graduation-cap"></i>
                         <span>Exam Practice</span>
                     </a></li>
-                    <li><a href="{{ url_for('papers') }}" class="nav-link">
+                    <li><a href="{{ url_for('pastpapers') }}" class="nav-link">
                         <i class="fas fa-graduation-cap"></i>
                         <span>Past Papers</span>
-                    </a></li>
-                    <li><a href="{{ url_for('attempts') }}" class="nav-link">
-                        <i class="fas fa-calendar"></i>
-                        <span>Past Attempts</span>
                     </a></li>
                 </ul>
             </div>
@@ -945,7 +945,10 @@
                         <i class="fas fa-tasks"></i>
                         <span>Assignments</span>
                     </a></li>
-                    
+                    <li><a  href="{{ url_for('attempts') }}" class="nav-link">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Progress</span>
+                    </a></li>
                     <li><a href="#" class="nav-link">
                         <i class="fas fa-trophy"></i>
                         <span>Achievements</span>
