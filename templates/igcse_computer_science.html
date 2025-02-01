@@ -266,7 +266,11 @@
         </details>
         <details>
             <summary>8. Databases</summary>
-            <a href="#databases" onclick="showTab('databases')">Overview</a>
+            <a href="#databases" onclick="showTab('databases')">Overview</a> 
+                <a href="#databases-st" onclick="showTab('databases-st')">Database tables</a>
+                <a href="#databases-sql" onclick="showTab('databases-sql')">What is SQL</a>
+                <a href="#databases-udb" onclick="showTab('databases-udb')">Uses of Database</a>
+                <a href="#databases-trysql" onclick="showTab('databases-trysql")">Try SQL</a>
         </details>
     </div>
 
@@ -1587,11 +1591,90 @@
     </main>
     
     </div>
-       
-       
-        
-    </div>
+    
+    
+   ---
+    <div id="databases-st" class="tab">
+    
+    <header>
+        <h1>Single Table Databases</h1>
+    </header>
+    <main>
+        <section>
+            <h2>What is a Single Table Database?</h2>
+            <p>A single table database is a simple database that stores all data in one table. Each row represents a record, and each column represents a field.</p>
+            <p>This type of database is useful for small datasets, where all information can fit in one table without redundancy.</p>
+        </section>
 
+        <section>
+            <h2>Structure of a Single Table</h2>
+            <p>A table consists of:</p>
+            <ul>
+                <li><strong>Fields (Columns):</strong> These define the type of data stored (e.g., Name, Age, Email).</li>
+                <li><strong>Records (Rows):</strong> Each row represents a single data entry.</li>
+                <li><strong>Primary Key:</strong> A unique field that identifies each record (e.g., Student ID).</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>Example of a Single Table</h2>
+            <table border="1" cellpadding="8" cellspacing="0">
+                <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Email</th>
+                </tr>
+                <tr>
+                    <td>001</td>
+                    <td>Alice</td>
+                    <td>15</td>
+                    <td>alice@example.com</td>
+                </tr>
+                <tr>
+                    <td>002</td>
+                    <td>Bob</td>
+                    <td>16</td>
+                    <td>bob@example.com</td>
+                </tr>
+                <tr>
+                    <td>003</td>
+                    <td>Charlie</td>
+                    <td>15</td>
+                    <td>charlie@example.com</td>
+                </tr>
+            </table>
+        </section>
+
+        <section>
+            <h2>Problem-Solving Examples</h2>
+            <div class="example-box">
+                <h3>Example 1: Finding a Student</h3>
+                <p><strong>Problem:</strong> A teacher needs to find the email of the student named Bob. How can they do this?</p>
+                <p><strong>Solution:</strong></p>
+                <ul>
+                    <li>Look at the "Name" column to find "Bob".</li>
+                    <li>Check the corresponding "Email" field.</li>
+                </ul>
+                <p><strong>Answer:</strong> Bob's email is <em>bob@example.com</em>.</p>
+            </div>
+            <div class="example-box">
+                <h3>Example 2: Sorting Data</h3>
+                <p><strong>Problem:</strong> The school wants to sort students by age. How can they do this?</p>
+                <p><strong>Solution:</strong></p>
+                <ul>
+                    <li>Sort the "Age" column in ascending order.</li>
+                    <li>The youngest students will appear first.</li>
+                </ul>
+                <p><strong>Answer:</strong> The sorted order will be Alice (15), Charlie (15), Bob (16).</p>
+            </div>
+        </section>
+    </main>
+  <div/>
+              
+    </div>
+    
+    
     <script>
         function showTab(tabId) {
             const tabs = document.querySelectorAll('.tab');
