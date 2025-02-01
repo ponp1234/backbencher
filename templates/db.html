@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SQL Query Interface</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f5f5f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .query-input {
+            width: 100%;
+            min-height: 150px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+            resize: vertical;
+        }
+        .button {
+            background-color: #4a69bd;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .button:hover {
+            background-color: #3c55a5;
+        }
+        .results-section {
+            margin-top: 20px;
+        }
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .results-table th, .results-table td {
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        .results-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+        }
+        .error-message, .success-message {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+            display: none;
+        }
+        .error-message {
+            color: #dc3545;
+            background-color: #f8d7da;
+        }
+        .success-message {
+            color: #28a745;
+            background-color: #d4edda;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>SQL Query Interface</h1>
+        <textarea id="queryInput" class="query-input">-- Drop the table (cleanup)
+DROP TABLE employees;
+
+-- Create the employees table
+CREATE TABLE employees (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    department VARCHAR(50),
+    salary DECIMAL(10,2),
+    hire_date DATE
+);
+
+-- Insert sample data
+INSERT INTO employees (name, department, salary, hire_date) VALUES
+('Alice Johnson', 'HR', 55000.00, '2021-03-15'),
+('Bob Smith', 'Engineering', 75000.00, '2019-07-10'),
+('Charlie Lee', 'Marketing', 62000.00, '2020-08-25'),
+('David Brown', 'Engineering', 80000.00, '2018-05-20'),
+('Emma Wilson', 'HR', 60000.00, '2022-01-12');
+
+-- Select all records
+SELECT * FROM employees;
+
+-- Select specific columns
+SELECT name, department, salary FROM employees;
+
+-- Select with WHERE clause
+SELECT * FROM employees WHERE department = 'Engineering';
+SELECT * FROM employees WHERE salary > 60000;
+SELECT * FROM employees WHERE hire_date BETWEEN '2020-01-01' AND '2022-12-31';
+
+-- Select with multiple conditions
+SELECT * FROM employees WHERE department = 'HR' AND salary > 55000;
+SELECT * FROM employees WHERE department = 'Engineering' OR salary > 70000;
+
+-- Select with pattern matching (LIKE)
+SELECT * FROM employees WHERE name LIKE 'A%';  -- Names starting with 'A'
+SELECT * FROM employees WHERE name LIKE '%son'; -- Names ending with 'son'
+
+-- Order by queries
+SELECT * FROM employees ORDER BY salary ASC;
+SELECT * FROM employees ORDER BY salary DESC;
+SELECT * FROM employees ORDER BY department ASC, salary DESC;
+
+-- Using LIMIT and OFFSET
+SELECT * FROM employees ORDER BY salary DESC LIMIT 3;
+SELECT * FROM employees ORDER BY hire_date ASC LIMIT 2 OFFSET 1;
+
+-- Aggregation queries
+SELECT department, COUNT(*) AS total_employees FROM employees GROUP BY department;
+SELECT department, AVG(salary) AS avg_salary FROM employees GROUP BY department;
+SELECT department, MAX(salary) AS highest_salary FROM employees GROUP BY department;
+
+-- Drop the table (cleanup)
+DROP TABLE employees;</textarea>
+        <button onclick="executeQueries()" class="button">Run Queries</button>
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+        <div class="results-section" id="resultsSection"></div>
+    </div>
+    <script>
+        function executeQueries() {
+            const queryText = document.getElementById('queryInput').value;
+            const queries = queryText.split(';').map(q => q.trim()).filter(q => q);
+            const errorMessage = document.getElementById('errorMessage');
+            const successMessage = document.getElementById('successMessage');
+            const resultsSection = document.getElementById('resultsSection');
+            
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+            resultsSection.innerHTML = '';
+            
+            if (queries.length === 0) {
+                errorMessage.textContent = 'Please enter at least one SQL query.';
+                errorMessage.style.display = 'block';
+                return;
+            }
+            
+            fetch('/execute_query', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ queries })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    errorMessage.textContent = data.error;
+                    errorMessage.style.display = 'block';
+                } else {
+                    successMessage.textContent = 'Queries executed successfully';
+                    successMessage.style.display = 'block';
+                    displayResults(data.queries_results);
+                }
+            })
+            .catch(error => {
+                errorMessage.textContent = 'Error executing query: ' + error.message;
+                errorMessage.style.display = 'block';
+            });
+        }
+
+        function displayResults(results) {
+            const resultsSection = document.getElementById('resultsSection');
+            resultsSection.innerHTML = '';
+            
+            results.forEach(queryResult => {
+                const queryBlock = document.createElement('div');
+                queryBlock.innerHTML = `<h3>Query: ${queryResult.query}</h3>`;
+                
+                if (queryResult.results && queryResult.results.length > 0) {
+                    let tableHtml = '<table class="results-table">';
+                    tableHtml += '<tr>';
+                    Object.keys(queryResult.results[0]).forEach(key => {
+                        tableHtml += `<th>${key}</th>`;
+                    });
+                    tableHtml += '</tr>';
+                    
+                    queryResult.results.forEach(row => {
+                        tableHtml += '<tr>';
+                        Object.values(row).forEach(value => {
+                            tableHtml += `<td>${value}</td>`;
+                        });
+                        tableHtml += '</tr>';
+                    });
+                    tableHtml += '</table>';
+                    queryBlock.innerHTML += tableHtml;
+                } else {
+                    queryBlock.innerHTML += '<p>Exceuted</p>';
+                }
+                resultsSection.appendChild(queryBlock);
+            });
+        }
+    </script>
+</body>
+</html>

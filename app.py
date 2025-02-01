@@ -5,6 +5,9 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 from datetime import datetime
 from datetime import datetime, timedelta
+from sqlalchemy import text, exc
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
 
 
 app = Flask(__name__)
@@ -14,6 +17,12 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
+
+# Separate database for this API
+EXECUTE_QUERY_DB_URI = 'sqlite:///dummy.db'  # Replace with API-specific DB URL
+execute_query_engine = create_engine(EXECUTE_QUERY_DB_URI, pool_pre_ping=True)
+SessionLocal = sessionmaker(bind=execute_query_engine)
+
 
 
 
@@ -448,6 +457,31 @@ def papers():
     
     return render_template("papers.html", exams=exams, attempts=attempts, learnings=learnings, todos=todos)
 
+@app.route("/pastpapers")
+@login_required
+def pastpapers():
+    # Get all past attempts by the current user
+    # Define today's and tomorrow's dates
+    today = datetime.now().date()
+    tomorrow = today + timedelta(days=1)
+    
+    # Filter To-Do items by date
+    todos = ToDo.query.filter(
+        ToDo.user_id == current_user.id,
+        ToDo.date.in_([today, tomorrow])  # Filter for today and tomorrow
+    ).order_by(ToDo.date.asc()).all()
+    
+    print(todos)
+    # Get the current user's student class
+    user_class = current_user.student_class
+    print(user_class)
+   
+    # Fetch exams mapped to the user's student class
+    exams = db.session.query(Exam).join(ExamMapping).filter(ExamMapping.class_name == user_class).all()
+    
+    learnings = db.session.query(Learning).join(LearningsMapping).filter(LearningsMapping.class_name == user_class).all()
+    
+    return render_template("pastpapers.html", exams=exams, attempts=attempts, learnings=learnings, todos=todos)
 
 
 @app.route("/dashboard")
@@ -590,34 +624,6 @@ def check_gemini():
         }), 500
 
 
-@app.route("/pastpapers")
-@login_required
-def pastpapers():
-    # Get all past attempts by the current user
-    # Define today's and tomorrow's dates
-    today = datetime.now().date()
-    tomorrow = today + timedelta(days=1)
-    
-    # Filter To-Do items by date
-    todos = ToDo.query.filter(
-        ToDo.user_id == current_user.id,
-        ToDo.date.in_([today, tomorrow])  # Filter for today and tomorrow
-    ).order_by(ToDo.date.asc()).all()
-    
-    print(todos)
-    # Get the current user's student class
-    user_class = current_user.student_class
-    print(user_class)
-   
-    # Fetch exams mapped to the user's student class
-    exams = db.session.query(Exam).join(ExamMapping).filter(ExamMapping.class_name == user_class).all()
-    
-    learnings = db.session.query(Learning).join(LearningsMapping).filter(LearningsMapping.class_name == user_class).all()
-    
-    return render_template("pastpapers.html", exams=exams, attempts=attempts, learnings=learnings, todos=todos)
-
-
-
 @app.route('/add_todo', methods=['POST'])
 @login_required
 def add_todo():
@@ -690,8 +696,55 @@ def change_class():
 def calc():
     return render_template("calc.html")
 
+
+@app.route('/dbq')
+@login_required
+def dbq():
+    return render_template('dbq.html')
+
+
+
+@app.route('/execute_query', methods=['POST'])
+@login_required
+def execute_query():
+    session = SessionLocal()  # Create a new session for this API request
+    try:
+        data = request.get_json()
+        queries = data.get('queries', [])  # Expecting a list of queries
+
+        if not queries or not isinstance(queries, list):
+            return jsonify({'error': 'No valid queries provided'})
+
+        # Prevent destructive queries
+        for query in queries:
+            query_lower = query.lower()
+            if any(word in query_lower for word in ['alter']):
+                return jsonify({'error': 'Data modification queries are not allowed'})
+
+        print("Executing queries...")
+
+        results = []
+        for query in queries:
+            result = session.execute(text(query))
+            if result.returns_rows:
+                rows = [dict(row) for row in result.mappings()]
+                results.append({'query': query, 'results': rows})
+            else:
+                results.append({'query': query, 'message': 'Query executed successfully'})
+
+        session.close()  # Close session after execution
+        return jsonify({'queries_results': results})
+
+    except Exception as e:
+        session.rollback()  # Rollback in case of failure
+        return jsonify({'error': str(e)})
+
+    finally:
+        session.close()  # Ensure session is closed
+        
 if __name__ == '__main__':
     with app.app_context():
+        
         db.create_all()  # Creates database tables if they don't exist
 
     context = (r'/home/bb/exam/ssl/bb.pem', r'/home/bb/exam/ssl/bb.key')
