@@ -956,13 +956,14 @@
             <div class="section">
                 <h3 class="section-title">Support</h3>
                 <ul class="nav-links">
-                    <li><a href="#" class="nav-link">
-                        <i class="fas fa-question-circle"></i>
-                        <span>Help Center</span>
-                    </a></li>
-                    <li><a href="#" class="nav-link">
+                   
+                    <li><a href="{{ url_for('settings') }}" class="nav-link">
                         <i class="fas fa-cog"></i>
                         <span>Settings</span>
+                    </a></li>
+                     <li><a href="{{ url_for('logout') }}" class="nav-link">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Logout</span>
                     </a></li>
                 </ul>
             </div>
