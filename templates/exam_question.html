@@ -16,7 +16,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #25978c 0%, #2575fc 100%);
+            background: linear-gradient(135deg, white 0%, #EEF5FF 100%);
             min-height: 100vh;
             display: flex;
         }
@@ -24,7 +24,7 @@
         /* Sidebar Styles */
         .sidebar {
             width: 250px;
-            background: #006093;
+            background: #071952;
             backdrop-filter: blur(10px);
             padding: 20px;
             border-right: 1px solid rgba(255, 255, 255, 0.2);
@@ -96,6 +96,7 @@
             display: flex;
             justify-content: center;
             padding: 20px;
+            
         }
 
         .question-box {
@@ -242,8 +243,7 @@
         <div class="sidebar-logo">
 
         </div>
-        <a href="{{ url_for('user_home') }}">Classroom</a>
-        <a href="{{ url_for('logout') }}">Bye</a>
+        <a href="{{ url_for('papers') }}">End Exam</a>
     </div>
 
     <!-- Top Bar with Exam Title, Question Number, Progress Bar, and Current Time -->
