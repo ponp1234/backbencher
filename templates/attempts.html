@@ -821,7 +821,36 @@
             background: #ff5252;
         }
 
-        
+        .table-container {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.pagination {
+    margin-top: 15px;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.pagination button {
+    padding: 6px 12px;
+    background-color: #071952;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.pagination button:hover {
+    background-color: #004080;
+}
+
+.pagination button.active {
+    background-color: #ff6b6b;
+}
+
     </style>
 </head>
 <body>
@@ -937,27 +966,30 @@
         
   
         
-   <h2>Your Past Exam Attempts</h2>
-        <table class="attempts-table">
-            <thead>
-                <tr>
-                    <th>Exam</th>
-                    <th>Score</th>
-                    <th>Total Questions</th>
-                    <th>Date</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for attempt in attempts %}
-                <tr>
-                    <td>{{ attempt.exam.title }}</td>
-                    <td>{{ attempt.score }}</td>
-                    <td>{{ attempt.total_questions }}</td>
-                    <td>{{ attempt.attempt_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+ <h2>Your Past Exam Attempts</h2>
+<div class="table-container">
+    <table class="attempts-table" id="paginatedTable">
+        <thead>
+            <tr>
+                <th>Exam</th>
+                <th>Score</th>
+                <th>Total Questions</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attempt in attempts %}
+            <tr>
+                <td>{{ attempt.exam.title }}</td>
+                <td>{{ attempt.score }}</td>
+                <td>{{ attempt.total_questions }}</td>
+                <td>{{ attempt.attempt_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="pagination" id="pagination"></div>
+</div>
    
       
         <div style="margin-top: 20px; font-size: 0.9em;">
