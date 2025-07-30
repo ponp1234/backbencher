@@ -826,6 +826,59 @@
             background: #ff5252;
         }
 
+        .styled-form {
+    background: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin-top: 20px;
+    border-left: 5px solid #071952;
+}
+
+.styled-form .form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+.styled-form label {
+    font-weight: 600;
+    color: #071952;
+    margin-bottom: 5px;
+}
+
+.styled-form select {
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: 0.3s;
+}
+
+.styled-form select:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
+}
+
+.btn-submit {
+    background: #071952;
+    color: white;
+    border: none;
+    padding: 12px 18px;
+    font-size: 14px;
+    border-radius: 6px;
+    cursor: pointer;
+    width: 100%;
+    transition: background 0.3s ease;
+}
+
+.btn-submit:hover {
+    background: #004080;
+}
+
+
         
     </style>
 </head>
@@ -955,22 +1008,22 @@
             {% endif %}
         {% endwith %}
 
-        <!-- Change Class Form -->
-        <form method="POST" action="{{ url_for('change_class') }}">
-            <div class="form-group">
-                <label for="class">Change Class:</label>
-                <select id="class" name="class" required>
-                    <option value="">Select Class</option>
-                    <option value="IGCSE">IGCSE-9</option>
-                    <option value="IGCSE">IGCSE-10</option>
-                    <option value="Primary 3">Primary 3</option>
-                    <option value="Primary 4">Primary 4</option>
-                    <option value="Primary 5">Primary 5</option>
-                    <option value="Primary 6">Primary 6</option>
-                </select>
-            </div>
-            <button type="submit">Save Changes</button>
-        </form>
+       <!-- Change Class Form (Improved Design) -->
+<form method="POST" action="{{ url_for('change_class') }}" class="styled-form">
+    <div class="form-group">
+        <label for="class">Change Class:</label>
+        <select id="class" name="class" required>
+            <option value="">Select Class</option>
+            <option value="IGCSE-9">IGCSE-9</option>
+            <option value="IGCSE-10">IGCSE-10</option>
+            <option value="Primary 3">Primary 3</option>
+            <option value="Primary 4">Primary 4</option>
+            <option value="Primary 5">Primary 5</option>
+            <option value="Primary 6">Primary 6</option>
+        </select>
+    </div>
+    <button type="submit" class="btn-submit">Save Changes</button>
+</form>
     
     
     </div>
