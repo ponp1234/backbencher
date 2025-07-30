@@ -3,12 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <title>Terms of Service - Backbench</title>
+    <link rel="icon" href="static/logo2.png" type="image/icon type">
+    <style>
+        body {
+            background-color: #f0f2f5;
+            color: #2c3e50;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .header img {
+            width: 220px;
+            height: auto;
+        }
+        .section {
+            background: #fff;
+            max-width: 700px;
+            margin: 40px auto 0 auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            padding: 40px 30px;
+        }
+        h1 {
+            color: #0081c6;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        p, ul, li {
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+        ul {
+            margin-left: 20px;
+        }
+        .back-link {
+            display: block;
+            margin: 30px auto 0 auto;
+            text-align: center;
+        }
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 10px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        footer a {
+            color: #ecf0f1;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Terms of Service</h1>
-    <p>
-        By using Backbench, you agree to use the platform for educational purposes only. All content is provided "as is" without warranty of any kind. The website owner is not responsible for any loss, damage, or consequences resulting from the use of this site or its content. Users are responsible for their own actions and compliance with local laws.
-    </p>
-    <a href="{{ url_for('home') }}">Back to Home</a>
+    <div class="header">
+        <img src="static/logo3.png" alt="Backbench Logo">
+    </div>
+    <div class="section">
+        <h1>Terms of Service</h1>
+        <p>
+            By using Backbench, you agree to the following terms:
+        </p>
+        <ul>
+            <li>Use the platform for educational purposes only.</li>
+            <li>All content is provided "as is" without warranty of any kind.</li>
+            <li>The website owner is not responsible for any loss, damage, or consequences resulting from the use of this site or its content.</li>
+            <li>Users are responsible for their own actions and compliance with local laws.</li>
+            <li>Backbench may update these terms at any time without notice.</li>
+        </ul>
+        <p>
+            In any case, the website owner will not be responsible for any direct, indirect, incidental, or consequential damages arising from the use or inability to use the platform.
+        </p>
+        <a class="back-link" href="{{ url_for('home') }}">&#8592; Back to Home</a>
+    </div>
+    <footer>
+        <div>
+            <a href="{{ url_for('contact') }}">Contact Us</a>
+            <a href="{{ url_for('terms') }}">Terms of Service</a>
+            <a href="{{ url_for('privacy') }}">Privacy Policy</a>
+        </div>
+        <div style="margin-top: 20px; font-size: 0.9em;">
+            <p>&copy; 2025 Backbench. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>

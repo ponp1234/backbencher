@@ -3,12 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <title>Privacy Policy - Backbench</title>
+    <link rel="icon" href="static/logo2.png" type="image/icon type">
+    <style>
+        body {
+            background-color: #f0f2f5;
+            color: #2c3e50;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .header img {
+            width: 220px;
+            height: auto;
+        }
+        .section {
+            background: #fff;
+            max-width: 700px;
+            margin: 40px auto 0 auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            padding: 40px 30px;
+        }
+        h1 {
+            color: #0081c6;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        p, ul, li {
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+        ul {
+            margin-left: 20px;
+        }
+        .back-link {
+            display: block;
+            margin: 30px auto 0 auto;
+            text-align: center;
+        }
+        footer {
+            background: #2c3e50;
+            color: white;
+            padding: 20px 10px;
+            text-align: center;
+            margin-top: 40px;
+        }
+        footer a {
+            color: #ecf0f1;
+            text-decoration: none;
+            margin: 0 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Privacy Policy</h1>
-    <p>
-        Backbench respects your privacy. We collect only the information necessary to provide our services and do not share your personal data with third parties except as required by law. By using this site, you consent to our privacy practices. The website owner is not responsible for any misuse of information by users or third parties.
-    </p>
-    <a href="{{ url_for('home') }}">Back to Home</a>
+    <div class="header">
+        <img src="static/logo3.png" alt="Backbench Logo">
+    </div>
+    <div class="section">
+        <h1>Privacy Policy</h1>
+        <p>
+            Backbench respects your privacy. We collect only the information necessary to provide our services and do not share your personal data with third parties except as required by law.
+        </p>
+        <ul>
+            <li>We may collect your name, email, and usage data to improve your experience.</li>
+            <li>Your data is stored securely and is not sold or shared for marketing.</li>
+            <li>By using this site, you consent to our privacy practices.</li>
+            <li>The website owner is not responsible for any misuse of information by users or third parties.</li>
+        </ul>
+        <p>
+            For any privacy concerns, please contact us at <a href="mailto:support@backbench.com">support@backbench.com</a>.
+        </p>
+        <a class="back-link" href="{{ url_for('home') }}">&#8592; Back to Home</a>
+    </div>
+    <footer>
+        <div>
+            <a href="{{ url_for('contact') }}">Contact Us</a>
+            <a href="{{ url_for('terms') }}">Terms of Service</a>
+            <a href="{{ url_for('privacy') }}">Privacy Policy</a>
+        </div>
+        <div style="margin-top: 20px; font-size: 0.9em;">
+            <p>&copy; 2025 Backbench. All rights reserved.</p>
+        </div>
+    </footer>
 </body>
 </html>
