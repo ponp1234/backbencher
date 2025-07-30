@@ -1365,74 +1365,64 @@
             }
         }
         
-          .attempts-table {
+        /* Enhanced Table */
+        .attempts-table {
             width: 100%;
             border-collapse: collapse;
             background: white;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            margin-top: 20px;
         }
 
         .attempts-table thead {
-            background: #071952;
+            background: linear-gradient(135deg, #071952 0%, #004080 100%);
             color: white;
         }
 
         .attempts-table th {
-            padding: 15px 20px;
+            padding: 1.2rem 1.5rem;
             text-align: left;
-            font-weight: 500;
-            font-size: 14px;
+            font-weight: 600;
+            font-size: 0.95rem;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        .attempts-table th::after {
+            content: '';
+            position: absolute;
+            right: 0;
+            top: 25%;
+            height: 50%;
+            width: 1px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .attempts-table th:last-child::after {
+            display: none;
         }
 
         .attempts-table td {
-            padding: 12px 20px;
-            border-bottom: 1px solid #e0e0e0;
-            font-size: 14px;
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.95rem;
             color: #333;
+            vertical-align: middle;
+        }
+
+        .attempts-table tbody tr {
+            transition: all 0.3s ease;
         }
 
         .attempts-table tbody tr:hover {
-            background-color: #f5f5f5;
-            transition: background-color 0.2s ease;
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f4ff 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
         .attempts-table tbody tr:last-child td {
             border-bottom: none;
         }
 
-        /* Score column styling */
-        .attempts-table td:nth-child(2) {
-            font-weight: 600;
-            color: #071952;
-        }
-
-        /* Date column styling */
-        .attempts-table td:last-child {
-            color: #666;
-        }
-
-        /* Responsive styles */
-        @media (max-width: 768px) {
-            .attempts-table {
-                display: block;
-                overflow-x: auto;
-                white-space: nowrap;
-            }
-
-            .attempts-table th, 
-            .attempts-table td {
-                padding: 12px 15px;
-            }
-
-            .attempts-table thead {
-                display: table-header-group;
-            }
-        }
-        
     </style>
     
 </body>
