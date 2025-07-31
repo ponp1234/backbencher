@@ -985,6 +985,27 @@
             </div>
         </div>
    
+
+        <!-- Tasks Widget -->
+        <div class="tasks-widget">
+            <div class="tasks-header">
+                <h2>🎯 Today's Super Tasks!</h2>
+                <a href="{{ url_for('task') }}">
+                    <i class="fas fa-tasks"></i>
+                </a>
+            </div>
+            <ul class="task-list">
+                {% for todo in todos %}
+                <li class="task-item">
+                    <div class="task-checkbox"></div>
+                    <div class="task-content">
+                        <div class="task-title">{{ todo.task }}</div>
+                        <div class="task-time">Due on {{ todo.date }} 📅</div>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
       
         <div style="margin-top: 20px; font-size: 0.9em;">
         <p>&copy; 2025 Backbench. All rights reserved.</p>
@@ -1299,7 +1320,7 @@
             font-weight: 600;
         }
 
-        /* Tasks Widget */
+       /* Tasks Widget */
         .tasks-widget {
             background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
             padding: 2rem;
