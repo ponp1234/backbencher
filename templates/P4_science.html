@@ -1495,8 +1495,16 @@
             totalPoints += 100;
             completedTopics++;
             
+            // Update dashboard
             updateDashboard();
             closeSlideModal();
+            
+            // Send completion data to server
+            fetch('/update_learning_progress', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ topic: currentTopic })
+            });
             
             // Show completion message
             alert(`🎉 Congratulations! You've completed ${slideContent[currentTopic].title} and earned 100 points!`);
@@ -1536,14 +1544,6 @@
         }
 
         function updateDashboard() {
-            document.getElementById('points-display').textContent = `${totalPoints} Points`;
-            document.getElementById('topics-display').textContent = `${completedTopics}/6 Topics`;
-            
-            const progressPercentage = Math.round((completedTopics / 6) * 100);
-            document.getElementById('progress-percentage').textContent = `${progressPercentage}%`;
-            document.getElementById('overall-progress').style.width = `${progressPercentage}%`;
-        }
-
         // Keyboard navigation
         document.addEventListener('keydown', function(e) {
             const modal = document.getElementById('slide-modal');
