@@ -466,13 +466,15 @@ def user_home():
             duedate = today + timedelta(days=7)
     else:
         duedate = today + timedelta(days=7)
+    
+    print(duedate)
 
     # Filter To-Do items by date <= duedate
     todos = ToDo.query.filter(
         ToDo.user_id == current_user.id,
         ToDo.date <= duedate
     ).order_by(ToDo.date.asc()).all()
-    
+
     # Get the current user's student class
     user_class = current_user.student_class
     print(user_class)
