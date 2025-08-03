@@ -1544,21 +1544,21 @@
         }
 
         function updateDashboard() {
-        // Keyboard navigation
+            // Update points and topics display
+            document.getElementById('points-display').textContent = `${totalPoints} Points`;
+            document.getElementById('topics-display').textContent = `${completedTopics}/6 Topics`;
+            // Update progress bar
+            const percent = Math.round((completedTopics / 6) * 100);
+            document.getElementById('progress-percentage').textContent = `${percent}%`;
+            document.getElementById('overall-progress').style.width = `${percent}%`;
+        }
+
+        // Keyboard navigation (should only be registered once)
         document.addEventListener('keydown', function(e) {
             const modal = document.getElementById('slide-modal');
-            if (modal.style.display === 'flex') {
+            if (modal && modal.style.display === 'flex') {
                 if (e.key === 'ArrowLeft') {
                     previousSlide();
-                } else if (e.key === 'ArrowRight') {
-                    nextSlide();
-                } else if (e.key === 'Escape') {
-                    closeSlideModal();
-                }
-            }
-        });
-
- 
     </script>
 </body>
 </html>
