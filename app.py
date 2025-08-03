@@ -543,18 +543,18 @@ def pastpapers():
 @app.route("/dashboard")
 @login_required
 def dashboard():
-    # Get all past attempts by the current user
-    # Define today's and tomorrow's dates
+ # Get duedate from query params, default to 7 days from today
+    duedate_str = request.args.get('duedate')
     today = datetime.now().date()
-    tomorrow = today + timedelta(days=1)
+    if duedate_str:
+        try:
+            duedate = datetime.strptime(duedate_str, "%Y-%m-%d").date()
+        except ValueError:
+            duedate = today + timedelta(days=70)
+    else:
+        duedate = today + timedelta(days=70)
     
-    # Filter To-Do items by date
-    todos = ToDo.query.filter(
-        ToDo.user_id == current_user.id,
-        ToDo.date.in_([today, tomorrow])  # Filter for today and tomorrow
-    ).order_by(ToDo.date.asc()).all()
-    
-    print(todos)
+    print(duedate)
     # Get the current user's student class
     user_class = current_user.student_class
     print(user_class)
