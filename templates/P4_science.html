@@ -1,1467 +1,1633 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>P4 Science - Backbench</title>
+    <title>Diversity - P4 Science</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <style>
-        body {
-            font-family: 'Segoe UI', Arial, sans-serif;
-            background: #f1f8ffff;
-            margin: 0;
-            padding: 0;
+        * {
+            box-sizing: border-box;
         }
-        .main-content {
-            margin-left: 0;
-            padding: 0;
-            min-height: 100vh;
-            background: #f1f8ffff;
+        
+        body { 
+            margin: 0; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; 
+            background: #f1f5f9; 
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: #1f2937;
         }
-        .header-bar {
-            background: linear-gradient(90deg, #0360a5 0%, #0057b8 100%);
-            color: #fff;
-            border-radius: 18px;
-            margin: 32px 32px 24px 32px;
-            padding: 32px 40px 28px 40px;
-            font-size: 2rem;
-            font-weight: 700;
-            box-shadow: 0 4px 24px rgba(3,96,165,0.08);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .header-bar .subtitle {
-            font-size: 1.1rem;
-            font-weight: 400;
-            margin-top: 8px;
-            color: #e3f0fa;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 0 32px 32px 32px;
-        }
-        .stats-row {
-            display: flex;
-            gap: 32px;
-            margin-bottom: 32px;
-        }
-        .stat-card {
-            background: #fff;
-            border-radius: 16px;
-            box-shadow: 0 2px 12px rgba(3,96,165,0.06);
-            padding: 24px 32px;
-            display: flex;
-            align-items: center;
-            gap: 18px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #0360a5;
-        }
-        .stat-card .stat-icon {
-            font-size: 2.2rem;
-            background: #e3f0fa;
-            border-radius: 50%;
-            padding: 10px;
-        }
-        .progress-section {
-            margin-bottom: 32px;
-        }
-        .progress-label {
-            font-weight: 600;
-            color: #0057b8;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .progress-bar {
-            background: #e3f0fa;
-            border-radius: 12px;
-            height: 10px;
-            overflow: hidden;
+        
+        .slide-modal { 
+            width: 100vw; 
+            height: 100vh; 
+            background: #f1f5f9; 
+            display: flex; 
+            align-items: stretch; 
+            justify-content: center; 
+            transition: padding-left 0.3s ease;
             position: relative;
         }
-        .progress-fill {
-            background: linear-gradient(90deg, #0360a5, #0057b8);
-            height: 100%;
-            border-radius: 12px;
-            transition: width 0.5s;
-        }
-        .topics-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-            gap: 28px;
-        }
-        .topic-card {
-            background: #fff;
-            border-radius: 18px;
-            box-shadow: 0 2px 12px rgba(3,96,165,0.06);
-            padding: 32px 28px 28px 28px;
+        
+        .slide-modal.sidebar-open { padding-left: 280px; }
+        
+        .sidebar {
+            width: 280px;
+            background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            padding: 20px 0 0 0;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            transition: box-shadow 0.2s, transform 0.2s;
-            border: 2px solid transparent;
+            gap: 4px;
+            overflow-y: auto;
+            position: fixed;
+            left: -280px;
+            top: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            -webkit-overflow-scrolling: touch;
         }
-        .topic-card:hover {
-            box-shadow: 0 8px 32px rgba(0, 87, 184, 0.13);
-            border-color: #0360a5;
-            transform: translateY(-4px) scale(1.01);
-        }
-        .topic-icon {
-            font-size: 2.5rem;
-            margin-bottom: 12px;
-            color: #0057b8;
-        }
-        .topic-title {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #0360a5;
-            margin-bottom: 6px;
-        }
-        .topic-description {
-            color: #4a5568;
-            font-weight: 500;
-            margin-bottom: 18px;
-            line-height: 1.5;
-        }
-        .start-learning-btn {
-            background: linear-gradient(90deg, #0360a5, #0057b8);
+        
+        .sidebar.open { left: 0; }
+        
+        .menu-toggle {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1001;
+            background: linear-gradient(135deg, #1a2a44, #2c4a7e);
+            color: white;
             border: none;
             border-radius: 10px;
-            padding: 10px 22px;
-            font-weight: 600;
-            color: #fff;
+            padding: 12px 14px;
             cursor: pointer;
-            font-size: 1rem;
-            margin-top: auto;
-            transition: background 0.2s;
-            text-decoration: none;
-            display: inline-block;
+            font-size: 1.3rem;
+            box-shadow: 0 3px 12px rgba(26,42,68,0.3);
+            transition: all 0.3s ease;
+            min-height: 50px;
+            min-width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        .start-learning-btn:hover {
-            background: #0360a5;
+        
+        .menu-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26,42,68,0.4);
         }
-        /* Slide Modal Styles */
-        .slide-modal {
-            position: fixed;
+        
+        .menu-toggle.sidebar-open {
+            left: 16px;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: none;
+        }
+        
+        .subtopic-section {
+            margin-bottom: 16px;
+        }
+        .subtopic-header {
+            background: #e5e7eb;
+            padding: 12px 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #1a2a44;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .subtopic-btn {
+            background: none;
+            border: none;
+            text-align: left;
+            padding: 14px 24px;
+            font-size: 0.95rem;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+            width: 100%;
+            display: block;
+            min-height: 50px;
+            line-height: 1.5;
+        }
+        .subtopic-btn.active, .subtopic-btn:hover {
+            background: #e6f0fa;
+            color: #1a2a44;
+            border-left: 4px solid #2c4a7e;
+            font-weight: 600;
+        }
+        
+        .slide-container { 
+            background: #ffffff; 
+            border-radius: 12px; 
+            width: 100vw; 
+            max-width: none; 
+            height: 95vh; 
+            box-shadow: 0 6px 24px rgba(0,0,0,0.1); 
+            display: flex; 
+            flex-direction: column; 
+            flex: 1; 
+            margin: 12px;
+            position: relative;
+        }
+        
+        .slide-header { 
+            background: linear-gradient(135deg, #1a2a44, #2c4a7e); 
+            color: white; 
+            padding: 20px 32px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            flex-shrink: 0;
+            border-radius: 12px 12px 0 0;
+        }
+        .slide-title { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            margin: 0;
+            letter-spacing: -0.02em;
+        }
+        .slide-counter { 
+            background: rgba(255,255,255,0.15); 
+            padding: 8px 16px; 
+            border-radius: 20px; 
+            font-weight: 600; 
+            font-size: 0.9rem;
+        }
+        
+        .slide-content { 
+            flex: 1; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column;
+            background: #f8fafc; 
+            padding: 24px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .main-slide-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            min-height: 300px;
+        }
+        
+        .slide { 
+            width: 100%; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 32px 24px; 
+            background: #ffffff; 
+            border-radius: 16px; 
+            box-shadow: 0 4px 20px rgba(26,42,68,0.08); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center;
+            line-height: 1.6;
+        }
+        
+        .slide h2, .slide h3 {
+            color: #1a2a44;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+        
+        .slide p {
+            color: #374151;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 16px;
+            line-height: 1.7;
+        }
+        
+        .slide-navigation { 
+            background: #ffffff; 
+            padding: 20px 32px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-top: 1px solid #e5e7eb; 
+            flex-shrink: 0;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        .nav-btn { 
+            background: linear-gradient(135deg, #1a2a44, #2c4a7e); 
+            color: white; 
+            border: none; 
+            border-radius: 10px; 
+            padding: 12px 24px; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+            min-height: 50px;
+            transition: all 0.2s ease;
+        }
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26,42,68,0.3);
+        }
+        .nav-btn:disabled { 
+            opacity: 0.5; 
+            cursor: not-allowed; 
+            transform: none;
+            box-shadow: none;
+        }
+        .slide-progress { 
+            display: flex; 
+            gap: 8px; 
+            align-items: center; 
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .progress-dot { 
+            width: 10px; 
+            height: 10px; 
+            border-radius: 50%; 
+            background: #d1d5db; 
+            transition: all 0.2s ease;
+        }
+        .progress-dot.active { 
+            background: linear-gradient(135deg, #1a2a44, #2c4a7e);
+            transform: scale(1.3);
+        }
+        
+        /* Notes Section */
+        .notes-section {
+            background: #ffffff;
+            border-radius: 12px;
+            margin-top: 24px;
+            padding: 24px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+            border-top: 3px solid #2c4a7e;
+        }
+        
+        .notes-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            color: #1a2a44;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .notes-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+        
+        .notes-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #374151;
+        }
+        
+        .notes-images {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .bw-image {
+            width: 100%;
+            height: 120px;
+            background: #f7f7f7;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #6b7280;
+            filter: grayscale(100%);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            padding: 12px;
+        }
+        
+        .bw-image::before {
+            content: '';
+            position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(10px);
-            display: none;
+            background: linear-gradient(45deg, #f3f4f6 25%, transparent 25%), 
+                        linear-gradient(-45deg, #f3f4f6 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #f3f4f6 75%), 
+                        linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
+            background-size: 15px 15px;
+            background-position: 0 0, 0 7.5px, 7.5px -7.5px, -7.5px 0px;
+            opacity: 0.1;
+        }
+        
+        /* AI Help Floating Widget */
+        .ai-help-widget {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1002;
+            font-family: inherit;
+        }
+        
+        .ai-help-toggle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.4rem;
+            display: flex;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
         }
-        .slide-container {
-            background: white;
-            border-radius: 24px;
-            width: 95vw;
-            height: 90vh;
-            max-width: 1000px;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        
+        .ai-help-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.5);
+        }
+        
+        .ai-help-toggle.active {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .ai-help-panel {
+            position: absolute;
+            top: 70px;
+            right: 0;
+            width: 340px;
+            max-height: 480px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border: 1px solid #e5e7eb;
+            transform: translateY(-20px) scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-help-panel.open {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .ai-help-header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .ai-help-content {
+            padding: 20px;
+            max-height: 320px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .ai-chat-messages {
             display: flex;
             flex-direction: column;
-        }
-        .slide-header {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 20px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .slide-title {
-            font-size: 1.5rem;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
             gap: 12px;
+            margin-bottom: 16px;
+            min-height: 80px;
         }
-        .slide-counter {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 16px;
+        
+        .ai-message {
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        
+        .ai-message.user {
+            background: #e6f0fa;
+            color: #1a2a44;
+            align-self: flex-end;
+            max-width: 80%;
+        }
+        
+        .ai-message.bot {
+            background: #f0fdf4;
+            color: #166534;
+            align-self: flex-start;
+            max-width: 90%;
+        }
+        
+        .ai-input-area {
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 16px;
+        }
+        
+        .ai-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #e5e7eb;
             border-radius: 20px;
-            font-weight: 600;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+            min-height: 40px;
         }
-        .close-slide-btn {
-            background: rgba(255, 255, 255, 0.2);
+        
+        .ai-input:focus {
+            border-color: #10b981;
+        }
+        
+        .ai-send-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
             border: none;
-            border-radius: 12px;
+            border-radius: 50%;
             width: 40px;
             height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 1.2rem;
-            color: white;
-        }
-        .close-slide-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-        }
-        .slide-content {
-            height: calc(100% - 140px);
-            overflow: hidden;
-            position: relative;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            transition: transform 0.2s;
+            flex-shrink: 0;
         }
-        .slide {
-            width: 100%;
-            height: 100%;
-            padding: 40px;
-            display: none;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            background: #f8fafc;
+        
+        .ai-send-btn:hover {
+            transform: scale(1.05);
         }
-        .slide.active {
+        
+        .ai-suggestions {
             display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
         }
-        .slide h2 {
-            font-size: 2.5rem;
-            color: #2d3748;
-            margin-bottom: 24px;
-            font-weight: 800;
-        }
-        .slide h3 {
-            font-size: 2rem;
-            color: #4a5568;
-            margin-bottom: 20px;
-            font-weight: 700;
-        }
-        .slide p {
-            font-size: 1.3rem;
-            color: #4a5568;
-            margin-bottom: 20px;
-            max-width: 800px;
-            line-height: 1.6;
-        }
-        .slide-icon {
-            font-size: 6rem;
-            margin-bottom: 24px;
-            animation: bounce 2s infinite;
-        }
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
-            40% { transform: translateY(-10px); }
-            60% { transform: translateY(-5px); }
-        }
-        .fun-fact-slide {
-            background: linear-gradient(135deg, #fef3c7, #fde68a);
-            border-radius: 20px;
-            padding: 32px;
-            margin: 20px 0;
-            border-left: 6px solid #f59e0b;
-            max-width: 700px;
-        }
-        .fun-fact-slide strong {
-            color: #92400e;
-            font-size: 1.4rem;
-        }
-        .slide-navigation {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: white;
-            padding: 20px 32px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid #e2e8f0;
-        }
-        .nav-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
+        
+        .ai-suggestion {
+            background: #f3f4f6;
+            color: #374151;
             border: none;
+            padding: 8px 12px;
             border-radius: 12px;
-            padding: 12px 24px;
-            font-size: 1rem;
-            font-weight: 600;
+            font-size: 0.75rem;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            transition: all 0.2s ease;
+            min-height: 36px;
         }
-        .nav-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+        
+        .ai-suggestion:hover {
+            background: #e6f0fa;
+            color: #1a2a44;
         }
-        .nav-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-        .slide-progress {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-        .progress-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background: #e2e8f0;
-            transition: all 0.3s ease;
-        }
-        .progress-dot.active {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            transform: scale(1.2);
-        }
-        .quiz-slide {
-            background: #f0f9ff;
-            border-radius: 20px;
-            padding: 32px;
-            max-width: 800px;
+        
+        /* Video Support */
+        .video-container {
             width: 100%;
-        }
-        .quiz-question {
-            font-size: 1.4rem;
-            color: #2d3748;
-            margin-bottom: 24px;
-            font-weight: 600;
-        }
-        .quiz-options {
-            display: grid;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-        .quiz-option {
-            background: white;
-            border: 2px solid #e2e8f0;
+            max-width: 700px;
+            margin: 24px 0;
             border-radius: 12px;
-            padding: 16px 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-align: left;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .video-container video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .video-placeholder {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #1a2a44, #2c4a7e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
             font-size: 1.1rem;
-            font-weight: 500;
+            border-radius: 12px;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        /* Quiz Styles */
+        .quiz-option { 
+            background: #ffffff; 
+            border: 2px solid #e5e7eb; 
+            border-radius: 10px; 
+            padding: 16px 20px; 
+            cursor: pointer; 
+            margin: 8px 0; 
+            font-size: 1rem; 
+            width: 100%;
+            max-width: 600px;
+            transition: all 0.2s ease;
+            min-height: 50px;
+            text-align: left;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
         }
         .quiz-option:hover {
-            border-color: #cbd5e1;
-            background: #f8fafc;
+            border-color: #2c4a7e;
+            transform: translateY(-1px);
         }
-        .quiz-option.selected {
-            background: #dbeafe;
-            border-color: #3b82f6;
-            color: #1e40af;
+        .quiz-option.selected { 
+            background: #e6f0fa; 
+            border-color: #2c4a7e; 
+            color: #1a2a44; 
         }
-        .quiz-option.correct {
-            background: #dcfce7;
-            border-color: #22c55e;
-            color: #15803d;
+        .quiz-option.correct { 
+            background: #dcfce7; 
+            border-color: #22c55e; 
+            color: #15803d; 
         }
-        .quiz-option.incorrect {
-            background: #fecaca;
-            border-color: #ef4444;
-            color: #dc2626;
+        .quiz-option.incorrect { 
+            background: #fee2e2; 
+            border-color: #dc2626; 
+            color: #b91c1c; 
         }
-        .quiz-explanation {
-            background: #f0fdf4;
-            border-radius: 12px;
-            padding: 20px;
-            border-left: 4px solid #22c55e;
-            margin-top: 20px;
+        .quiz-explanation { 
+            background: #f0fdf4; 
+            border-radius: 10px; 
+            padding: 20px; 
+            border-left: 4px solid #22c55e; 
+            margin-top: 20px; 
+            display: none; 
+            max-width: 600px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .quiz-explanation.show { display: block; }
+        
+        .back-home-btn {
+            background: #ffffff;
+            color: #2c4a7e;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 8px 16px;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(26,42,68,0.1);
+            font-size: 0.9rem;
+            border: none;
+            margin-left: 12px;
+            transition: all 0.2s ease;
+            min-height: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .back-home-btn:hover {
+            background: #e6f0fa;
+            color: #1a2a44;
+        }
+        
+        /* Overlay for mobile menu */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
             display: none;
+            transition: opacity 0.3s ease;
         }
-        .quiz-explanation.show {
+        
+        .sidebar-overlay.show {
             display: block;
-            animation: slideIn 0.3s ease-out;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            opacity: 1;
         }
 
-        /* MOBILE RESPONSIVE STYLES */
-        @media (max-width: 900px) {
-            .header-bar {
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .slide-modal { 
+                padding-left: 0 !important; 
+            }
+            .slide-modal.sidebar-open { 
+                padding-left: 0; 
+            }
+            
+            .menu-toggle { 
+                top: 12px;
+                left: 12px;
+                min-height: 48px;
+                min-width: 48px;
                 font-size: 1.2rem;
-                padding: 18px 10px 14px 10px;
-                margin: 12px 6px 12px 6px;
-                border-radius: 12px;
+                border-radius: 8px;
             }
-            .container {
-                padding: 0 6px 16px 6px;
+            
+            .menu-toggle.sidebar-open { 
+                left: 12px; 
+                background: linear-gradient(135deg, #dc2626, #b91c1c);
+                transform: none;
             }
-            .stats-row {
-                flex-direction: column;
-                gap: 12px;
+            
+            .sidebar { 
+                width: 85vw;
+                max-width: 320px;
+                border-radius: 0 16px 16px 0;
+                padding-top: 70px;
             }
-            .slide-modal {
-                align-items: flex-start;
-                justify-content: flex-start;
+            
+            .subtopic-header { 
+                font-size: 0.8rem;
+                padding: 12px 20px;
+                letter-spacing: 0.4px;
             }
-            .slide-container {
-                width: 100vw;
-                height: 100vh;
-                max-width: 100vw;
-                max-height: 100vh;
-                border-radius: 0;
-                box-shadow: none;
-                padding: 0;
+            
+            .subtopic-btn { 
+                padding: 14px 22px; 
+                font-size: 0.95rem;
+                min-height: 50px;
+                line-height: 1.5;
             }
+            
+            .slide-container { 
+                width: 100vw; 
+                height: 100vh; 
+                border-radius: 0; 
+                margin: 0;
+            }
+            
             .slide-header {
-                padding: 12px 8px;
-                font-size: 1rem;
+                padding: 16px 20px;
+                flex-wrap: wrap;
+                gap: 10px;
             }
-            .slide-content {
-                height: calc(100% - 120px);
-                padding: 0;
+            
+            .slide-title {
+                font-size: 1.2rem;
+                gap: 8px;
             }
-            .slide {
-                padding: 12px 2vw;
-                font-size: 1rem;
-                border-radius: 0;
+            
+            .slide-counter {
+                font-size: 0.8rem;
+                padding: 6px 12px;
             }
-            .slide h2 {
+            
+            .slide { 
+                padding: 20px 16px; 
+                border-radius: 0; 
+                margin: 0;
+            }
+            
+            .slide h2, .slide h3 {
                 font-size: 1.3rem;
-            }
-            .slide h3 {
-                font-size: 1.1rem;
-            }
-            .slide p {
-                font-size: 1rem;
-            }
-            .slide-icon {
-                font-size: 2.5rem;
                 margin-bottom: 12px;
             }
-            .slide-navigation {
-                padding: 10px 4px;
+            
+            .slide p {
                 font-size: 1rem;
+                line-height: 1.6;
             }
-            .quiz-slide {
-                padding: 12px 2vw;
-                font-size: 1rem;
+            
+            .slide-navigation { 
+                padding: 16px 20px;
+                flex-wrap: wrap;
+                gap: 12px;
             }
-            .fun-fact-slide {
-                padding: 12px 2vw;
-                font-size: 1rem;
+            
+            .nav-btn {
+                font-size: 0.9rem;
+                padding: 10px 20px;
+                min-height: 48px;
             }
-            .topics-grid {
+            
+            .slide-progress {
+                order: -1;
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 8px;
+            }
+            
+            .progress-dot {
+                width: 8px;
+                height: 8px;
+            }
+            
+            .back-home-btn { 
+                font-size: 0.8rem; 
+                padding: 6px 12px; 
+                margin-left: 8px;
+                gap: 4px;
+                min-height: 40px;
+            }
+            
+            .video-container {
+                margin: 16px 0;
+            }
+            
+            .video-placeholder {
+                height: 180px;
+                font-size: 0.9rem;
+                padding: 16px;
+            }
+            
+            .notes-content {
                 grid-template-columns: 1fr;
-                gap: 14px;
+                gap: 16px;
             }
-            .topic-card {
-                padding: 18px 10px 16px 10px;
-                border-radius: 10px;
+            
+            .notes-text {
+                font-size: 0.9rem;
             }
-            .topic-title {
+            
+            .bw-image {
+                height: 100px;
+                font-size: 0.8rem;
+            }
+            
+            .ai-help-widget {
+                top: 12px;
+                right: 12px;
+            }
+            
+            .ai-help-toggle {
+                width: 52px;
+                height: 52px;
+                font-size: 1.3rem;
+            }
+            
+            .ai-help-panel {
+                width: calc(100vw - 40px);
+                max-width: 320px;
+                top: 70px;
+                right: 10px;
+                max-height: 400px;
+            }
+            
+            .ai-help-header {
+                padding: 14px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .ai-help-content {
+                padding: 16px;
+                max-height: 280px;
+            }
+            
+            .ai-message {
+                font-size: 0.8rem;
+                padding: 8px 10px;
+            }
+            
+            .ai-input {
+                font-size: 16px;
+                padding: 10px 12px;
+            }
+            
+            .ai-suggestion {
+                font-size: 0.7rem;
+                padding: 6px 10px;
+                min-height: 36px;
+            }
+            
+            .quiz-option {
+                font-size: 0.95rem;
+                padding: 14px 16px;
+                margin: 6px 0;
+                min-height: 50px;
+            }
+            
+            .quiz-explanation {
+                font-size: 0.9rem;
+                padding: 16px;
+                margin-top: 16px;
+            }
+        }
+
+        /* Small mobile phones */
+        @media (max-width: 480px) {
+            .menu-toggle {
+                top: 10px;
+                left: 10px;
+                min-height: 48px;
+                min-width: 48px;
+            }
+            
+            .sidebar {
+                width: 90vw;
+                max-width: 300px;
+            }
+            
+            .slide-header {
+                padding: 12px 16px;
+            }
+            
+            .slide-title {
                 font-size: 1.1rem;
             }
-            .topic-description {
+            
+            .slide {
+                padding: 16px 12px;
+            }
+            
+            .slide h2, .slide h3 {
+                font-size: 1.2rem;
+            }
+            
+            .slide p {
                 font-size: 0.95rem;
             }
-            .start-learning-btn {
-                font-size: 0.95rem;
-                padding: 8px 14px;
+            
+            .slide-navigation {
+                padding: 12px 16px;
+            }
+            
+            .nav-btn {
+                font-size: 0.85rem;
+                padding: 8px 16px;
+                min-height: 44px;
+            }
+            
+            .notes-section {
+                padding: 16px;
+                margin-top: 16px;
+            }
+            
+            .video-placeholder {
+                height: 150px;
+                font-size: 0.85rem;
+            }
+            
+            .ai-help-widget {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .ai-help-toggle {
+                width: 48px;
+                height: 48px;
+                font-size: 1.2rem;
+            }
+            
+            .ai-help-panel {
+                width: calc(100vw - 30px);
+                right: 5px;
+            }
+        }
+
+        /* Landscape mobile orientation */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .slide-container {
+                height: 100vh;
+            }
+            
+            .slide-content {
+                padding: 16px;
+            }
+            
+            .slide {
+                padding: 16px;
+            }
+            
+            .main-slide-area {
+                min-height: 200px;
+            }
+            
+            .video-placeholder {
+                height: 140px;
+            }
+            
+            .sidebar {
+                width: 70vw;
+                max-width: 280px;
+            }
+        }
+
+        /* Touch improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .nav-btn:hover,
+            .menu-toggle:hover,
+            .ai-help-toggle:hover,
+            .quiz-option:hover,
+            .subtopic-btn:hover,
+            .back-home-btn:hover,
+            .ai-suggestion:hover {
+                transform: none;
+                box-shadow: inherit;
+            }
+            
+            .nav-btn:active,
+            .menu-toggle:active,
+            .ai-help-toggle:active,
+            .subtopic-btn:active,
+            .back-home-btn:active,
+            .ai-suggestion:active {
+                transform: scale(0.98);
+            }
+            
+            .quiz-option:active {
+                transform: scale(0.99);
             }
         }
     </style>
 </head>
 <body>
-    <div class="main-content">
-        <div class="header-bar">
-            <div>
-                P4 Science Study Guide
-                <div class="subtitle">Skills you'll gain: Explore all topics of the Primary 4 Science curriculum.</div>
-            </div>
-            <a href="{{ url_for('user_home') }}" style="background:#fff; color:#0360a5; font-weight:600; border-radius:10px; padding:10px 22px; text-decoration:none; box-shadow:0 2px 8px rgba(3,96,165,0.10); font-size:1rem;">
-                ← Back to Home
-            </a>
-        </div>
-        <div class="container">
-            <div class="stats-row">
-                <div class="stat-card">
-                    <span class="stat-icon">🏆</span>
-                    <span id="points-display">{{ total_points|default(0) }} Points</span>
-                </div>
-                <div class="stat-card">
-                    <span class="stat-icon">⭐</span>
-                    <span id="topics-display">{{ completed_topics|default(0) }}/6 Topics</span>
-                </div>
-            </div>
-            <div class="progress-section">
-                <div class="progress-label">
-                    <span>Overall Progress</span>
-                    <span id="progress-percentage">{{ ((completed_topics|default(0) / 6) * 100) | round(0) }}%</span>
-                </div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="overall-progress" style="width: {{ ((completed_topics|default(0) / 6) * 100) | round(0) }}%"></div>
-                </div>
-            </div>
-            <div class="topics-grid">
-            
-                <div class="topic-card diversity">
-                    <div class="topic-icon">🌱</div>
-                    <div class="topic-title">Diversity</div>
-                    <div class="topic-description">
-                        General characteristics and classification of living and non-living things.<br>
-                        Diversity of materials.
-                    </div>
-                    <a class="start-learning-btn" href="{{ url_for('learn', code='diversity4') }}">Start Learning</a>
-                </div>
-                <div class="topic-card cycles">
-                    <div class="topic-icon">🔄</div>
-                    <div class="topic-title">Cycles</div>
-                    <div class="topic-description">
-                        Life cycles of plants and animals.<br>
-                        Matter and water cycles.
-                    </div>
-                    <a class="start-learning-btn" href="{{ url_for('learn', code='cycles4') }}">Start Learning</a>
-                </div>
-                <div class="topic-card systems">
-                    <div class="topic-icon">🧬</div>
-                    <div class="topic-title">Systems</div>
-                    <div class="topic-description">
-                        Plant parts and their functions.<br>
-                        The human digestive system.
-                    </div>
-                    <a class="start-learning-btn" href="{{ url_for('learn', code='systems4') }}">Start Learning</a>
-                </div>
-                <div class="topic-card interactions">
-                    <div class="topic-icon">🧲</div>
-                    <div class="topic-title">Interactions</div>
-                    <div class="topic-description">
-                        Magnets (properties, creation, and uses).
-                    </div>
-                    <a class="start-learning-btn" href="{{ url_for('learn', code='interactions4') }}">Start Learning</a>
-                </div>
-                <div class="topic-card energy">
-                    <div class="topic-icon">💡</div>
-                    <div class="topic-title">Energy</div>
-                    <div class="topic-description">
-                        Light and shadows.<br>
-                        Heat and its effects.
-                    </div>
-                    <a class="start-learning-btn" href="{{ url_for('learn', code='energy4') }}">Start Learning</a>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-    <!-- Slide Modal -->
-    <div class="slide-modal" id="slide-modal">
-        <div class="slide-container">
-            <div class="slide-header">
-                <h2 class="slide-title" id="slide-title">
+<button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()">
+    ☰
+</button>
+
+<div class="slide-modal" id="slide-modal">
+    <div class="sidebar" id="sidebar">
+        <!-- Subtopics will be rendered here -->
+    </div>
+    <div class="slide-container">
+        <div class="slide-header">
+            <span style="display:flex;align-items:center;">
+                <h2 class="slide-title" style="margin:0;">
                     <span id="slide-icon">🌱</span>
-                    <span id="slide-title-text">Plants and Their Parts</span>
+                    <span id="slide-title-text">Diversity</span>
                 </h2>
-                <div class="slide-counter" id="slide-counter">1 / 10</div>
-                <button class="close-slide-btn" onclick="closeSlideModal()">✕</button>
+            </span>
+            <span style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
+                <div class="slide-counter" id="slide-counter" style="display:inline-block;">1 / 20</div>
+                <a href="{{ url_for('learn', code='Primary4') }}" class="back-home-btn">🏠 Back to Home</a>
+            </span>
+        </div>
+        <div class="slide-content" id="slide-content">
+            <div class="main-slide-area" id="main-slide-area"></div>
+        </div>
+        <div class="slide-navigation">
+            <div class="slide-progress" id="slide-progress"></div>
+            <button class="nav-btn" id="prev-slide-btn" onclick="previousSlide()" disabled>← Previous</button>
+            <button class="nav-btn" id="next-slide-btn" onclick="nextSlide()">Next →</button>
+        </div>
+    </div>
+</div>
+
+<!-- AI Help Widget -->
+<div class="ai-help-widget">
+    <button class="ai-help-toggle" id="ai-help-toggle" onclick="toggleAIHelp()">🤖</button>
+    <div class="ai-help-panel" id="ai-help-panel">
+        <div class="ai-help-header">
+            <span>🤖</span>
+            <span>BB AI Assistant</span>
+        </div>
+        <div class="ai-help-content">
+            <div class="ai-suggestions">
+                <button class="ai-suggestion" onclick="askAI('Explain living things')">Explain living things</button>
+                <button class="ai-suggestion" onclick="askAI('What is diversity?')">What is diversity?</button>
+                <button class="ai-suggestion" onclick="askAI('Help with quiz')">Help with quiz</button>
             </div>
-            <!-- Horizontal thumbnail bar -->
-            <div class="slide-thumbnails" id="slide-thumbnails" style="display:flex;overflow-x:auto;gap:8px;padding:10px 24px 0 24px;background:#f8fafc;">
-                <!-- Thumbnails will be generated here -->
-            </div>
-            <div class="slide-content" id="slide-content">
-                <!-- Slides will be loaded here -->
-            </div>
-            <div class="slide-navigation">
-                <button class="nav-btn" id="prev-slide-btn" onclick="previousSlide()" disabled>
-                    ← Previous
-                </button>
-                <div class="slide-progress" id="slide-progress">
-                    <!-- Progress dots will be generated here -->
+            <div class="ai-chat-messages" id="ai-chat-messages">
+                <div class="ai-message bot">
+                    Hi! I'm BB AI, your learning assistant. Ask me anything about this lesson! 😊
                 </div>
-                <button class="nav-btn" id="next-slide-btn" onclick="nextSlide()">
-                    Next →
-                </button>
+            </div>
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="ai-input" placeholder="Ask me anything..." onkeypress="handleAIKeyPress(event)">
+                <button class="ai-send-btn" onclick="sendAIMessage()">➤</button>
             </div>
         </div>
     </div>
+</div>
 
-    <script>
-        // Global variables
-        let currentSlideIndex = 0;
-        let currentTopic = '';
-        let totalPoints = {{ total_points|default(0) }};
-        let completedTopics = {{ completed_topics|default(0) }};
+<script>
+const subtopicSections = [
+    {
+        title: "Living & Non-Living Things",
+        subtopics: [
+            { title: "Introduction to Diversity", slideIndex: 0 },
+            { title: "What is Diversity?", slideIndex: 1 },
+            { title: "Living Things", slideIndex: 2 },
+            { title: "Non-Living Things", slideIndex: 3 },
+            { title: "Characteristics of Living Things", slideIndex: 4 },
+            { title: "Classification Systems", slideIndex: 5 },
+            { title: "Plants", slideIndex: 6 },
+            { title: "Animals", slideIndex: 7 },
+            { title: "Fungi", slideIndex: 8 },
+            { title: "Microorganisms", slideIndex: 9 }
+        ]
+    },
+    {
+        title: "Diversity of Materials",
+        subtopics: [
+            { title: "Types of Materials", slideIndex: 10 },
+            { title: "Natural Materials", slideIndex: 11 },
+            { title: "Man-made Materials", slideIndex: 12 },
+            { title: "Uses of Materials", slideIndex: 13 },
+            { title: "Grouping Materials", slideIndex: 14 },
+            { title: "Importance of Diversity", slideIndex: 15 },
+            { title: "Review", slideIndex: 16 },
+            { title: "Quiz Preparation", slideIndex: 17 },
+            { title: "Quiz 1", slideIndex: 18 },
+            { title: "Quiz 2", slideIndex: 19 }
+        ]
+    }
+];
 
-        // Slide content database
-        const slideContent = {
-            plants: {
-                title: "Plants and Their Parts",
-                icon: "🌱",
-                slides: [
-                    {
-                        type: "intro",
-                        content: `
-                            <div class="slide-icon">🌱</div>
-                            <h2>Welcome to Plants and Their Parts!</h2>
-                            <p>Get ready to discover the amazing world of plants and learn how each part has a special job to help plants grow and survive!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌿</div>
-                            <h3>What Are Plants?</h3>
-                            <p>Plants are living things that can make their own food using sunlight! They are found everywhere on Earth - from tiny grass to giant trees.</p>
-                            <p>Unlike animals, plants can't move around to find food. Instead, they have special parts that work together to help them survive.</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌳</div>
-                            <h3>The Main Parts of a Plant</h3>
-                            <p>Every plant has four main parts that work together like a team:</p>
-                            <p><strong>🌿 Roots • 🌱 Stem • 🍃 Leaves • 🌸 Flowers</strong></p>
-                            <p>Each part has a very important job to do!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌿</div>
-                            <h3>Roots - The Underground Workers</h3>
-                            <p>Roots grow underground where we can't see them. They have two very important jobs:</p>
-                            <p><strong>1. Absorb water and nutrients</strong> from the soil to feed the plant</p>
-                            <p><strong>2. Hold the plant firmly</strong> in the ground so it doesn't fall over</p>
-                            <p>Think of roots like the plant's mouth and anchor!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌱</div>
-                            <h3>Stem - The Plant's Highway</h3>
-                            <p>The stem is like a highway system inside the plant! It carries water and nutrients from the roots up to the leaves.</p>
-                            <p>The stem also carries the food that leaves make down to the rest of the plant.</p>
-                            <p>Some stems are soft like flowers, others are hard like tree trunks!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🍃</div>
-                            <h3>Leaves - The Food Factories</h3>
-                            <p>Leaves are amazing! They make food for the plant using sunlight, water, and air.</p>
-                            <p>This special process is called <strong>photosynthesis</strong> - it's like cooking with sunlight!</p>
-                            <p>Leaves also help the plant breathe by taking in carbon dioxide and giving out oxygen.</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌸</div>
-                            <h3>Flowers - The Baby Makers</h3>
-                            <p>Flowers are the most colorful part of plants! They help plants make seeds to grow new baby plants.</p>
-                            <p>Flowers attract bees and butterflies with their bright colors and sweet smell.</p>
-                            <p>When insects visit flowers, they help spread pollen to make new seeds!</p>
-                        `
-                    },
-                    {
-                        type: "fun-fact",
-                        content: `
-                            <div class="slide-icon">🌲</div>
-                            <h3>Amazing Plant Facts!</h3>
-                            <div class="fun-fact-slide">
-                                <strong>🌿 Did you know?</strong> The tallest tree in the world is a redwood tree that's over 115 meters tall - that's like a 35-story building!
-                            </div>
-                            <div class="fun-fact-slide">
-                                <strong>🌱 Cool fact:</strong> Some plant roots can grow deeper than the plant is tall!
-                            </div>
-                        `
-                    },
-                    {
-                        type: "quiz",
-                        content: `
-                            <div class="quiz-slide">
-                                <h3>Test Your Knowledge!</h3>
-                                <div class="quiz-question">Which part of a plant absorbs water and nutrients from the soil?</div>
-                                <div class="quiz-options">
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Leaves</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, true)">Roots</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Flowers</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Stem</button>
-                                </div>
-                                <div class="quiz-explanation">
-                                    <strong>Correct!</strong> Roots grow underground and absorb water and nutrients from soil to feed the entire plant.
-                                </div>
-                            </div>
-                        `
-                    },
-                    {
-                        type: "conclusion",
-                        content: `
-                            <div class="slide-icon">🌟</div>
-                            <h2>Congratulations!</h2>
-                            <p>You've learned all about plant parts and how they work together!</p>
-                            <p>Remember: <strong>Roots</strong> absorb, <strong>Stems</strong> transport, <strong>Leaves</strong> make food, and <strong>Flowers</strong> make seeds.</p>
-                            <p>Great job exploring the wonderful world of plants! 🌱</p>
-                        `
-                    }
-                ]
-            },
-            animals: {
-                title: "Animals and Their Habitats",
-                icon: "🐛",
-                slides: [
-                    {
-                        type: "intro",
-                        content: `
-                            <div class="slide-icon">🦁</div>
-                            <h2>Welcome to Animal Habitats!</h2>
-                            <p>Get ready to explore where animals live and discover how they adapt to survive in different environments around the world!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🏠</div>
-                            <h3>What is a Habitat?</h3>
-                            <p>A habitat is the natural home where an animal lives. It provides everything the animal needs to survive:</p>
-                            <p><strong>🍽️ Food</strong> • <strong>💧 Water</strong> • <strong>🏡 Shelter</strong> • <strong>🌍 Space</strong></p>
-                            <p>Different animals need different types of habitats!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌲</div>
-                            <h3>Forest Habitats</h3>
-                            <p>Forests are full of trees and provide homes for many animals!</p>
-                            <p><strong>🐿️ Squirrels</strong> live in tree holes and eat nuts</p>
-                            <p><strong>🦅 Birds</strong> build nests in branches and eat insects</p>
-                            <p><strong>🐻 Bears</strong> find berries and fish in forest streams</p>
-                            <p>Trees give animals shelter, food, and places to hide from danger!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌊</div>
-                            <h3>Ocean Habitats</h3>
-                            <p>The ocean is the largest habitat on Earth! It's home to amazing sea creatures.</p>
-                            <p><strong>🐠 Fish</strong> swim in schools for protection</p>
-                            <p><strong>🐋 Whales</strong> are the largest animals in the ocean</p>
-                            <p><strong>🦀 Crabs</strong> live on the ocean floor and in coral reefs</p>
-                            <p>Ocean animals have special features like gills to breathe underwater!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🏜️</div>
-                            <h3>Desert Habitats</h3>
-                            <p>Deserts are very hot and dry, but some animals love living there!</p>
-                            <p><strong>🐪 Camels</strong> store water in their humps</p>
-                            <p><strong>🦎 Lizards</strong> hide under rocks during the hot day</p>
-                            <p><strong>🦂 Scorpions</strong> come out at night when it's cooler</p>
-                            <p>Desert animals are experts at saving water!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌾</div>
-                            <h3>Grassland Habitats</h3>
-                            <p>Grasslands are open areas covered with grass - perfect for some animals!</p>
-                            <p><strong>🦓 Zebras</strong> eat grass and live in herds for safety</p>
-                            <p><strong>🦁 Lions</strong> hunt other animals in the grasslands</p>
-                            <p><strong>🐘 Elephants</strong> roam across grasslands looking for food</p>
-                            <p>Many grassland animals are fast runners!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">❄️</div>
-                            <h3>Arctic Habitats</h3>
-                            <p>The Arctic is very cold and covered with ice and snow!</p>
-                            <p><strong>🐧 Penguins</strong> have thick feathers and fat to stay warm</p>
-                            <p><strong>🐻‍❄️ Polar bears</strong> have white fur to blend in with snow</p>
-                            <p><strong>🦭 Seals</strong> have thick skin called blubber to keep warm</p>
-                            <p>Arctic animals have special features to survive the cold!</p>
-                        `
-                    },
-                    {
-                        type: "fun-fact",
-                        content: `
-                            <div class="slide-icon">🦋</div>
-                            <h3>Amazing Animal Facts!</h3>
-                            <div class="fun-fact-slide">
-                                <strong>🐧 Did you know?</strong> Emperor penguins can hold their breath for up to 22 minutes while diving for food!
-                            </div>
-                            <div class="fun-fact-slide">
-                                <strong>🐪 Cool fact:</strong> Camels can drink up to 40 gallons of water in one go!
-                            </div>
-                        `
-                    },
-                    {
-                        type: "quiz",
-                        content: `
-                            <div class="quiz-slide">
-                                <h3>Test Your Knowledge!</h3>
-                                <div class="quiz-question">Which habitat would be best for a polar bear?</div>
-                                <div class="quiz-options">
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Desert</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Forest</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, true)">Arctic</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Ocean</button>
-                                </div>
-                                <div class="quiz-explanation">
-                                    <strong>Correct!</strong> Polar bears live in the Arctic where their white fur helps them blend in with snow and ice.
-                                </div>
-                            </div>
-                        `
-                    },
-                    {
-                        type: "conclusion",
-                        content: `
-                            <div class="slide-icon">🌟</div>
-                            <h2>Congratulations!</h2>
-                            <p>You've learned all about different animal habitats and how animals adapt!</p>
-                            <p>Remember: Every animal needs the right habitat with food, water, shelter, and space to survive.</p>
-                            <p>Great job exploring the amazing world of animal habitats! 🐾</p>
-                        `
-                    }
-                ]
-            },
-            heat: {
-                title: "Heat and Temperature",
-                icon: "🌡️",
-                slides: [
-                    {
-                        type: "intro",
-                        content: `
-                            <div class="slide-icon">🌡️</div>
-                            <h2>Welcome to Heat and Temperature!</h2>
-                            <p>Get ready to discover the difference between hot and cold, and learn how heat moves around us!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🔥</div>
-                            <h3>What is Heat?</h3>
-                            <p>Heat is a form of energy that makes things warm! When something has heat energy, its tiny particles move faster.</p>
-                            <p>Heat always moves from hot things to cold things - never the other way around!</p>
-                            <p>We can feel heat when we touch something warm or stand near a fire.</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌡️</div>
-                            <h3>What is Temperature?</h3>
-                            <p>Temperature tells us how hot or cold something is. We measure it with a thermometer!</p>
-                            <p><strong>Hot:</strong> 🔥 Fire, boiling water, summer day</p>
-                            <p><strong>Warm:</strong> ☀️ Body temperature, warm bath</p>
-                            <p><strong>Cool:</strong> 🌬️ Morning air, swimming pool</p>
-                            <p><strong>Cold:</strong> ❄️ Ice, winter day, refrigerator</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">➡️</div>
-                            <h3>How Heat Moves</h3>
-                            <p>Heat moves in three special ways:</p>
-                            <p><strong>🔥 Conduction:</strong> Heat moves through touching (like a hot spoon)</p>
-                            <p><strong>🌊 Convection:</strong> Heat moves through liquids and gases (like hot air rising)</p>
-                            <p><strong>☀️ Radiation:</strong> Heat moves through space (like sun warming your face)</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🍳</div>
-                            <h3>Heat in Cooking</h3>
-                            <p>We use heat to cook our food and make it taste better!</p>
-                            <p><strong>🔥 Boiling:</strong> Water gets so hot it turns into steam bubbles</p>
-                            <p><strong>🍞 Baking:</strong> Hot air in an oven cooks bread and cakes</p>
-                            <p><strong>🥘 Frying:</strong> Hot oil cooks food quickly</p>
-                            <p>Heat changes food to make it safe and delicious to eat!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🧊</div>
-                            <h3>Heat and States of Matter</h3>
-                            <p>Heat can change how things look and feel!</p>
-                            <p><strong>❄️ Ice (Solid):</strong> Very cold water is hard and frozen</p>
-                            <p><strong>💧 Water (Liquid):</strong> When ice warms up, it melts into water</p>
-                            <p><strong>💨 Steam (Gas):</strong> When water gets very hot, it becomes invisible steam</p>
-                            <p>Adding or removing heat changes what form things take!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🏠</div>
-                            <h3>Heat in Our Homes</h3>
-                            <p>We use heat to keep our homes comfortable!</p>
-                            <p><strong>🔥 Heaters:</strong> Warm up rooms when it's cold outside</p>
-                            <p><strong>🛁 Hot water:</strong> For baths, showers, and washing dishes</p>
-                            <p><strong>🧥 Clothes:</strong> Trap our body heat to keep us warm</p>
-                            <p>Good insulation helps keep heat inside when it's cold!</p>
-                        `
-                    },
-                    {
-                        type: "fun-fact",
-                        content: `
-                            <div class="slide-icon">🌟</div>
-                            <h3>Amazing Heat Facts!</h3>
-                            <div class="fun-fact-slide">
-                                <strong>☀️ Did you know?</strong> The sun's surface temperature is about 5,500°C - that's hot enough to melt any metal!
-                            </div>
-                            <div class="fun-fact-slide">
-                                <strong>🌡️ Cool fact:</strong> The coldest temperature ever recorded on Earth was -89°C in Antarctica!
-                            </div>
-                        `
-                    },
-                    {
-                        type: "quiz",
-                        content: `
-                            <div class="quiz-slide">
-                                <h3>Test Your Knowledge!</h3>
-                                <div class="quiz-question">What happens when you add heat to ice?</div>
-                                <div class="quiz-options">
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">It becomes harder</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, true)">It melts into water</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">It disappears</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Nothing happens</button>
-                                </div>
-                                <div class="quiz-explanation">
-                                    <strong>Correct!</strong> When ice gets warm enough, it melts and changes from solid to liquid water.
-                                </div>
-                            </div>
-                        `
-                    },
-                    {
-                        type: "conclusion",
-                        content: `
-                            <div class="slide-icon">🌟</div>
-                            <h2>Congratulations!</h2>
-                            <p>You've learned all about heat and temperature!</p>
-                            <p>Remember: Heat is energy that moves from hot to cold, and it can change the form of materials!</p>
-                            <p>Great job exploring the exciting world of heat and temperature! 🌡️</p>
-                        `
-                    }
-                ]
-            },
-            water: {
-                title: "Water Cycle",
-                icon: "💧",
-                slides: [
-                    {
-                        type: "intro",
-                        content: `
-                            <div class="slide-icon">💧</div>
-                            <h2>Welcome to the Water Cycle!</h2>
-                            <p>Get ready to follow water on its amazing journey around our planet!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌍</div>
-                            <h3>What is the Water Cycle?</h3>
-                            <p>The water cycle is water's never-ending journey around Earth! The same water goes round and round, changing from liquid to gas to solid.</p>
-                            <p>Water moves between oceans, clouds, rain, rivers, and back to oceans again!</p>
-                            <p>This cycle has been happening for millions of years!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">☀️</div>
-                            <h3>Step 1: Evaporation</h3>
-                            <p>The sun heats up water in oceans, lakes, and rivers. This makes the water turn into invisible water vapor that rises into the sky!</p>
-                            <p>It's like when you see steam coming from hot soup - the water becomes a gas!</p>
-                            <p>Plants also release water vapor through their leaves - this is called transpiration.</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">☁️</div>
-                            <h3>Step 2: Condensation</h3>
-                            <p>High up in the sky, the air is much cooler. The water vapor gets cold and turns back into tiny water droplets!</p>
-                            <p>Millions of these tiny droplets stick together to form clouds!</p>
-                            <p>It's like when you breathe on a cold window and it fogs up!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌧️</div>
-                            <h3>Step 3: Precipitation</h3>
-                            <p>When clouds get heavy with water droplets, they fall back to Earth as precipitation!</p>
-                            <p><strong>🌧️ Rain:</strong> Liquid water droplets fall when it's warm</p>
-                            <p><strong>❄️ Snow:</strong> Frozen water crystals fall when it's very cold</p>
-                            <p><strong>🧊 Hail:</strong> Ice balls form in strong storms</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🏔️</div>
-                            <h3>Step 4: Collection</h3>
-                            <p>When rain and snow fall to Earth, the water collects in different places:</p>
-                            <p><strong>🌊 Oceans and lakes:</strong> Water flows back to large bodies of water</p>
-                            <p><strong>🏞️ Rivers and streams:</strong> Water flows downhill toward the ocean</p>
-                            <p><strong>🌱 Ground:</strong> Some water soaks into soil and feeds plants</p>
-                            <p>Then the cycle starts all over again!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌱</div>
-                            <h3>Why is the Water Cycle Important?</h3>
-                            <p>The water cycle is super important for all life on Earth!</p>
-                            <p><strong>🌿 Plants:</strong> Need water to grow and make food</p>
-                            <p><strong>🐾 Animals:</strong> Need fresh water to drink and survive</p>
-                            <p><strong>👥 People:</strong> Need clean water for drinking, cooking, and washing</p>
-                            <p>Without the water cycle, there would be no life on our planet!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌈</div>
-                            <h3>Water Cycle in Action</h3>
-                            <p>You can see the water cycle happening all around you!</p>
-                            <p><strong>🌅 Morning dew:</strong> Water vapor condensing on grass</p>
-                            <p><strong>☁️ Cloud watching:</strong> Seeing condensed water vapor in the sky</p>
-                            <p><strong>🌧️ Puddles:</strong> Collecting rainwater that will evaporate again</p>
-                            <p>The water cycle never stops - it's always working!</p>
-                        `
-                    },
-                    {
-                        type: "fun-fact",
-                        content: `
-                            <div class="slide-icon">💫</div>
-                            <h3>Amazing Water Cycle Facts!</h3>
-                            <div class="fun-fact-slide">
-                                <strong>💧 Did you know?</strong> The water you drink today might have been inside a dinosaur millions of years ago!
-                            </div>
-                            <div class="fun-fact-slide">
-                                <strong>☁️ Cool fact:</strong> A single cloud can weigh as much as 100 elephants!
-                            </div>
-                        `
-                    },
-                    {
-                        type: "quiz",
-                        content: `
-                            <div class="quiz-slide">
-                                <h3>Test Your Knowledge!</h3>
-                                <div class="quiz-question">What happens during evaporation?</div>
-                                <div class="quiz-options">
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Water falls from clouds</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, true)">Water turns into water vapor and rises</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Water vapor turns into clouds</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Water collects in rivers</button>
-                                </div>
-                                <div class="quiz-explanation">
-                                    <strong>Correct!</strong> During evaporation, the sun heats water and turns it into water vapor that rises into the sky.
-                                </div>
-                            </div>
-                        `
-                    },
-                    {
-                        type: "conclusion",
-                        content: `
-                            <div class="slide-icon">🌟</div>
-                            <h2>Congratulations!</h2>
-                            <p>You've followed water on its amazing journey through the water cycle!</p>
-                            <p>Remember: Evaporation → Condensation → Precipitation → Collection - and repeat!</p>
-                            <p>Great job exploring the wonderful water cycle! 💧</p>
-                        `
-                    }
-                ]
-            },
-            earth: {
-                title: "Earth and Space",
-                icon: "🌍",
-                slides: [
-                    {
-                        type: "intro",
-                        content: `
-                            <div class="slide-icon">🌍</div>
-                            <h2>Welcome to Earth and Space!</h2>
-                            <p>Get ready to explore our amazing planet and the incredible universe beyond!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌍</div>
-                            <h3>Our Planet Earth</h3>
-                            <p>Earth is our home planet! It's the only planet we know of that has life.</p>
-                            <p><strong>🌊 Water:</strong> About 70% of Earth is covered with oceans</p>
-                            <p><strong>🌍 Land:</strong> Continents and islands make up the rest</p>
-                            <p><strong>🌬️ Atmosphere:</strong> A layer of air surrounds Earth and protects us</p>
-                            <p>Earth is just the right distance from the sun - not too hot, not too cold!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌅</div>
-                            <h3>Day and Night</h3>
-                            <p>Earth spins like a top! This spinning is called rotation, and it takes 24 hours for one complete spin.</p>
-                            <p><strong>☀️ Day:</strong> When your part of Earth faces the sun</p>
-                            <p><strong>🌙 Night:</strong> When your part of Earth faces away from the sun</p>
-                            <p>As Earth spins, different parts get sunlight while other parts are in darkness!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🍂</div>
-                            <h3>The Seasons</h3>
-                            <p>Earth travels around the sun in a big circle called an orbit. This journey takes one year!</p>
-                            <p>Because Earth is tilted, different parts get more or less sunlight at different times:</p>
-                            <p><strong>🌸 Spring:</strong> Plants start growing, weather gets warmer</p>
-                            <p><strong>☀️ Summer:</strong> Longest days, warmest weather</p>
-                            <p><strong>🍂 Autumn:</strong> Leaves change color, cooler weather</p>
-                            <p><strong>❄️ Winter:</strong> Shortest days, coldest weather</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🌙</div>
-                            <h3>The Moon</h3>
-                            <p>The moon is Earth's companion! It travels around our planet and affects our oceans.</p>
-                            <p><strong>🌊 Tides:</strong> The moon's gravity pulls on our oceans, making them rise and fall</p>
-                            <p><strong>🌙 Phases:</strong> The moon seems to change shape as it orbits Earth</p>
-                            <p><strong>🌚 New moon → 🌓 Quarter moon → 🌕 Full moon → 🌗 Quarter moon</strong></p>
-                            <p>The moon has no air or water - astronauts need spacesuits to visit!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">☀️</div>
-                            <h3>The Sun</h3>
-                            <p>The sun is a giant star that gives us light and heat! It's much, much bigger than Earth.</p>
-                            <p><strong>🔥 Very hot:</strong> The sun's surface is about 5,500°C!</p>
-                            <p><strong>⚡ Energy:</strong> The sun gives Earth the energy that powers weather and helps plants grow</p>
-                            <p><strong>⚠️ Safety:</strong> Never look directly at the sun - it can hurt your eyes!</p>
-                            <p>Without the sun, there would be no life on Earth!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🪐</div>
-                            <h3>Other Planets</h3>
-                            <p>Earth is one of eight planets that orbit around the sun! Our solar system is like a cosmic family.</p>
-                            <p><strong>🔴 Mars:</strong> The red planet - might have had water long ago</p>
-                            <p><strong>🪐 Saturn:</strong> Has beautiful rings made of ice and rock</p>
-                            <p><strong>🔵 Neptune:</strong> Very cold and windy, far from the sun</p>
-                            <p>Each planet is unique and special in its own way!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">⭐</div>
-                            <h3>Stars and Space</h3>
-                            <p>Beyond our solar system, space is filled with billions of stars!</p>
-                            <p><strong>⭐ Stars:</strong> Giant balls of hot gas that shine with their own light</p>
-                            <p><strong>🌌 Galaxy:</strong> Our sun and stars belong to the Milky Way galaxy</p>
-                            <p><strong>🚀 Space exploration:</strong> People have sent rockets and astronauts to explore space</p>
-                            <p>Space is so big that it would take millions of years to travel to the nearest star!</p>
-                        `
-                    },
-                    {
-                        type: "fun-fact",
-                        content: `
-                            <div class="slide-icon">🌠</div>
-                            <h3>Amazing Space Facts!</h3>
-                            <div class="fun-fact-slide">
-                                <strong>🌍 Did you know?</strong> If you could drive a car to the moon, it would take about 6 months of non-stop driving!
-                            </div>
-                            <div class="fun-fact-slide">
-                                <strong>⭐ Cool fact:</strong> The light from some stars takes so long to reach us that the star might not exist anymore!
-                            </div>
-                        `
-                    },
-                    {
-                        type: "quiz",
-                        content: `
-                            <div class="quiz-slide">
-                                <h3>Test Your Knowledge!</h3>
-                                <div class="quiz-question">What causes day and night on Earth?</div>
-                                <div class="quiz-options">
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">The moon moving around Earth</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, true)">Earth spinning on its axis</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">The sun moving around Earth</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">The stars twinkling</button>
-                                </div>
-                                <div class="quiz-explanation">
-                                    <strong>Correct!</strong> Day and night happen because Earth spins around once every 24 hours. When your part of Earth faces the sun, it's day. When it faces away, it's night.
-                                </div>
-                            </div>
-                        `
-                    },
-                    {
-                        type: "conclusion",
-                        content: `
-                            <div class="slide-icon">🌟</div>
-                            <h2>Congratulations!</h2>
-                            <p>You've learned all about Earth and space!</p>
-                            <p>Remember: Earth is our home in the solar system, and it's just the right place for life!</p>
-                            <p>Great job exploring the amazing world of Earth and space! 🌍</p>
-                        `
-                    }
-                ]
-            },
-            machines: {
-                title: "Simple Machines",
-                icon: "⚡",
-                slides: [
-                        content: `
-                            <div class="slide-icon">🔩</div>
-                            <h3>The Wedge</h3>
-                            <p>A wedge is like two inclined planes put together! It's used to split things apart or hold them together.</p>
-                            <p><strong>🪓 Axe:</strong> Splits wood with its sharp wedge shape</p>
-                            <p><strong>🔪 Knife:</strong> Cuts through food easily</p>
-                            <p><strong>📌 Nail:</strong> Its pointed end wedges into wood</p>
-                            <p>Wedges concentrate force into a small area to make cutting easier!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🔩</div>
-                            <h3>The Screw</h3>
-                            <p>A screw is an inclined plane wrapped around a cylinder! It helps hold things together.</p>
-                            <p>Screws trade distance for force - you turn many times to get strong holding power!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <p><strong>🚪 Doorknob:</strong> The round handle turns the axle inside</p>
-                            <p><strong>🎡 Ferris wheel:</strong> A giant wheel that carries people around</p>
-                            <p>Wheels reduce friction and make it much easier to move heavy things!</p>
-                        `
-                    },
-                    {
-                        type: "content",
-                        content: `
-                            <div class="slide-icon">🪢</div>
-                            <h3>The Pulley</h3>
-                            <p>A pulley is a wheel with a rope or chain that goes around it! It helps lift heavy things.</p>
-                            <p><strong>🏗️ Construction cranes:</strong> Lift heavy building materials high up</p>
-                            <p><strong>🏴‍☠️ Flag poles:</strong> Raise and lower flags easily</p>
-                            <p><strong>⛵ Ships:</strong> Use pulleys to adjust their sails</p>
-                            <p>Pulleys can change the direction of force or make lifting easier!</p>
-                        `
-                    },
-                    {
-                        type: "fun-fact",
-                        content: `
-                            <div class="slide-icon">🏗️</div>
-                            <h3>Amazing Machine Facts!</h3>
-                            <div class="fun-fact-slide">
-                                <strong>🏺 Did you know?</strong> The ancient Egyptians used simple machines like ramps and levers to build the giant pyramids!
-                            </div>
-                            <div class="fun-fact-slide">
-                                <strong>⚙️ Cool fact:</strong> Your body is full of simple machines - your arm is a lever and your teeth are wedges!
-                            </div>
-                        `
-                    },
-                    {
-                        type: "quiz",
-                        content: `
-                            <div class="quiz-slide">
-                                <h3>Test Your Knowledge!</h3>
-                                <div class="quiz-question">Which simple machine would be best for lifting a heavy box to a high shelf?</div>
-                                <div class="quiz-options">
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, true)">Pulley</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Screw</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Wheel and Axle</button>
-                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Wedge</button>
-                                </div>
-                                <div class="quiz-explanation">
-                                    <strong>Correct!</strong> A pulley uses a rope and wheel to help lift heavy objects up to high places with less effort.
-                                </div>
-                            </div>
-                        `
-                    },
-                    {
-                        type: "conclusion",
-                        content: `
-                            <div class="slide-icon">🌟</div>
-                            <h2>Congratulations!</h2>
-                            <p>You've learned all about simple machines and how they make work easier!</p>
-                            <p>Remember: Lever, Inclined Plane, Wedge, Screw, Wheel & Axle, and Pulley - they're everywhere!</p>
-                            <p>Great job exploring the world of simple machines! ⚡</p>
-                        `
-                    }
-                ]
-            }
-        };
-
-        // Functions for modal and slide management
-        function openSlideModal(topic) {
-            currentTopic = topic;
-            currentSlideIndex = 0;
-            
-            const modal = document.getElementById('slide-modal');
-            const slideIcon = document.getElementById('slide-icon');
-            const slideTitle = document.getElementById('slide-title-text');
-            
-            slideIcon.textContent = slideContent[topic].icon;
-            slideTitle.textContent = slideContent[topic].title;
-            
-            loadSlide();
-            updateSlideProgress();
-            modal.style.display = 'flex';
-            
-            // Prevent body scroll
-            document.body.style.overflow = 'hidden';
+const slides = [
+    { 
+        content: `
+            <div class="slide-icon">🌱</div>
+            <h2>Welcome to Diversity!</h2>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    <iframe width="560" height="315" 
+                        src="https://www.youtube.com/embed/SyaLcfMeeEM?rel=0&controls=1&showinfo=0&autoplay=1&mute=1" 
+                        frameborder="0" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+            </div>
+            <p>Let's explore living and non-living things and the diversity of materials.</p>
+        `,
+        notes: {
+            text: "Diversity is everywhere around us! In this lesson, we'll discover how scientists classify the amazing variety of living and non-living things in our world. Pay attention to the key characteristics that help us tell living things apart from non-living things.",
+            images: ["🌳 Trees and plants", "🪨 Rocks and minerals"]
         }
-
-        function closeSlideModal() {
-            const modal = document.getElementById('slide-modal');
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
+    },
+    { 
+        content: `
+            <h3>What is Diversity?</h3>
+            <p>Diversity means variety. In science, it refers to the many different types of things in our world.</p>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    📹 Video: Examples of Diversity in Nature
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Think about all the different animals, plants, and materials you see every day. From tiny ants to huge elephants, from soft cotton to hard steel - this variety is what we call diversity!",
+            images: ["🦋 Different butterflies", "🌸 Various flowers"]
         }
-
-        function loadSlide() {
-            const slideContentEl = document.getElementById('slide-content');
-            const slides = slideContent[currentTopic].slides;
-            slideContentEl.innerHTML = '';
-            const slideEl = document.createElement('div');
-            slideEl.className = 'slide active';
-            slideEl.innerHTML = slides[currentSlideIndex].content;
-            slideContentEl.appendChild(slideEl);
-            updateSlideCounter();
-            updateNavigationButtons();
+    },
+    { 
+        content: `
+            <h3>Living Things</h3>
+            <p>Living things can grow, move, breathe, reproduce, and respond to their environment.</p>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    📹 Video: Characteristics of Living Things
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Remember MRS GREN to identify living things: Movement, Respiration, Sensitivity, Growth, Reproduction, Excretion, Nutrition. All living things need these seven characteristics!",
+            images: ["🐱 Animals moving", "🌱 Plants growing"]
         }
-
-        function updateSlideCounter() {
-            const counter = document.getElementById('slide-counter');
-            const totalSlides = slideContent[currentTopic].slides.length;
-            counter.textContent = `${currentSlideIndex + 1} / ${totalSlides}`;
+    },
+    { 
+        content: `<h3>Non-Living Things</h3><p>Non-living things do not grow, move, or reproduce. Examples: rocks, water, air.</p>`,
+        notes: {
+            text: "Non-living things don't have the seven characteristics of life. They can't grow on their own, don't need food, and can't make babies. But they're still very important in our world!",
+            images: ["🪨 Different rocks", "💧 Water droplets"]
         }
-
-        function updateNavigationButtons() {
-            const prevBtn = document.getElementById('prev-slide-btn');
-            const nextBtn = document.getElementById('next-slide-btn');
-            const totalSlides = slideContent[currentTopic].slides.length;
-            prevBtn.disabled = currentSlideIndex === 0;
-            nextBtn.disabled = false;
-            if (currentSlideIndex === totalSlides - 1) {
-                nextBtn.textContent = 'Complete!';
-            } else {
-                nextBtn.textContent = 'Next →';
-            }
+    },
+    { 
+        content: `<h3>Characteristics of Living Things</h3><p>They need food, water, air, and can reproduce.</p>`,
+        notes: {
+            text: "All living things share these basic needs. Plants make their own food through photosynthesis, while animals must eat other living things. Both need water and air to survive.",
+            images: ["🍎 Food sources", "💨 Air and breathing"]
         }
-
-        function updateSlideProgress() {
-            const progressEl = document.getElementById('slide-progress');
-            const totalSlides = slideContent[currentTopic].slides.length;
-            progressEl.innerHTML = '';
-            for (let i = 0; i < totalSlides; i++) {
-                const dot = document.createElement('div');
-                dot.className = `progress-dot ${i === currentSlideIndex ? 'active' : ''}`;
-                progressEl.appendChild(dot);
-            }
+    },
+    { 
+        content: `<h3>Classification</h3><p>We classify living things into groups: plants, animals, fungi, etc.</p>`,
+        notes: {
+            text: "Scientists organize living things into groups based on their similarities. This makes it easier to study and understand the incredible diversity of life on Earth.",
+            images: ["📊 Classification chart", "🔬 Scientific grouping"]
         }
+    },
+    { 
+        content: `
+            <h3>Plants</h3>
+            <p>Plants make their own food using sunlight. They have roots, stems, and leaves.</p>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    📹 Video: How Plants Make Food (Photosynthesis)
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Plants are amazing food factories! They use sunlight, water, and carbon dioxide to make their own food through photosynthesis. The green substance chlorophyll helps capture sunlight.",
+            images: ["🌿 Plant parts diagram", "☀️ Sunlight and leaves"]
+        }
+    },
+    { 
+        content: `<h3>Animals</h3><p>Animals move around and eat other living things for food.</p>`,
+        notes: {
+            text: "Unlike plants, animals can't make their own food. They must eat plants or other animals to get energy. Animals can move from place to place to find food and shelter.",
+            images: ["🦁 Predator animals", "🐰 Herbivore animals"]
+        }
+    },
+    { 
+        content: `<h3>Fungi</h3><p>Fungi like mushrooms do not make their own food. They break down dead things.</p>`,
+        notes: {
+            text: "Fungi are nature's recyclers! They break down dead plants and animals, returning nutrients to the soil. Mushrooms are just the visible part - most fungi live underground.",
+            images: ["🍄 Different mushrooms", "🧽 Fungi structures"]
+        }
+    },
+    { 
+        content: `<h3>Microorganisms</h3><p>Some living things are so small we need a microscope to see them!</p>`,
+        notes: {
+            text: "The microscopic world is full of tiny living things like bacteria and viruses. Some are helpful (like those that help us digest food), while others can make us sick.",
+            images: ["🔬 Microscope view", "🦠 Microorganism shapes"]
+        }
+    },
+    { 
+        content: `
+            <h3>Diversity of Materials</h3>
+            <p>Materials can be natural (wood, cotton) or man-made (plastic, glass).</p>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    📹 Video: Natural vs Man-made Materials
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Look around you - everything is made of materials! Some come directly from nature, while others are created by humans using natural resources as starting materials.",
+            images: ["🌲 Natural materials", "🏭 Man-made materials"]
+        }
+    },
+    { 
+        content: `<h3>Natural Materials</h3><p>Come from plants, animals, or the earth. Examples: wood, wool, stone.</p>`,
+        notes: {
+            text: "Natural materials are gifts from nature. Wood comes from trees, wool from sheep, cotton from plants, and metals from rocks deep in the earth.",
+            images: ["🐑 Wool from sheep", "🌰 Wood from trees"]
+        }
+    },
+    { 
+        content: `<h3>Man-made Materials</h3><p>Made by people. Examples: plastic, glass, steel.</p>`,
+        notes: {
+            text: "Humans are clever inventors! We've learned to create new materials by mixing, heating, and changing natural materials. Plastic comes from oil, glass from sand!",
+            images: ["🥤 Plastic items", "🪟 Glass objects"]
+        }
+    },
+    { 
+        content: `<h3>Uses of Materials</h3><p>We choose materials based on their properties: strong, waterproof, flexible, etc.</p>`,
+        notes: {
+            text: "Smart material choice is important! We use waterproof materials for raincoats, strong materials for buildings, and flexible materials for clothing.",
+            images: ["🏗️ Strong materials", "🧥 Flexible materials"]
+        }
+    },
+    { 
+        content: `<h3>Grouping Materials</h3><p>We can group materials by what they are made of or how they are used.</p>`,
+        notes: {
+            text: "Materials can be grouped in many ways: by their source (natural/man-made), by their properties (hard/soft), or by their use (building/clothing).",
+            images: ["📋 Material groups", "🔧 Material properties"]
+        }
+    },
+    { 
+        content: `<h3>Why is Diversity Important?</h3><p>Diversity helps living things survive and adapt to changes.</p>`,
+        notes: {
+            text: "Diversity is like nature's insurance policy! When environments change, some species can survive because they're different. This keeps ecosystems healthy and balanced.",
+            images: ["🌍 Ecosystem balance", "🔄 Adaptation examples"]
+        }
+    },
+    { 
+        content: `<h3>Review</h3><p>Living things, non-living things, and materials are all around us!</p>`,
+        notes: {
+            text: "Great job learning about diversity! Remember the key differences between living and non-living things, and how we classify the amazing variety of materials in our world.",
+            images: ["✅ Review checklist", "📚 Key concepts"]
+        }
+    },
+    { 
+        content: `<h3>Get Ready for a Quiz!</h3><p>Let's test your knowledge about diversity!</p>`,
+        notes: {
+            text: "Time to show what you've learned! Think about the characteristics of living things, the differences between natural and man-made materials, and why diversity matters.",
+            images: ["🎯 Quiz preparation", "🧠 Knowledge check"]
+        }
+    },
+    {
+        content: `
+        <div class="quiz-slide">
+            <h3>Quiz 1</h3>
+            <div class="quiz-question">Which of these is a living thing?</div>
+            <div class="quiz-options">
+                <button class="quiz-option" onclick="selectQuizAnswer(this, true)">A tree</button>
+                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">A rock</button>
+                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">A car</button>
+                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">A table</button>
+            </div>
+            <div class="quiz-explanation"><strong>Correct!</strong> A tree is a living thing because it grows and makes its own food.</div>
+        </div>
+        `,
+        notes: {
+            text: "Remember MRS GREN! A tree can grow, reproduce (make seeds), respond to sunlight, and make its own food through photosynthesis.",
+            images: ["🌳 Tree characteristics", "📝 Living thing checklist"]
+        }
+    },
+    {
+        content: `
+        <div class="quiz-slide">
+            <h3>Quiz 2</h3>
+            <div class="quiz-question">Which is a man-made material?</div>
+            <div class="quiz-options">
+                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Wood</button>
+                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Cotton</button>
+                <button class="quiz-option" onclick="selectQuizAnswer(this, true)">Plastic</button>
+                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Wool</button>
+            </div>
+            <div class="quiz-explanation"><strong>Correct!</strong> Plastic is made by people from chemicals.</div>
+        </div>
+        `,
+        notes: {
+            text: "Plastic is created by humans from oil and chemicals. Wood comes from trees, cotton from plants, and wool from sheep - all natural sources!",
+            images: ["🏭 Plastic factory", "🌿 Natural sources"]
+        }
+    }
+];
 
-        function nextSlide() {
-            const totalSlides = slideContent[currentTopic].slides.length;
-            if (currentSlideIndex < totalSlides - 1) {
-                currentSlideIndex++;
+let currentSlideIndex = 0;
+let sidebarOpen = false;
+let aiHelpOpen = false;
+let sidebarTouchStartX = 0;
+let sidebarTouchEndX = 0;
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const slideModal = document.getElementById('slide-modal');
+    const menuToggle = document.getElementById('menu-toggle');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    sidebarOpen = !sidebarOpen;
+    
+    if (sidebarOpen) {
+        sidebar.classList.add('open');
+        slideModal.classList.add('sidebar-open');
+        menuToggle.classList.add('sidebar-open');
+        menuToggle.innerHTML = '✕';
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    } else {
+        sidebar.classList.remove('open');
+        slideModal.classList.remove('sidebar-open');
+        menuToggle.classList.remove('sidebar-open');
+        menuToggle.innerHTML = '☰';
+        overlay.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+}
+
+function toggleAIHelp() {
+    const panel = document.getElementById('ai-help-panel');
+    const toggle = document.getElementById('ai-help-toggle');
+    
+    aiHelpOpen = !aiHelpOpen;
+    
+    if (aiHelpOpen) {
+        panel.classList.add('open');
+        toggle.classList.add('active');
+        toggle.innerHTML = '✕';
+    } else {
+        panel.classList.remove('open');
+        toggle.classList.remove('active');
+        toggle.innerHTML = '🤖';
+    }
+}
+
+function askAI(question) {
+    const input = document.getElementById('ai-input');
+    input.value = question;
+    sendAIMessage();
+}
+
+function sendAIMessage() {
+    const input = document.getElementById('ai-input');
+    const messages = document.getElementById('ai-chat-messages');
+    const question = input.value.trim();
+    
+    if (!question) return;
+    
+    const userMessage = document.createElement('div');
+    userMessage.className = 'ai-message user';
+    userMessage.textContent = question;
+    messages.appendChild(userMessage);
+    
+    input.value = '';
+    
+    setTimeout(() => {
+        const botMessage = document.createElement('div');
+        botMessage.className = 'ai-message bot';
+        botMessage.textContent = generateAIResponse(question);
+        messages.appendChild(botMessage);
+        messages.scrollTop = messages.scrollHeight;
+    }, 1000);
+    
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function generateAIResponse(question) {
+    const responses = {
+        'explain living things': 'Living things have 7 key characteristics: Movement, Respiration, Sensitivity, Growth, Reproduction, Excretion, and Nutrition (MRS GREN). They can respond to their environment and need food, water, and air to survive! 🌱',
+        'what is diversity': 'Diversity means variety! It\'s all the different types of living things, materials, and objects in our world. Think of all the different animals, plants, and materials you see around you - that\'s diversity! 🌍',
+        'help with quiz': 'Remember the key points: Living things grow and reproduce, non-living things don\'t. Natural materials come from nature (wood, wool), man-made materials are created by humans (plastic, glass). You\'ve got this! 💪',
+        'natural materials': 'Natural materials come directly from nature - like wood from trees, cotton from plants, wool from sheep, and stone from the earth. They\'re not made by humans! 🌿',
+        'man-made materials': 'Man-made materials are created by humans, like plastic (from oil), glass (from sand), and steel (from iron). We use technology to make these! 🏭'
+    };
+    
+    const key = question.toLowerCase();
+    for (const [keyword, response] of Object.entries(responses)) {
+        if (key.includes(keyword.replace(/\s+/g, '')) || key.includes(keyword)) {
+            return response;
+        }
+    }
+    
+    return `That's a great question about diversity! Based on slide ${currentSlideIndex + 1}, I'd suggest focusing on the key concepts we've covered. Feel free to ask more specific questions! 😊`;
+}
+
+function handleAIKeyPress(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        sendAIMessage();
+    }
+}
+
+function renderSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.innerHTML = '';
+    
+    subtopicSections.forEach(section => {
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'subtopic-section';
+        
+        const header = document.createElement('div');
+        header.className = 'subtopic-header';
+        header.textContent = section.title;
+        headerDiv.appendChild(header);
+        
+        section.subtopics.forEach(subtopic => {
+            const btn = document.createElement('button');
+            btn.className = 'subtopic-btn' + (currentSlideIndex === subtopic.slideIndex ? ' active' : '');
+            btn.textContent = subtopic.title;
+            btn.onclick = () => {
+                currentSlideIndex = subtopic.slideIndex;
                 loadSlide();
-                updateSlideProgress();
-            } else {
-                completeSlide();
-            }
-        }
-
-        function previousSlide() {
-            if (currentSlideIndex > 0) {
-                currentSlideIndex--;
-                loadSlide();
-                updateSlideProgress();
-            }
-        }
-
-        function completeSlide() {
-            totalPoints += 100;
-            completedTopics++;
-            updateDashboard();
-            closeSlideModal();
-            fetch('/update_learning_progress', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ topic: currentTopic })
-            });
-            alert(`🎉 Congratulations! You've completed ${slideContent[currentTopic].title} and earned 100 points!`);
-        }
-
-        function selectQuizAnswer(button, isCorrect) {
-            const options = button.parentElement.querySelectorAll('.quiz-option');
-            const explanation = button.parentElement.nextElementSibling;
-            options.forEach(option => {
-                option.disabled = true;
-                option.style.pointerEvents = 'none';
-            });
-            button.classList.add('selected');
-            if (isCorrect) {
-                button.classList.add('correct');
-                totalPoints += 10;
-            } else {
-                button.classList.add('incorrect');
-                options.forEach(option => {
-                    if (option.onclick.toString().includes('true')) {
-                        option.classList.add('correct');
-                    }
-                });
-            }
-            explanation.classList.add('show');
-            updateDashboard();
-        }
-
-        function updateDashboard() {
-            document.getElementById('points-display').textContent = `${totalPoints} Points`;
-            document.getElementById('topics-display').textContent = `${completedTopics}/6 Topics`;
-            const percent = Math.round((completedTopics / 6) * 100);
-            document.getElementById('progress-percentage').textContent = `${percent}%`;
-            document.getElementById('overall-progress').style.width = `${percent}%`;
-        }
-
-        // Keyboard navigation (should only be registered once)
-        document.addEventListener('keydown', function(e) {
-            const modal = document.getElementById('slide-modal');
-            if (modal && modal.style.display === 'flex') {
-                if (e.key === 'ArrowLeft') {
-                    previousSlide();
-                } else if (e.key === 'ArrowRight') {
-                    nextSlide();
-                } else if (e.key === 'Escape') {
-                    closeSlideModal();
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
                 }
+            };
+            headerDiv.appendChild(btn);
+        });
+        
+        sidebar.appendChild(headerDiv);
+    });
+}
+
+function loadSlide() {
+    const slideContentEl = document.getElementById('slide-content');
+    
+    slideContentEl.innerHTML = '';
+    
+    const mainArea = document.createElement('div');
+    mainArea.className = 'main-slide-area';
+    mainArea.id = 'main-slide-area';
+    
+    const slideEl = document.createElement('div');
+    slideEl.className = 'slide active';
+    slideEl.innerHTML = slides[currentSlideIndex].content;
+    mainArea.appendChild(slideEl);
+    
+    slideContentEl.appendChild(mainArea);
+    
+    if (slides[currentSlideIndex].notes) {
+        const notesSection = document.createElement('div');
+        notesSection.className = 'notes-section';
+        
+        notesSection.innerHTML = `
+            <div class="notes-header">
+                <span>📝</span>
+                <span>Study Notes</span>
+            </div>
+            <div class="notes-content">
+                <div class="notes-text">
+                    ${slides[currentSlideIndex].notes.text}
+                </div>
+                <div class="notes-images">
+                    ${slides[currentSlideIndex].notes.images.map(img => 
+                        `<div class="bw-image">${img}</div>`
+                    ).join('')}
+                </div>
+            </div>
+        `;
+        
+        slideContentEl.appendChild(notesSection);
+    }
+    
+    updateSlideCounter();
+    updateNavigationButtons();
+    updateSlideProgress();
+    renderSidebar();
+}
+
+function updateSlideCounter() {
+    document.getElementById('slide-counter').textContent = `${currentSlideIndex + 1} / ${slides.length}`;
+}
+
+function updateNavigationButtons() {
+    document.getElementById('prev-slide-btn').disabled = currentSlideIndex === 0;
+    document.getElementById('next-slide-btn').disabled = false;
+    document.getElementById('next-slide-btn').textContent = (currentSlideIndex === slides.length - 1) ? 'Finish' : 'Next →';
+}
+
+function updateSlideProgress() {
+    const progressEl = document.getElementById('slide-progress');
+    progressEl.innerHTML = '';
+    for (let i = 0; i < slides.length; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'progress-dot' + (i === currentSlideIndex ? ' active' : '');
+        progressEl.appendChild(dot);
+    }
+}
+
+function nextSlide() {
+    if (currentSlideIndex < slides.length - 1) {
+        currentSlideIndex++;
+        loadSlide();
+    } else {
+        alert('Congratulations! You have completed the Diversity lesson!');
+    }
+}
+
+function previousSlide() {
+    if (currentSlideIndex > 0) {
+        currentSlideIndex--;
+        loadSlide();
+    }
+}
+
+function selectQuizAnswer(button, isCorrect) {
+    const options = button.parentElement.querySelectorAll('.quiz-option');
+    const explanation = button.parentElement.nextElementSibling;
+    
+    options.forEach(option => {
+        option.disabled = true;
+        option.style.pointerEvents = 'none';
+    });
+    
+    button.classList.add('selected');
+    
+    if (isCorrect) {
+        button.classList.add('correct');
+    } else {
+        button.classList.add('incorrect');
+        options.forEach(option => {
+            if (option.onclick.toString().includes('true')) {
+                option.classList.add('correct');
             }
         });
-    </script>
+    }
+    
+    explanation.classList.add('show');
+}
+
+let touchStartY = 0;
+let touchEndY = 0;
+
+document.addEventListener('touchstart', function(event) {
+    touchStartY = event.changedTouches[0].screenY;
+    if (sidebarOpen && event.target.closest('#sidebar')) {
+        sidebarTouchStartX = event.changedTouches[0].screenX;
+    }
+}, false);
+
+document.addEventListener('touchend', function(event) {
+    touchEndY = event.changedTouches[0].screenY;
+    if (sidebarOpen && event.target.closest('#sidebar')) {
+        sidebarTouchEndX = event.changedTouches[0].screenX;
+        handleSidebarSwipe();
+    } else {
+        handleSlideSwipe();
+    }
+}, false);
+
+function handleSlideSwipe() {
+    const swipeThreshold = 50;
+    const swipeDistance = touchEndY - touchStartY;
+    
+    if (Math.abs(swipeDistance) > swipeThreshold) {
+        if (swipeDistance > 0 && currentSlideIndex > 0) {
+            previousSlide();
+        } else if (swipeDistance < 0 && currentSlideIndex < slides.length - 1) {
+            nextSlide();
+        }
+    }
+}
+
+function handleSidebarSwipe() {
+    const swipeThreshold = 50;
+    const swipeDistance = sidebarTouchEndX - sidebarTouchStartX;
+    
+    if (swipeDistance < -swipeThreshold && sidebarOpen) {
+        toggleSidebar();
+    }
+}
+
+document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('menu-toggle');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    if (sidebarOpen && !sidebar.contains(event.target) && !menuToggle.contains(event.target) && event.target === overlay) {
+        if (window.innerWidth <= 768) {
+            toggleSidebar();
+        }
+    }
+});
+
+document.addEventListener('click', function(event) {
+    const aiWidget = document.querySelector('.ai-help-widget');
+    const aiPanel = document.getElementById('ai-help-panel');
+    
+    if (aiHelpOpen && !aiWidget.contains(event.target)) {
+        toggleAIHelp();
+    }
+});
+
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function(event) {
+    const now = (new Date()).getTime();
+    if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+    }
+    lastTouchEnd = now;
+}, false);
+
+window.addEventListener('orientationchange', function() {
+    setTimeout(function() {
+        document.body.style.display = 'none';
+        document.body.offsetHeight;
+        document.body.style.display = '';
+        if (sidebarOpen) {
+            toggleSidebar();
+        }
+    }, 100);
+});
+
+window.onload = function() {
+    loadSlide();
+    
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+    }
+};
+</script>
 </body>
 </html>
