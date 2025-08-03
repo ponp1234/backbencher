@@ -613,8 +613,8 @@
         // Global variables
         let currentSlideIndex = 0;
         let currentTopic = '';
-        let totalPoints = 0;
-        let completedTopics = 0;
+        let totalPoints = {{ total_points|default(0) }};
+        let completedTopics = {{ completed_topics|default(0) }};
 
         // Slide content database
         const slideContent = {

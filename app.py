@@ -230,6 +230,15 @@ def update_learning_progress():
     db.session.commit()
     return jsonify({'success': True})
 
+@app.route('/P4_science')
+@login_required
+def p4_science():
+    # Query the user's progress from the database
+    progress = LearningProgress.query.filter_by(user_id=current_user.id).all()
+    completed_topics = len([p for p in progress if p.completed])
+    total_points = sum([p.points for p in progress])  # If you track points per topic
+    return render_template('P4_science.html', completed_topics=completed_topics, total_points=total_points)
+
 @app.route('/countdown')
 @login_required
 def countdown():
