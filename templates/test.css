@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Backbench - AI-Powered Learning for Success</title>
-    <link rel="icon" href="static/logo2.png" type="image/icon type">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         * {
@@ -595,7 +594,7 @@
             const table = document.getElementById('paginatedTable');
             const tbody = table.querySelector('tbody');
             const rows = Array.from(tbody.querySelectorAll('tr'));
-            const rowsPerPage = 15;
+            const rowsPerPage = 3;
             let currentPage = 1;
 
             function displayPage(page) {
