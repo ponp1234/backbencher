@@ -3,178 +3,145 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ScienceBot - Primary 4 Learning Platform</title>
+    <title>P4 Science - Backbench</title>
     <style>
-        * {
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #f6f8fa;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
         }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .main-content {
+            margin-left: 0;
+            padding: 0;
             min-height: 100vh;
-            color: #1a202c;
-            line-height: 1.6;
-            padding: 20px;
+            background: #f6f8fa;
         }
-
+        .header-bar {
+            background: linear-gradient(90deg, #0360a5 0%, #0057b8 100%);
+            color: #fff;
+            border-radius: 18px;
+            margin: 32px 32px 24px 32px;
+            padding: 32px 40px 28px 40px;
+            font-size: 2rem;
+            font-weight: 700;
+            box-shadow: 0 4px 24px rgba(3,96,165,0.08);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .header-bar .subtitle {
+            font-size: 1.1rem;
+            font-weight: 400;
+            margin-top: 8px;
+            color: #e3f0fa;
+        }
         .container {
             max-width: 1200px;
             margin: 0 auto;
+            padding: 0 32px 32px 32px;
         }
-
-        .welcome-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 24px;
-            padding: 32px;
+        .stats-row {
+            display: flex;
+            gap: 32px;
             margin-bottom: 32px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-
-        .welcome-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 24px;
-        }
-
-        .welcome-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #2d3748;
-            margin-bottom: 8px;
-        }
-
-        .welcome-subtitle {
-            font-size: 1.1rem;
-            color: #718096;
-            font-weight: 500;
-        }
-
-        .stats-container {
-            display: flex;
-            gap: 24px;
-            align-items: center;
-        }
-
-        .stat-item {
+        .stat-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(3,96,165,0.06);
+            padding: 24px 32px;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 18px;
+            font-size: 1.2rem;
             font-weight: 600;
-            color: #4a5568;
+            color: #0360a5;
         }
-
-        .stat-icon {
-            font-size: 1.5rem;
+        .stat-card .stat-icon {
+            font-size: 2.2rem;
+            background: #e3f0fa;
+            border-radius: 50%;
+            padding: 10px;
         }
-
         .progress-section {
-            margin-top: 20px;
+            margin-bottom: 32px;
         }
-
         .progress-label {
             font-weight: 600;
-            color: #4a5568;
-            margin-bottom: 12px;
+            color: #0057b8;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
         .progress-bar {
-            background: #e2e8f0;
+            background: #e3f0fa;
             border-radius: 12px;
-            height: 8px;
+            height: 10px;
             overflow: hidden;
             position: relative;
         }
-
         .progress-fill {
-            background: linear-gradient(90deg, #667eea, #764ba2);
+            background: linear-gradient(90deg, #0360a5, #0057b8);
             height: 100%;
             border-radius: 12px;
-            transition: width 0.5s ease;
-            position: relative;
+            transition: width 0.5s;
         }
-
         .topics-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-            gap: 24px;
-            margin-bottom: 32px;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 28px;
         }
-
         .topic-card {
-            border-radius: 24px;
-            padding: 32px;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 2px 12px rgba(3,96,165,0.06);
+            padding: 32px 28px 28px 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            transition: box-shadow 0.2s, transform 0.2s;
             cursor: pointer;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 2px solid transparent;
         }
-
         .topic-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 87, 184, 0.13);
+            border-color: #0360a5;
+            transform: translateY(-4px) scale(1.01);
         }
-
-        .topic-card.plants { background: linear-gradient(135deg, #c6f6d5 0%, #9ae6b4 100%); }
-        .topic-card.animals { background: linear-gradient(135deg, #fed7a3 0%, #fbb06a 100%); }
-        .topic-card.heat { background: linear-gradient(135deg, #fbb6ce 0%, #f687b3 100%); }
-        .topic-card.water { background: linear-gradient(135deg, #bee3f8 0%, #90cdf4 100%); }
-        .topic-card.earth { background: linear-gradient(135deg, #e9d8fd 0%, #d6bcfa 100%); }
-        .topic-card.machines { background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); }
-
         .topic-icon {
-            font-size: 3rem;
-            margin-bottom: 16px;
-            display: block;
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            color: #0057b8;
         }
-
         .topic-title {
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             font-weight: 700;
-            color: #2d3748;
-            margin-bottom: 8px;
+            color: #0360a5;
+            margin-bottom: 6px;
         }
-
         .topic-description {
             color: #4a5568;
             font-weight: 500;
-            margin-bottom: 24px;
+            margin-bottom: 18px;
             line-height: 1.5;
         }
-
         .start-learning-btn {
-            background: rgba(255, 255, 255, 0.9);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 12px;
-            padding: 12px 24px;
+            background: linear-gradient(90deg, #0360a5, #0057b8);
+            border: none;
+            border-radius: 10px;
+            padding: 10px 22px;
             font-weight: 600;
-            color: #2d3748;
+            color: #fff;
             cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
             font-size: 1rem;
-            width: 100%;
+            margin-top: auto;
+            transition: background 0.2s;
         }
-
         .start-learning-btn:hover {
-            background: rgba(255, 255, 255, 1);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+            background: #0360a5;
         }
-
         /* Slide Modal Styles */
         .slide-modal {
             position: fixed;
@@ -484,26 +451,25 @@
     </style>
 </head>
 <body>
-    <a href="{{ url_for('user_home') }}" style="display:inline-block; margin-bottom:24px; background:#fff; color:#764ba2; font-weight:600; border-radius:12px; padding:10px 22px; text-decoration:none; box-shadow:0 2px 8px rgba(102,126,234,0.10); transition:background 0.2s;">
-        ← Back to Home
-    </a>
-    <div class="container">
-        <!-- Welcome Card -->
-        <div class="welcome-card">
-            <div class="welcome-header">
-                <div>
-                    <h1 class="welcome-title">Welcome{{ ' back, ' + current_user.username if current_user.is_authenticated else '' }}! 🎉</h1>
-                    <p class="welcome-subtitle">Session #1 • Ready to explore science?</p>
+    <div class="main-content">
+        <div class="header-bar">
+            <div>
+                P4 Science Study Guide
+                <div class="subtitle">Skills you'll gain: Explore all topics of the Primary 4 Science curriculum.</div>
+            </div>
+            <a href="{{ url_for('user_home') }}" style="background:#fff; color:#0360a5; font-weight:600; border-radius:10px; padding:10px 22px; text-decoration:none; box-shadow:0 2px 8px rgba(3,96,165,0.10); font-size:1rem;">
+                ← Back to Home
+            </a>
+        </div>
+        <div class="container">
+            <div class="stats-row">
+                <div class="stat-card">
+                    <span class="stat-icon">🏆</span>
+                    <span id="points-display">{{ total_points|default(0) }} Points</span>
                 </div>
-                <div class="stats-container">
-                    <div class="stat-item">
-                        <span class="stat-icon">🏆</span>
-                        <span id="points-display">{{ total_points|default(0) }} Points</span>
-                    </div>
-                    <div class="stat-item">
-                        <span class="stat-icon">⭐</span>
-                        <span id="topics-display">{{ completed_topics|default(0) }}/6 Topics</span>
-                    </div>
+                <div class="stat-card">
+                    <span class="stat-icon">⭐</span>
+                    <span id="topics-display">{{ completed_topics|default(0) }}/6 Topics</span>
                 </div>
             </div>
             <div class="progress-section">
@@ -515,68 +481,43 @@
                     <div class="progress-fill" id="overall-progress" style="width: {{ ((completed_topics|default(0) / 6) * 100) | round(0) }}%"></div>
                 </div>
             </div>
-        </div>
-
-        <!-- Topics Grid -->
-        <div class="topics-grid">
-            <div class="topic-card plants" onclick="openSlideModal('plants')">
-                <div class="topic-icon">🌱</div>
-                <h3 class="topic-title">Plants and Their Parts</h3>
-                <p class="topic-description">Discover roots, stems, leaves, and flowers!</p>
-                <button class="start-learning-btn">
-                    <span>📖</span>
-                    Start Learning
-                </button>
-            </div>
-
-            <div class="topic-card animals" onclick="openSlideModal('animals')">
-                <div class="topic-icon">🐛</div>
-                <h3 class="topic-title">Animals and Their Habitats</h3>
-                <p class="topic-description">Explore where animals live and how they adapt!</p>
-                <button class="start-learning-btn">
-                    <span>📖</span>
-                    Start Learning
-                </button>
-            </div>
-
-            <div class="topic-card heat" onclick="openSlideModal('heat')">
-                <div class="topic-icon">🌡️</div>
-                <h3 class="topic-title">Heat and Temperature</h3>
-                <p class="topic-description">Learn about hot and cold, and how heat moves!</p>
-                <button class="start-learning-btn">
-                    <span>📖</span>
-                    Start Learning
-                </button>
-            </div>
-
-            <div class="topic-card water" onclick="openSlideModal('water')">
-                <div class="topic-icon">💧</div>
-                <h3 class="topic-title">Water Cycle</h3>
-                <p class="topic-description">Follow water on its amazing journey!</p>
-                <button class="start-learning-btn">
-                    <span>📖</span>
-                    Start Learning
-                </button>
-            </div>
-
-            <div class="topic-card earth" onclick="openSlideModal('earth')">
-                <div class="topic-icon">🌍</div>
-                <h3 class="topic-title">Earth and Space</h3>
-                <p class="topic-description">Explore our planet and the universe!</p>
-                <button class="start-learning-btn">
-                    <span>📖</span>
-                    Start Learning
-                </button>
-            </div>
-
-            <div class="topic-card machines" onclick="openSlideModal('machines')">
-                <div class="topic-icon">⚡</div>
-                <h3 class="topic-title">Simple Machines</h3>
-                <p class="topic-description">Discover tools that make work easier!</p>
-                <button class="start-learning-btn">
-                    <span>📖</span>
-                    Start Learning
-                </button>
+            <div class="topics-grid">
+                <div class="topic-card plants" onclick="openSlideModal('plants')">
+                    <div class="topic-icon">🌱</div>
+                    <div class="topic-title">Plants and Their Parts</div>
+                    <div class="topic-description">Discover roots, stems, leaves, and flowers!</div>
+                    <button class="start-learning-btn">Start Learning</button>
+                </div>
+                <div class="topic-card animals" onclick="openSlideModal('animals')">
+                    <div class="topic-icon">🐛</div>
+                    <div class="topic-title">Animals and Their Habitats</div>
+                    <div class="topic-description">Explore where animals live and how they adapt!</div>
+                    <button class="start-learning-btn">Start Learning</button>
+                </div>
+                <div class="topic-card heat" onclick="openSlideModal('heat')">
+                    <div class="topic-icon">🌡️</div>
+                    <div class="topic-title">Heat and Temperature</div>
+                    <div class="topic-description">Learn about hot and cold, and how heat moves!</div>
+                    <button class="start-learning-btn">Start Learning</button>
+                </div>
+                <div class="topic-card water" onclick="openSlideModal('water')">
+                    <div class="topic-icon">💧</div>
+                    <div class="topic-title">Water Cycle</div>
+                    <div class="topic-description">Follow water on its amazing journey!</div>
+                    <button class="start-learning-btn">Start Learning</button>
+                </div>
+                <div class="topic-card earth" onclick="openSlideModal('earth')">
+                    <div class="topic-icon">🌍</div>
+                    <div class="topic-title">Earth and Space</div>
+                    <div class="topic-description">Explore our planet and the universe!</div>
+                    <button class="start-learning-btn">Start Learning</button>
+                </div>
+                <div class="topic-card machines" onclick="openSlideModal('machines')">
+                    <div class="topic-icon">⚡</div>
+                    <div class="topic-title">Simple Machines</div>
+                    <div class="topic-description">Discover tools that make work easier!</div>
+                    <button class="start-learning-btn">Start Learning</button>
+                </div>
             </div>
         </div>
     </div>
@@ -1493,6 +1434,65 @@ function updateNavigationButtons() {
         }
 
         function completeSlide() {
+            // Add points and update progress
+            totalPoints += 100;
+            completedTopics++;
+            
+            // Update dashboard
+            updateDashboard();
+            closeSlideModal();
+            
+            // Send completion data to server
+            fetch('/update_learning_progress', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ topic: currentTopic })
+            });
+            
+            // Show completion message
+            alert(`🎉 Congratulations! You've completed ${slideContent[currentTopic].title} and earned 100 points!`);
+        }
+
+        function selectQuizAnswer(button, isCorrect) {
+            const options = button.parentElement.querySelectorAll('.quiz-option');
+            const explanation = button.parentElement.nextElementSibling;
+            
+            // Disable all options
+            options.forEach(option => {
+                option.disabled = true;
+                option.style.pointerEvents = 'none';
+            });
+            
+            // Mark selected answer
+            button.classList.add('selected');
+            
+            // Show correct/incorrect styling
+            if (isCorrect) {
+                button.classList.add('correct');
+                totalPoints += 10; // Bonus points for correct answer
+            } else {
+                button.classList.add('incorrect');
+                // Find and highlight correct answer
+                options.forEach(option => {
+                    if (option.onclick.toString().includes('true')) {
+                        option.classList.add('correct');
+                    }
+                });
+            }
+            
+            // Show explanation
+            explanation.classList.add('show');
+            
+            updateDashboard();
+        }
+
+        function updateDashboard() {
+            // Update points and topics display
+            document.getElementById('points-display').textContent = `${totalPoints} Points`;
+            document.getElementById('topics-display').textContent = `${completedTopics}/6 Topics`;
+            // Update progress bar
+            const percent = Math.round((completedTopics / 6) * 100);
+            document.getElementById('progress-percentage').textContent = `${percent}%`;
             // Add points and update progress
             totalPoints += 100;
             completedTopics++;
