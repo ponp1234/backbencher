@@ -61,7 +61,7 @@
             </span>
             <span>
                 <div class="slide-counter" id="slide-counter" style="display:inline-block;">1 / 20</div>
-              
+                <a href="{{ url_for('learn', code='Primary4') }}" class="back-home-btn">🏠 Back to Home</a>
             </span>
         </div>
         <div class="slide-content" id="slide-content"></div>
@@ -165,7 +165,7 @@ function nextSlide() {
         currentSlideIndex++;
         loadSlide();
     } else {
-       
+        window.location.href = "{{ url_for('learn', code='Primary4') }}";
     }
 }
 
