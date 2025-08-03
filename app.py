@@ -463,9 +463,9 @@ def user_home():
         try:
             duedate = datetime.strptime(duedate_str, "%Y-%m-%d").date()
         except ValueError:
-            duedate = today + timedelta(days=7)
+            duedate = today + timedelta(days=70)
     else:
-        duedate = today + timedelta(days=7)
+        duedate = today + timedelta(days=70)
     
     print(duedate)
 
