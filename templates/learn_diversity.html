@@ -6,8 +6,34 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { margin:0; font-family: 'Segoe UI', Arial, sans-serif; background: #f6f8fa; }
-        .slide-modal { width: 100vw; height: 100vh; background: #f6f8fa; display: flex; align-items: center; justify-content: center; }
-        .slide-container { background: #fff; border-radius: 18px; width: 98vw; max-width: 900px; height: 95vh; box-shadow: 0 4px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+        .slide-modal { width: 100vw; height: 100vh; background: #f6f8fa; display: flex; align-items: stretch; justify-content: center; }
+        .sidebar {
+            width: 260px;
+            background: #f3f4f6;
+            border-right: 1px solid #e2e8f0;
+            padding: 32px 0 0 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .subtopic-btn {
+            background: none;
+            border: none;
+            text-align: left;
+            padding: 16px 32px;
+            font-size: 1.1rem;
+            color: #4a5568;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+            border-left: 4px solid transparent;
+        }
+        .subtopic-btn.active, .subtopic-btn:hover {
+            background: #e0e7ff;
+            color: #4338ca;
+            border-left: 4px solid #6366f1;
+            font-weight: 600;
+        }
+        .slide-container { background: #fff; border-radius: 18px; width: 98vw; max-width: 900px; height: 95vh; box-shadow: 0 4px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; flex: 1; }
         .slide-header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
         .slide-title { font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 12px; }
         .slide-counter { background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; font-weight: 600; }
@@ -42,6 +68,10 @@
             background: #f3f4f6;
         }
         @media (max-width: 900px) {
+            .slide-modal { flex-direction: column; }
+            .sidebar { flex-direction: row; width: 100vw; height: auto; border-right: none; border-bottom: 1px solid #e2e8f0; padding: 0; overflow-x: auto; }
+            .subtopic-btn { padding: 10px 12px; font-size: 1rem; border-left: none; border-bottom: 4px solid transparent; }
+            .subtopic-btn.active, .subtopic-btn:hover { border-left: none; border-bottom: 4px solid #6366f1; }
             .slide-container { width: 100vw; height: 100vh; border-radius: 0; }
             .slide { padding: 12px 2vw; border-radius: 0; }
             .slide-header, .slide-navigation { padding: 10px 8px; }
@@ -51,6 +81,9 @@
 </head>
 <body>
 <div class="slide-modal" id="slide-modal">
+    <div class="sidebar" id="sidebar">
+        <!-- Subtopics will be rendered here -->
+    </div>
     <div class="slide-container">
         <div class="slide-header">
             <span style="display:flex;align-items:center;">
@@ -61,7 +94,7 @@
             </span>
             <span>
                 <div class="slide-counter" id="slide-counter" style="display:inline-block;">1 / 20</div>
-                <a href="{{ url_for('learn', code='Primary4') }}" class="back-home-btn">🏠 Back to Home</a>
+                <a href="/user_home" class="back-home-btn">🏠 Back to Home</a>
             </span>
         </div>
         <div class="slide-content" id="slide-content"></div>
@@ -73,8 +106,13 @@
     </div>
 </div>
 <script>
+const subtopics = [
+    { title: "General characteristics and classification of living and non-living things.", slideIndex: 0 },
+    { title: "Diversity of materials.", slideIndex: 10 }
+];
+
 const slides = [
-    // --- 18 content slides ---
+    // Slides 0-9: General characteristics and classification...
     { content: `<div class="slide-icon">🌱</div><h2>Welcome to Diversity!</h2><p>Let's explore living and non-living things and the diversity of materials.</p>` },
     { content: `<h3>What is Diversity?</h3><p>Diversity means variety. In science, it refers to the many different types of things in our world.</p>` },
     { content: `<h3>Living Things</h3><p>Living things can grow, move, breathe, reproduce, and respond to their environment.</p>` },
@@ -85,6 +123,7 @@ const slides = [
     { content: `<h3>Animals</h3><p>Animals move around and eat other living things for food.</p>` },
     { content: `<h3>Fungi</h3><p>Fungi like mushrooms do not make their own food. They break down dead things.</p>` },
     { content: `<h3>Microorganisms</h3><p>Some living things are so small we need a microscope to see them!</p>` },
+    // Slides 10-17: Diversity of materials
     { content: `<h3>Diversity of Materials</h3><p>Materials can be natural (wood, cotton) or man-made (plastic, glass).</p>` },
     { content: `<h3>Natural Materials</h3><p>Come from plants, animals, or the earth. Examples: wood, wool, stone.</p>` },
     { content: `<h3>Man-made Materials</h3><p>Made by people. Examples: plastic, glass, steel.</p>` },
@@ -128,6 +167,21 @@ const slides = [
 
 let currentSlideIndex = 0;
 
+function renderSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.innerHTML = '';
+    subtopics.forEach((sub, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'subtopic-btn' + (currentSlideIndex >= sub.slideIndex && (idx === subtopics.length-1 || currentSlideIndex < subtopics[idx+1].slideIndex) ? ' active' : '');
+        btn.textContent = sub.title;
+        btn.onclick = () => {
+            currentSlideIndex = sub.slideIndex;
+            loadSlide();
+        };
+        sidebar.appendChild(btn);
+    });
+}
+
 function loadSlide() {
     const slideContentEl = document.getElementById('slide-content');
     slideContentEl.innerHTML = '';
@@ -138,6 +192,7 @@ function loadSlide() {
     updateSlideCounter();
     updateNavigationButtons();
     updateSlideProgress();
+    renderSidebar();
 }
 
 function updateSlideCounter() {
@@ -165,7 +220,7 @@ function nextSlide() {
         currentSlideIndex++;
         loadSlide();
     } else {
-        window.location.href = "{{ url_for('learn', code='Primary4') }}";
+        window.location.href = "/p4_science";
     }
 }
 
