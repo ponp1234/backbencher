@@ -6,26 +6,88 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body { margin:0; font-family: 'Segoe UI', Arial, sans-serif; background: #f6f8fa; }
-        .slide-modal { width: 100vw; height: 100vh; background: #f6f8fa; display: flex; align-items: stretch; justify-content: center; }
+        
+        .slide-modal { 
+            width: 100vw; 
+            height: 100vh; 
+            background: #f6f8fa; 
+            display: flex; 
+            align-items: stretch; 
+            justify-content: center; 
+            transition: padding-left 0.3s ease;
+        }
+        
+        .slide-modal.sidebar-open { padding-left: 280px; }
+        
         .sidebar {
-            width: 260px;
+            width: 280px;
             background: #f3f4f6;
             border-right: 1px solid #e2e8f0;
-            padding: 32px 0 0 0;
+            padding: 20px 0 0 0;
             display: flex;
             flex-direction: column;
-            gap: 8px;
+            gap: 4px;
+            overflow-y: auto;
+            position: fixed;
+            left: -280px;
+            top: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .sidebar.open { left: 0; }
+        
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1001;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 12px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 10px rgba(102,126,234,0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .menu-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+        }
+        
+        .menu-toggle.sidebar-open {
+            left: 300px;
+        }
+        
+        .subtopic-section {
+            margin-bottom: 16px;
+        }
+        .subtopic-header {
+            background: #e2e8f0;
+            padding: 12px 20px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #374151;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         .subtopic-btn {
             background: none;
             border: none;
             text-align: left;
-            padding: 16px 32px;
-            font-size: 1.1rem;
+            padding: 12px 24px;
+            font-size: 0.95rem;
             color: #4a5568;
             cursor: pointer;
             transition: background 0.2s, color 0.2s;
             border-left: 4px solid transparent;
+            width: 100%;
+            display: block;
         }
         .subtopic-btn.active, .subtopic-btn:hover {
             background: #e0e7ff;
@@ -33,24 +95,377 @@
             border-left: 4px solid #6366f1;
             font-weight: 600;
         }
-        .slide-container { background: #fff; border-radius: 18px; width: 98vw; max-width: 900px; height: 95vh; box-shadow: 0 4px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; flex: 1; }
-        .slide-header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .slide-container { 
+            background: #fff; 
+            border-radius: 18px; 
+            width: 100vw; 
+            max-width: none; 
+            height: 95vh; 
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08); 
+            display: flex; 
+            flex-direction: column; 
+            flex: 1; 
+            margin: 10px;
+        }
+        
+        .slide-header { 
+            background: linear-gradient(135deg, #667eea, #764ba2); 
+            color: white; 
+            padding: 20px 32px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+        }
         .slide-title { font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 12px; }
         .slide-counter { background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; font-weight: 600; }
-        .slide-content { flex: 1; overflow-y: auto; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
-        .slide { width: 100%; max-width: 800px; margin: 0 auto; padding: 40px 20px; background: #fff; border-radius: 24px; box-shadow: 0 4px 24px rgba(102,126,234,0.08); display: flex; flex-direction: column; align-items: center; text-align: center; }
-        .slide-navigation { background: #fff; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; }
-        .nav-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 12px; padding: 12px 24px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        
+        .slide-content { 
+            flex: 1; 
+            overflow-y: auto; 
+            display: flex; 
+            flex-direction: column;
+            background: #f8fafc; 
+            padding: 20px;
+        }
+        
+        .main-slide-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            min-height: 400px;
+        }
+        
+        .slide { 
+            width: 100%; 
+            max-width: 900px; 
+            margin: 0 auto; 
+            padding: 40px 20px; 
+            background: #fff; 
+            border-radius: 24px; 
+            box-shadow: 0 4px 24px rgba(102,126,234,0.08); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center; 
+        }
+        
+        .slide-navigation { 
+            background: #fff; 
+            padding: 20px 32px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-top: 1px solid #e2e8f0; 
+        }
+        
+        .nav-btn { 
+            background: linear-gradient(135deg, #667eea, #764ba2); 
+            color: white; 
+            border: none; 
+            border-radius: 12px; 
+            padding: 12px 24px; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+        }
         .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .slide-progress { display: flex; gap: 8px; align-items: center; }
         .progress-dot { width: 12px; height: 12px; border-radius: 50%; background: #e2e8f0; }
         .progress-dot.active { background: linear-gradient(135deg, #667eea, #764ba2); }
-        .quiz-option { background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; cursor: pointer; margin: 8px 0; font-size: 1.1rem; }
+        
+        /* Notes Section */
+        .notes-section {
+            background: #fff;
+            border-radius: 16px;
+            margin-top: 20px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            border-top: 3px solid #667eea;
+        }
+        
+        .notes-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            color: #374151;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .notes-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            align-items: start;
+        }
+        
+        .notes-text {
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #4a5568;
+        }
+        
+        .notes-images {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .bw-image {
+            width: 100%;
+            height: 150px;
+            background: #f7f7f7;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+            color: #6b7280;
+            filter: grayscale(100%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bw-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, #f3f4f6 25%, transparent 25%), 
+                        linear-gradient(-45deg, #f3f4f6 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #f3f4f6 75%), 
+                        linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            opacity: 0.1;
+        }
+        
+        /* AI Help Floating Widget */
+        .ai-help-widget {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 1002;
+            font-family: inherit;
+        }
+        
+        .ai-help-toggle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .ai-help-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.5);
+        }
+        
+        .ai-help-toggle.active {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .ai-help-panel {
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+            width: 350px;
+            max-height: 500px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border: 1px solid #e5e7eb;
+            transform: translateY(20px) scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-help-panel.open {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .ai-help-header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 16px 16px 0 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .ai-help-content {
+            padding: 20px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+        
+        .ai-chat-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 15px;
+            min-height: 100px;
+        }
+        
+        .ai-message {
+            padding: 10px 12px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .ai-message.user {
+            background: #eff6ff;
+            color: #1e40af;
+            align-self: flex-end;
+            max-width: 80%;
+        }
+        
+        .ai-message.bot {
+            background: #f0fdf4;
+            color: #166534;
+            align-self: flex-start;
+            max-width: 90%;
+        }
+        
+        .ai-input-area {
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 15px;
+        }
+        
+        .ai-input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .ai-input:focus {
+            border-color: #10b981;
+        }
+        
+        .ai-send-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+        }
+        
+        .ai-send-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .ai-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        
+        .ai-suggestion {
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .ai-suggestion:hover {
+            background: #e5e7eb;
+        }
+        
+        /* Video Support */
+        .video-container {
+            width: 100%;
+            max-width: 800px;
+            margin: 20px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        
+        .video-container video {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .video-placeholder {
+            width: 100%;
+            height: 300px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            border-radius: 12px;
+        }
+        
+        /* Quiz Styles */
+        .quiz-option { 
+            background: white; 
+            border: 2px solid #e2e8f0; 
+            border-radius: 12px; 
+            padding: 16px 20px; 
+            cursor: pointer; 
+            margin: 8px 0; 
+            font-size: 1.1rem; 
+            width: 100%;
+            max-width: 600px;
+        }
         .quiz-option.selected { background: #dbeafe; border-color: #3b82f6; color: #1e40af; }
         .quiz-option.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; }
         .quiz-option.incorrect { background: #fecaca; border-color: #ef4444; color: #dc2626; }
-        .quiz-explanation { background: #f0fdf4; border-radius: 12px; padding: 20px; border-left: 4px solid #22c55e; margin-top: 20px; display: none; }
+        .quiz-explanation { 
+            background: #f0fdf4; 
+            border-radius: 12px; 
+            padding: 20px; 
+            border-left: 4px solid #22c55e; 
+            margin-top: 20px; 
+            display: none; 
+            max-width: 600px;
+        }
         .quiz-explanation.show { display: block; }
+        
         .back-home-btn {
             background: #fff;
             color: #764ba2;
@@ -67,19 +482,111 @@
         .back-home-btn:hover {
             background: #f3f4f6;
         }
+        
+        /* Overlay for mobile menu */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+        }
+        
+        .sidebar-overlay.show {
+            display: block;
+        }
+        
         @media (max-width: 900px) {
-            .slide-modal { flex-direction: column; }
-            .sidebar { flex-direction: row; width: 100vw; height: auto; border-right: none; border-bottom: 1px solid #e2e8f0; padding: 0; overflow-x: auto; }
-            .subtopic-btn { padding: 10px 12px; font-size: 1rem; border-left: none; border-bottom: 4px solid transparent; }
-            .subtopic-btn.active, .subtopic-btn:hover { border-left: none; border-bottom: 4px solid #6366f1; }
-            .slide-container { width: 100vw; height: 100vh; border-radius: 0; }
-            .slide { padding: 12px 2vw; border-radius: 0; }
-            .slide-header, .slide-navigation { padding: 10px 8px; }
-            .back-home-btn { font-size: 0.95rem; padding: 6px 10px; }
+            .slide-modal { padding-left: 0 !important; }
+            .slide-modal.sidebar-open { padding-left: 0; }
+            
+            .menu-toggle.sidebar-open { left: 20px; }
+            
+            .sidebar { 
+                width: 100vw;
+                max-width: 320px;
+            }
+            
+            .subtopic-header { 
+                display: block;
+                font-size: 0.8rem;
+                padding: 8px 16px;
+            }
+            
+            .subtopic-btn { 
+                padding: 10px 20px; 
+                font-size: 0.9rem; 
+            }
+            
+            .slide-container { 
+                width: 100vw; 
+                height: 100vh; 
+                border-radius: 0; 
+                margin: 0;
+            }
+            
+            .slide { 
+                padding: 20px 15px; 
+                border-radius: 0; 
+            }
+            
+            .slide-header, .slide-navigation { 
+                padding: 15px 20px; 
+            }
+            
+            .back-home-btn { 
+                font-size: 0.9rem; 
+                padding: 6px 12px; 
+                margin-left: 10px;
+            }
+            
+            .video-container {
+                margin: 15px 0;
+            }
+            
+            .video-placeholder {
+                height: 200px;
+                font-size: 1rem;
+            }
+            
+            .notes-content {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .bw-image {
+                height: 120px;
+            }
+            
+            .ai-help-widget {
+                bottom: 20px;
+                right: 20px;
+            }
+            
+            .ai-help-toggle {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            
+            .ai-help-panel {
+                width: 300px;
+                bottom: 70px;
+                right: -20px;
+            }
         }
     </style>
 </head>
 <body>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+<button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()">
+    ☰
+</button>
+
 <div class="slide-modal" id="slide-modal">
     <div class="sidebar" id="sidebar">
         <!-- Subtopics will be rendered here -->
@@ -97,7 +604,9 @@
                 <a href="/user_home" class="back-home-btn">🏠 Back to Home</a>
             </span>
         </div>
-        <div class="slide-content" id="slide-content"></div>
+        <div class="slide-content" id="slide-content">
+            <div class="main-slide-area" id="main-slide-area"></div>
+        </div>
         <div class="slide-navigation">
             <button class="nav-btn" id="prev-slide-btn" onclick="previousSlide()" disabled>← Previous</button>
             <div class="slide-progress" id="slide-progress"></div>
@@ -105,33 +614,238 @@
         </div>
     </div>
 </div>
+
+<!-- AI Help Widget -->
+<div class="ai-help-widget">
+    <button class="ai-help-toggle" id="ai-help-toggle" onclick="toggleAIHelp()">🤖</button>
+    <div class="ai-help-panel" id="ai-help-panel">
+        <div class="ai-help-header">
+            <span>🤖</span>
+            <span>BB AI Assistant</span>
+        </div>
+        <div class="ai-help-content">
+            <div class="ai-suggestions">
+                <button class="ai-suggestion" onclick="askAI('Explain living things')">Explain living things</button>
+                <button class="ai-suggestion" onclick="askAI('What is diversity?')">What is diversity?</button>
+                <button class="ai-suggestion" onclick="askAI('Help with quiz')">Help with quiz</button>
+            </div>
+            <div class="ai-chat-messages" id="ai-chat-messages">
+                <div class="ai-message bot">
+                    Hi! I'm BB AI, your learning assistant. Ask me anything about this lesson! 😊
+                </div>
+            </div>
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="ai-input" placeholder="Ask me anything..." onkeypress="handleAIKeyPress(event)">
+                <button class="ai-send-btn" onclick="sendAIMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
-const subtopics = [
-    { title: "General characteristics and classification of living and non-living things.", slideIndex: 0 },
-    { title: "Diversity of materials.", slideIndex: 10 }
+const subtopicSections = [
+    {
+        title: "Living & Non-Living Things",
+        subtopics: [
+            { title: "Introduction to Diversity", slideIndex: 0 },
+            { title: "What is Diversity?", slideIndex: 1 },
+            { title: "Living Things", slideIndex: 2 },
+            { title: "Non-Living Things", slideIndex: 3 },
+            { title: "Characteristics of Living Things", slideIndex: 4 },
+            { title: "Classification Systems", slideIndex: 5 },
+            { title: "Plants", slideIndex: 6 },
+            { title: "Animals", slideIndex: 7 },
+            { title: "Fungi", slideIndex: 8 },
+            { title: "Microorganisms", slideIndex: 9 }
+        ]
+    },
+    {
+        title: "Diversity of Materials",
+        subtopics: [
+            { title: "Types of Materials", slideIndex: 10 },
+            { title: "Natural Materials", slideIndex: 11 },
+            { title: "Man-made Materials", slideIndex: 12 },
+            { title: "Uses of Materials", slideIndex: 13 },
+            { title: "Grouping Materials", slideIndex: 14 },
+            { title: "Importance of Diversity", slideIndex: 15 },
+            { title: "Review", slideIndex: 16 },
+            { title: "Quiz Preparation", slideIndex: 17 },
+            { title: "Quiz 1", slideIndex: 18 },
+            { title: "Quiz 2", slideIndex: 19 }
+        ]
+    }
 ];
 
 const slides = [
     // Slides 0-9: General characteristics and classification...
-    { content: `<div class="slide-icon">🌱</div><h2>Welcome to Diversity!</h2><p>Let's explore living and non-living things and the diversity of materials.</p>` },
-    { content: `<h3>What is Diversity?</h3><p>Diversity means variety. In science, it refers to the many different types of things in our world.</p>` },
-    { content: `<h3>Living Things</h3><p>Living things can grow, move, breathe, reproduce, and respond to their environment.</p>` },
-    { content: `<h3>Non-Living Things</h3><p>Non-living things do not grow, move, or reproduce. Examples: rocks, water, air.</p>` },
-    { content: `<h3>Characteristics of Living Things</h3><p>They need food, water, air, and can reproduce.</p>` },
-    { content: `<h3>Classification</h3><p>We classify living things into groups: plants, animals, fungi, etc.</p>` },
-    { content: `<h3>Plants</h3><p>Plants make their own food using sunlight. They have roots, stems, and leaves.</p>` },
-    { content: `<h3>Animals</h3><p>Animals move around and eat other living things for food.</p>` },
-    { content: `<h3>Fungi</h3><p>Fungi like mushrooms do not make their own food. They break down dead things.</p>` },
-    { content: `<h3>Microorganisms</h3><p>Some living things are so small we need a microscope to see them!</p>` },
+    { 
+        content: `
+            <div class="slide-icon">🌱</div>
+            <h2>Welcome to Diversity!</h2>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    📹 Introduction Video: What is Diversity?
+                </div>
+            </div>
+            <p>Let's explore living and non-living things and the diversity of materials.</p>
+        `,
+        notes: {
+            text: "Diversity is everywhere around us! In this lesson, we'll discover how scientists classify the amazing variety of living and non-living things in our world. Pay attention to the key characteristics that help us tell living things apart from non-living things.",
+            images: ["🌳 Trees and plants", "🪨 Rocks and minerals"]
+        }
+    },
+    { 
+        content: `
+            <h3>What is Diversity?</h3>
+            <p>Diversity means variety. In science, it refers to the many different types of things in our world.</p>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    📹 Video: Examples of Diversity in Nature
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Think about all the different animals, plants, and materials you see every day. From tiny ants to huge elephants, from soft cotton to hard steel - this variety is what we call diversity!",
+            images: ["🦋 Different butterflies", "🌸 Various flowers"]
+        }
+    },
+    { 
+        content: `
+            <h3>Living Things</h3>
+            <p>Living things can grow, move, breathe, reproduce, and respond to their environment.</p>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    📹 Video: Characteristics of Living Things
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Remember MRS GREN to identify living things: Movement, Respiration, Sensitivity, Growth, Reproduction, Excretion, Nutrition. All living things need these seven characteristics!",
+            images: ["🐱 Animals moving", "🌱 Plants growing"]
+        }
+    },
+    { 
+        content: `<h3>Non-Living Things</h3><p>Non-living things do not grow, move, or reproduce. Examples: rocks, water, air.</p>`,
+        notes: {
+            text: "Non-living things don't have the seven characteristics of life. They can't grow on their own, don't need food, and can't make babies. But they're still very important in our world!",
+            images: ["🪨 Different rocks", "💧 Water droplets"]
+        }
+    },
+    { 
+        content: `<h3>Characteristics of Living Things</h3><p>They need food, water, air, and can reproduce.</p>`,
+        notes: {
+            text: "All living things share these basic needs. Plants make their own food through photosynthesis, while animals must eat other living things. Both need water and air to survive.",
+            images: ["🍎 Food sources", "💨 Air and breathing"]
+        }
+    },
+    { 
+        content: `<h3>Classification</h3><p>We classify living things into groups: plants, animals, fungi, etc.</p>`,
+        notes: {
+            text: "Scientists organize living things into groups based on their similarities. This makes it easier to study and understand the incredible diversity of life on Earth.",
+            images: ["📊 Classification chart", "🔬 Scientific grouping"]
+        }
+    },
+    { 
+        content: `
+            <h3>Plants</h3>
+            <p>Plants make their own food using sunlight. They have roots, stems, and leaves.</p>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    📹 Video: How Plants Make Food (Photosynthesis)
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Plants are amazing food factories! They use sunlight, water, and carbon dioxide to make their own food through photosynthesis. The green substance chlorophyll helps capture sunlight.",
+            images: ["🌿 Plant parts diagram", "☀️ Sunlight and leaves"]
+        }
+    },
+    { 
+        content: `<h3>Animals</h3><p>Animals move around and eat other living things for food.</p>`,
+        notes: {
+            text: "Unlike plants, animals can't make their own food. They must eat plants or other animals to get energy. Animals can move from place to place to find food and shelter.",
+            images: ["🦁 Predator animals", "🐰 Herbivore animals"]
+        }
+    },
+    { 
+        content: `<h3>Fungi</h3><p>Fungi like mushrooms do not make their own food. They break down dead things.</p>`,
+        notes: {
+            text: "Fungi are nature's recyclers! They break down dead plants and animals, returning nutrients to the soil. Mushrooms are just the visible part - most fungi live underground.",
+            images: ["🍄 Different mushrooms", "🧽 Fungi structures"]
+        }
+    },
+    { 
+        content: `<h3>Microorganisms</h3><p>Some living things are so small we need a microscope to see them!</p>`,
+        notes: {
+            text: "The microscopic world is full of tiny living things like bacteria and viruses. Some are helpful (like those that help us digest food), while others can make us sick.",
+            images: ["🔬 Microscope view", "🦠 Microorganism shapes"]
+        }
+    },
     // Slides 10-17: Diversity of materials
-    { content: `<h3>Diversity of Materials</h3><p>Materials can be natural (wood, cotton) or man-made (plastic, glass).</p>` },
-    { content: `<h3>Natural Materials</h3><p>Come from plants, animals, or the earth. Examples: wood, wool, stone.</p>` },
-    { content: `<h3>Man-made Materials</h3><p>Made by people. Examples: plastic, glass, steel.</p>` },
-    { content: `<h3>Uses of Materials</h3><p>We choose materials based on their properties: strong, waterproof, flexible, etc.</p>` },
-    { content: `<h3>Grouping Materials</h3><p>We can group materials by what they are made of or how they are used.</p>` },
-    { content: `<h3>Why is Diversity Important?</h3><p>Diversity helps living things survive and adapt to changes.</p>` },
-    { content: `<h3>Review</h3><p>Living things, non-living things, and materials are all around us!</p>` },
-    { content: `<h3>Get Ready for a Quiz!</h3><p>Let's test your knowledge about diversity!</p>` },
+    { 
+        content: `
+            <h3>Diversity of Materials</h3>
+            <p>Materials can be natural (wood, cotton) or man-made (plastic, glass).</p>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    📹 Video: Natural vs Man-made Materials
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Look around you - everything is made of materials! Some come directly from nature, while others are created by humans using natural resources as starting materials.",
+            images: ["🌲 Natural materials", "🏭 Man-made materials"]
+        }
+    },
+    { 
+        content: `<h3>Natural Materials</h3><p>Come from plants, animals, or the earth. Examples: wood, wool, stone.</p>`,
+        notes: {
+            text: "Natural materials are gifts from nature. Wood comes from trees, wool from sheep, cotton from plants, and metals from rocks deep in the earth.",
+            images: ["🐑 Wool from sheep", "🌰 Wood from trees"]
+        }
+    },
+    { 
+        content: `<h3>Man-made Materials</h3><p>Made by people. Examples: plastic, glass, steel.</p>`,
+        notes: {
+            text: "Humans are clever inventors! We've learned to create new materials by mixing, heating, and changing natural materials. Plastic comes from oil, glass from sand!",
+            images: ["🥤 Plastic items", "🪟 Glass objects"]
+        }
+    },
+    { 
+        content: `<h3>Uses of Materials</h3><p>We choose materials based on their properties: strong, waterproof, flexible, etc.</p>`,
+        notes: {
+            text: "Smart material choice is important! We use waterproof materials for raincoats, strong materials for buildings, and flexible materials for clothing.",
+            images: ["🏗️ Strong materials", "🧥 Flexible materials"]
+        }
+    },
+    { 
+        content: `<h3>Grouping Materials</h3><p>We can group materials by what they are made of or how they are used.</p>`,
+        notes: {
+            text: "Materials can be grouped in many ways: by their source (natural/man-made), by their properties (hard/soft), or by their use (building/clothing).",
+            images: ["📋 Material groups", "🔧 Material properties"]
+        }
+    },
+    { 
+        content: `<h3>Why is Diversity Important?</h3><p>Diversity helps living things survive and adapt to changes.</p>`,
+        notes: {
+            text: "Diversity is like nature's insurance policy! When environments change, some species can survive because they're different. This keeps ecosystems healthy and balanced.",
+            images: ["🌍 Ecosystem balance", "🔄 Adaptation examples"]
+        }
+    },
+    { 
+        content: `<h3>Review</h3><p>Living things, non-living things, and materials are all around us!</p>`,
+        notes: {
+            text: "Great job learning about diversity! Remember the key differences between living and non-living things, and how we classify the amazing variety of materials in our world.",
+            images: ["✅ Review checklist", "📚 Key concepts"]
+        }
+    },
+    { 
+        content: `<h3>Get Ready for a Quiz!</h3><p>Let's test your knowledge about diversity!</p>`,
+        notes: {
+            text: "Time to show what you've learned! Think about the characteristics of living things, the differences between natural and man-made materials, and why diversity matters.",
+            images: ["🎯 Quiz preparation", "🧠 Knowledge check"]
+        }
+    },
     // --- 2 quiz slides ---
     {
         content: `
@@ -146,7 +860,11 @@ const slides = [
             </div>
             <div class="quiz-explanation"><strong>Correct!</strong> A tree is a living thing because it grows and makes its own food.</div>
         </div>
-        `
+        `,
+        notes: {
+            text: "Remember MRS GREN! A tree can grow, reproduce (make seeds), respond to sunlight, and make its own food through photosynthesis.",
+            images: ["🌳 Tree characteristics", "📝 Living thing checklist"]
+        }
     },
     {
         content: `
@@ -161,34 +879,193 @@ const slides = [
             </div>
             <div class="quiz-explanation"><strong>Correct!</strong> Plastic is made by people from chemicals.</div>
         </div>
-        `
+        `,
+        notes: {
+            text: "Plastic is created by humans from oil and chemicals. Wood comes from trees, cotton from plants, and wool from sheep - all natural sources!",
+            images: ["🏭 Plastic factory", "🌿 Natural sources"]
+        }
     }
 ];
 
 let currentSlideIndex = 0;
+let sidebarOpen = false;
+let aiHelpOpen = false;
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const slideModal = document.getElementById('slide-modal');
+    const menuToggle = document.getElementById('menu-toggle');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    sidebarOpen = !sidebarOpen;
+    
+    if (sidebarOpen) {
+        sidebar.classList.add('open');
+        slideModal.classList.add('sidebar-open');
+        menuToggle.classList.add('sidebar-open');
+        menuToggle.innerHTML = '✕';
+        overlay.classList.add('show');
+    } else {
+        sidebar.classList.remove('open');
+        slideModal.classList.remove('sidebar-open');
+        menuToggle.classList.remove('sidebar-open');
+        menuToggle.innerHTML = '☰';
+        overlay.classList.remove('show');
+    }
+}
+
+function toggleAIHelp() {
+    const panel = document.getElementById('ai-help-panel');
+    const toggle = document.getElementById('ai-help-toggle');
+    
+    aiHelpOpen = !aiHelpOpen;
+    
+    if (aiHelpOpen) {
+        panel.classList.add('open');
+        toggle.classList.add('active');
+        toggle.innerHTML = '✕';
+    } else {
+        panel.classList.remove('open');
+        toggle.classList.remove('active');
+        toggle.innerHTML = '🤖';
+    }
+}
+
+function askAI(question) {
+    const input = document.getElementById('ai-input');
+    input.value = question;
+    sendAIMessage();
+}
+
+function sendAIMessage() {
+    const input = document.getElementById('ai-input');
+    const messages = document.getElementById('ai-chat-messages');
+    const question = input.value.trim();
+    
+    if (!question) return;
+    
+    // Add user message
+    const userMessage = document.createElement('div');
+    userMessage.className = 'ai-message user';
+    userMessage.textContent = question;
+    messages.appendChild(userMessage);
+    
+    // Clear input
+    input.value = '';
+    
+    // Add bot response (simulated)
+    setTimeout(() => {
+        const botMessage = document.createElement('div');
+        botMessage.className = 'ai-message bot';
+        botMessage.textContent = generateAIResponse(question);
+        messages.appendChild(botMessage);
+        messages.scrollTop = messages.scrollHeight;
+    }, 1000);
+    
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function generateAIResponse(question) {
+    const responses = {
+        'explain living things': 'Living things have 7 key characteristics: Movement, Respiration, Sensitivity, Growth, Reproduction, Excretion, and Nutrition (MRS GREN). They can respond to their environment and need food, water, and air to survive! 🌱',
+        'what is diversity': 'Diversity means variety! It\'s all the different types of living things, materials, and objects in our world. Think of all the different animals, plants, and materials you see around you - that\'s diversity! 🌍',
+        'help with quiz': 'Remember the key points: Living things grow and reproduce, non-living things don\'t. Natural materials come from nature (wood, wool), man-made materials are created by humans (plastic, glass). You\'ve got this! 💪',
+        'natural materials': 'Natural materials come directly from nature - like wood from trees, cotton from plants, wool from sheep, and stone from the earth. They\'re not made by humans! 🌿',
+        'man-made materials': 'Man-made materials are created by humans, like plastic (from oil), glass (from sand), and steel (from iron). We use technology to make these! 🏭'
+    };
+    
+    const key = question.toLowerCase();
+    for (const [keyword, response] of Object.entries(responses)) {
+        if (key.includes(keyword.replace(/\s+/g, '')) || key.includes(keyword)) {
+            return response;
+        }
+    }
+    
+    return `That's a great question about diversity! Based on slide ${currentSlideIndex + 1}, I'd suggest focusing on the key concepts we've covered. Feel free to ask more specific questions! 😊`;
+}
+
+function handleAIKeyPress(event) {
+    if (event.key === 'Enter') {
+        sendAIMessage();
+    }
+}
 
 function renderSidebar() {
     const sidebar = document.getElementById('sidebar');
     sidebar.innerHTML = '';
-    subtopics.forEach((sub, idx) => {
-        const btn = document.createElement('button');
-        btn.className = 'subtopic-btn' + (currentSlideIndex >= sub.slideIndex && (idx === subtopics.length-1 || currentSlideIndex < subtopics[idx+1].slideIndex) ? ' active' : '');
-        btn.textContent = sub.title;
-        btn.onclick = () => {
-            currentSlideIndex = sub.slideIndex;
-            loadSlide();
-        };
-        sidebar.appendChild(btn);
+    
+    subtopicSections.forEach(section => {
+        // Create section header
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'subtopic-section';
+        
+        const header = document.createElement('div');
+        header.className = 'subtopic-header';
+        header.textContent = section.title;
+        headerDiv.appendChild(header);
+        
+        // Create subtopic buttons
+        section.subtopics.forEach(subtopic => {
+            const btn = document.createElement('button');
+            btn.className = 'subtopic-btn' + (currentSlideIndex === subtopic.slideIndex ? ' active' : '');
+            btn.textContent = subtopic.title;
+            btn.onclick = () => {
+                currentSlideIndex = subtopic.slideIndex;
+                loadSlide();
+                if (window.innerWidth <= 900) {
+                    toggleSidebar(); // Auto-close on mobile after selection
+                }
+            };
+            headerDiv.appendChild(btn);
+        });
+        
+        sidebar.appendChild(headerDiv);
     });
 }
 
 function loadSlide() {
     const slideContentEl = document.getElementById('slide-content');
+    
+    // Clear content
     slideContentEl.innerHTML = '';
+    
+    // Add main slide area
+    const mainArea = document.createElement('div');
+    mainArea.className = 'main-slide-area';
+    mainArea.id = 'main-slide-area';
+    
     const slideEl = document.createElement('div');
     slideEl.className = 'slide active';
     slideEl.innerHTML = slides[currentSlideIndex].content;
-    slideContentEl.appendChild(slideEl);
+    mainArea.appendChild(slideEl);
+    
+    slideContentEl.appendChild(mainArea);
+    
+    // Add notes section if available
+    if (slides[currentSlideIndex].notes) {
+        const notesSection = document.createElement('div');
+        notesSection.className = 'notes-section';
+        
+        notesSection.innerHTML = `
+            <div class="notes-header">
+                <span>📝</span>
+                <span>Study Notes</span>
+            </div>
+            <div class="notes-content">
+                <div class="notes-text">
+                    ${slides[currentSlideIndex].notes.text}
+                </div>
+                <div class="notes-images">
+                    ${slides[currentSlideIndex].notes.images.map(img => 
+                        `<div class="bw-image">${img}</div>`
+                    ).join('')}
+                </div>
+            </div>
+        `;
+        
+        slideContentEl.appendChild(notesSection);
+    }
+    
     updateSlideCounter();
     updateNavigationButtons();
     updateSlideProgress();
@@ -251,6 +1128,18 @@ function selectQuizAnswer(button, isCorrect) {
     }
     explanation.classList.add('show');
 }
+
+// Close sidebar when clicking outside on mobile
+document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('menu-toggle');
+    
+    if (sidebarOpen && !sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+        if (window.innerWidth <= 900) {
+            toggleSidebar();
+        }
+    }
+});
 
 window.onload = loadSlide;
 </script>
