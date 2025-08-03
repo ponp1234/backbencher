@@ -38,7 +38,14 @@ class WalletTransaction(db.Model):
     # Relationship
     user = db.relationship('User', backref='wallet_transactions', lazy=True)
 
+class LearningProgress(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    topic_code = db.Column(db.String(50), nullable=False)  # e.g., 'plants', 'animals'
+    completed = db.Column(db.Boolean, default=False)
+    completed_at = db.Column(db.DateTime, nullable=True)
 
+    user = db.relationship('User', backref='learning_progress', lazy=True)
 
 
 
@@ -199,6 +206,29 @@ def register():
         return redirect(url_for('register'))
     
     return render_template('register.html')
+
+@app.route('/update_learning_progress', methods=['POST'])
+@login_required
+def update_learning_progress():
+    data = request.get_json()
+    topic = data.get('topic')
+    if not topic:
+        return jsonify({'error': 'No topic provided'}), 400
+
+    progress = LearningProgress.query.filter_by(user_id=current_user.id, topic_code=topic).first()
+    if not progress:
+        progress = LearningProgress(
+            user_id=current_user.id,
+            topic_code=topic,
+            completed=True,
+            completed_at=datetime.utcnow()
+        )
+        db.session.add(progress)
+    else:
+        progress.completed = True
+        progress.completed_at = datetime.utcnow()
+    db.session.commit()
+    return jsonify({'success': True})
 
 @app.route('/countdown')
 @login_required
