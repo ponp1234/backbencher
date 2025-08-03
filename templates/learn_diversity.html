@@ -5,7 +5,6 @@
     <title>Diversity - P4 Science</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        /* Use your existing modal/slider CSS here for consistency */
         body { margin:0; font-family: 'Segoe UI', Arial, sans-serif; background: #f6f8fa; }
         .slide-modal { width: 100vw; height: 100vh; background: #f6f8fa; display: flex; align-items: center; justify-content: center; }
         .slide-container { background: #fff; border-radius: 18px; width: 98vw; max-width: 900px; height: 95vh; box-shadow: 0 4px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
@@ -26,10 +25,27 @@
         .quiz-option.incorrect { background: #fecaca; border-color: #ef4444; color: #dc2626; }
         .quiz-explanation { background: #f0fdf4; border-radius: 12px; padding: 20px; border-left: 4px solid #22c55e; margin-top: 20px; display: none; }
         .quiz-explanation.show { display: block; }
+        .back-home-btn {
+            background: #fff;
+            color: #764ba2;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 8px 18px;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(102,126,234,0.10);
+            font-size: 1rem;
+            border: none;
+            margin-left: 18px;
+            transition: background 0.2s;
+        }
+        .back-home-btn:hover {
+            background: #f3f4f6;
+        }
         @media (max-width: 900px) {
             .slide-container { width: 100vw; height: 100vh; border-radius: 0; }
             .slide { padding: 12px 2vw; border-radius: 0; }
             .slide-header, .slide-navigation { padding: 10px 8px; }
+            .back-home-btn { font-size: 0.95rem; padding: 6px 10px; }
         }
     </style>
 </head>
@@ -37,8 +53,16 @@
 <div class="slide-modal" id="slide-modal">
     <div class="slide-container">
         <div class="slide-header">
-            <h2 class="slide-title"><span id="slide-icon">🌱</span> <span id="slide-title-text">Diversity</span></h2>
-            <div class="slide-counter" id="slide-counter">1 / 20</div>
+            <span style="display:flex;align-items:center;">
+                <h2 class="slide-title" style="margin:0;">
+                    <span id="slide-icon">🌱</span>
+                    <span id="slide-title-text">Diversity</span>
+                </h2>
+            </span>
+            <span>
+                <div class="slide-counter" id="slide-counter" style="display:inline-block;">1 / 20</div>
+                <a href="{{ url_for('user_home') }}" class="back-home-btn">🏠 Back to Home</a>
+            </span>
         </div>
         <div class="slide-content" id="slide-content"></div>
         <div class="slide-navigation">
@@ -141,8 +165,7 @@ function nextSlide() {
         currentSlideIndex++;
         loadSlide();
     } else {
-        alert("🎉 You've completed the Diversity topic!");
-        // Optionally redirect or close
+        window.location.href = "{{ url_for('p4_science') }}";
     }
 }
 
