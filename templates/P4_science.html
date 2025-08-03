@@ -1525,3 +1525,7 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ topic: currentTopic })
             });
+        }
+
+        function selectQuizAnswer(button, isCorrect) {
+            const options = button.parentElement.children;
