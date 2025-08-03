@@ -423,58 +423,107 @@
     </style>
 </head>
 <body>
-    <div class="mobile-header">
+      <div class="mobile-header">
+     <div class="left-section">
         <i class="fas fa-bars menu-trigger" onclick="toggleMobileMenu()"></i>
-        <div class="logo-section">
-            <img src="static/logo2.png" alt="Logo">
-            <h2>Backbench</h2>
-        </div>
+            <div class="logo-section">
+                <img src="static/logo2.png" alt="Logo">
+                <h2>Backbench</h2>
+            </div>
+     
+       </div>    
     </div>
-
+    
+    <!-- User Profile -->
     <div class="user-profile">
         <div class="user-profile-info" onclick="toggleDropdown()">
-            <div class="user-avatar"><i class="fas fa-user"></i></div>
-            <span class="user-name">User</span>
+            <div class="user-avatar">
+                <i class="fas fa-user"></i>
+            </div>
+            <span class="user-name">{{ current_user.username }}</span>
             <div class="logout-dropdown" id="logoutDropdown">
                 <a href="/logout" class="logout-button">
-                    <i class="fas fa-sign-out-alt"></i> Logout
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
                 </a>
             </div>
         </div>
     </div>
 
+    <!-- Overlay for mobile -->
     <div class="overlay" id="overlay" onclick="toggleMobileMenu()"></div>
 
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
+        <!-- Logo Section -->
         <div class="logo-container">
             <img src="static/logo2.png" alt="Logo">
             <h2>Backbench</h2>
         </div>
+
+        <!-- Toggle Button (hidden on mobile) -->
         <div class="toggle-btn" onclick="toggleSidebar()">
             <i class="fas fa-chevron-left" id="toggle-icon"></i>
         </div>
+
+        <!-- Navigation Sections -->
         <div class="nav-sections">
+            <!-- Main Section -->
             <div class="section">
                 <h3 class="section-title">Main</h3>
                 <ul class="nav-links">
-                    <li><a href="#" class="nav-link"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
-                    <li><a href="#" class="nav-link"><i class="fas fa-calendar"></i><span>Tasks</span></a></li>
-                    <li><a href="#" class="nav-link"><i class="fas fa-book-open"></i><span>My Learnings</span></a></li>
-                    <li><a href="#" class="nav-link"><i class="fas fa-graduation-cap"></i><span>Exam Practice</span></a></li>
-                    <li><a href="#" class="nav-link"><i class="fas fa-graduation-cap"></i><span>Past Papers</span></a></li>
+                     <li><a href="{{ url_for('dashboard') }}" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a></li>
+                    <li><a href="{{ url_for('task') }}" class="nav-link">
+                        <i class="fas fa-calendar"></i>
+                        <span>Tasks</span>
+                    </a></li>
+                    <li><a href="{{ url_for('user_home') }}" class="nav-link">
+                        <i class="fas fa-book-open"></i>
+                        <span>My Learnings</span>
+                    </a></li>
+                     <li><a href="{{ url_for('papers') }}" class="nav-link">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Exam Practice</span>
+                    </a></li>
+                    <li><a href="{{ url_for('papers') }}" class="nav-link">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Past Papers</span>
+                    </a></li>
                 </ul>
             </div>
+
+            <!-- Learning Section -->
             <div class="section">
                 <h3 class="section-title">Learning</h3>
                 <ul class="nav-links">
-                    <li><a href="#" class="nav-link"><i class="fas fa-graduation-cap"></i><span>Progress</span></a></li>
+              
+             
+                    <li><a href="#" class="nav-link">
+                        <i class="fas fa-graduation-cap"></i>
+                        <span>Progress</span>
+                    </a></li>
+                
                 </ul>
             </div>
+
+           
+
+            <!-- Support Section -->
             <div class="section">
                 <h3 class="section-title">Support</h3>
-                <ul class="nav-links">
-                    <li><a href="#" class="nav-link"><i class="fas fa-cog"></i><span>Settings</span></a></li>
-                    <li><a href="/logout" class="nav-link"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+                    <ul class="nav-links">
+        
+                    <li><a href="{{ url_for('settings') }}" class="nav-link">
+                        <i class="fas fa-cog"></i>
+                        <span>Settings</span>
+                    </a></li>
+                     <li><a href="{{ url_for('logout') }}" class="nav-link">
+                        <i class="fas fa-question-circle"></i>
+                        <span>Logout</span>
+                    </a></li>
                 </ul>
             </div>
         </div>
@@ -496,33 +545,16 @@
                         <th>Date</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Mathematics Basics</td>
-                        <td>85%</td>
-                        <td>50</td>
-                        <td>2025-08-01 14:30:00</td>
-                    </tr>
-                    <tr>
-                        <td>Physics Fundamentals</td>
-                        <td>92%</td>
-                        <td>40</td>
-                        <td>2025-07-28 09:15:00</td>
-                    </tr>
-                    <tr>
-                        <td>Chemistry Intro</td>
-                        <td>78%</td>
-                        <td>45</td>
-                        <td>2025-07-25 11:00:00</td>
-                    </tr>
-                    <tr>
-                        <td>Biology Basics</td>
-                        <td>88%</td>
-                        <td>35</td>
-                        <td>2025-07-20 16:45:00</td>
-                    </tr>
-                    <!-- Add more rows as needed -->
-                </tbody>
+                  <tbody>
+            {% for attempt in attempts %}
+            <tr>
+                <td>{{ attempt.exam.title }}</td>
+                <td>{{ attempt.score }}</td>
+                <td>{{ attempt.total_questions }}</td>
+                <td>{{ attempt.attempt_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
             </table>
             <div class="pagination" id="pagination"></div>
         </div>
