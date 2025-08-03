@@ -102,7 +102,6 @@
             flex-direction: column;
             align-items: flex-start;
             transition: box-shadow 0.2s, transform 0.2s;
-            cursor: pointer;
             border: 2px solid transparent;
         }
         .topic-card:hover {
@@ -138,6 +137,8 @@
             font-size: 1rem;
             margin-top: auto;
             transition: background 0.2s;
+            text-decoration: none;
+            display: inline-block;
         }
         .start-learning-btn:hover {
             background: #0360a5;
@@ -504,41 +505,41 @@
                 </div>
             </div>
             <div class="topics-grid">
-                <div class="topic-card plants" onclick="openSlideModal('plants')">
+                <div class="topic-card plants">
                     <div class="topic-icon">🌱</div>
                     <div class="topic-title">Plants and Their Parts</div>
                     <div class="topic-description">Discover roots, stems, leaves, and flowers!</div>
-                    <button class="start-learning-btn">Start Learning</button>
+                    <a class="start-learning-btn" href="{{ url_for('learn', code='plants') }}">Start Learning</a>
                 </div>
-                <div class="topic-card animals" onclick="openSlideModal('animals')">
+                <div class="topic-card animals">
                     <div class="topic-icon">🐛</div>
                     <div class="topic-title">Animals and Their Habitats</div>
                     <div class="topic-description">Explore where animals live and how they adapt!</div>
-                    <button class="start-learning-btn">Start Learning</button>
+                    <a class="start-learning-btn" href="{{ url_for('learn', code='animals') }}">Start Learning</a>
                 </div>
-                <div class="topic-card heat" onclick="openSlideModal('heat')">
+                <div class="topic-card heat">
                     <div class="topic-icon">🌡️</div>
                     <div class="topic-title">Heat and Temperature</div>
                     <div class="topic-description">Learn about hot and cold, and how heat moves!</div>
-                    <button class="start-learning-btn">Start Learning</button>
+                    <a class="start-learning-btn" href="{{ url_for('learn', code='heat') }}">Start Learning</a>
                 </div>
-                <div class="topic-card water" onclick="openSlideModal('water')">
+                <div class="topic-card water">
                     <div class="topic-icon">💧</div>
                     <div class="topic-title">Water Cycle</div>
                     <div class="topic-description">Follow water on its amazing journey!</div>
-                    <button class="start-learning-btn">Start Learning</button>
+                    <a class="start-learning-btn" href="{{ url_for('learn', code='water') }}">Start Learning</a>
                 </div>
-                <div class="topic-card earth" onclick="openSlideModal('earth')">
+                <div class="topic-card earth">
                     <div class="topic-icon">🌍</div>
                     <div class="topic-title">Earth and Space</div>
                     <div class="topic-description">Explore our planet and the universe!</div>
-                    <button class="start-learning-btn">Start Learning</button>
+                    <a class="start-learning-btn" href="{{ url_for('learn', code='earth') }}">Start Learning</a>
                 </div>
-                <div class="topic-card machines" onclick="openSlideModal('machines')">
+                <div class="topic-card machines">
                     <div class="topic-icon">⚡</div>
                     <div class="topic-title">Simple Machines</div>
                     <div class="topic-description">Discover tools that make work easier!</div>
-                    <button class="start-learning-btn">Start Learning</button>
+                    <a class="start-learning-btn" href="{{ url_for('learn', code='machines') }}">Start Learning</a>
                 </div>
             </div>
         </div>
@@ -1200,6 +1201,28 @@
                                     <button class="quiz-option" onclick="selectQuizAnswer(this, false)">The moon moving around Earth</button>
                                     <button class="quiz-option" onclick="selectQuizAnswer(this, true)">Earth spinning on its axis</button>
                                     <button class="quiz-option" onclick="selectQuizAnswer(this, false)">The sun moving around Earth</button>
+                                    <button class="quiz-option" onclick="selectQuizAnswer(this, false)">The stars twinkling</button>
+                                </div>
+                                <div class="quiz-explanation">
+                                    <strong>Correct!</strong> Day and night happen because Earth spins around once every 24 hours. When your part of Earth faces the sun, it's day. When it faces away, it's night.
+                                </div>
+                            </div>
+                        `
+                    },
+                    {
+                        type: "conclusion",
+                        content: `
+                            <div class="slide-icon">🌟</div>
+                            <h2>Congratulations!</h2>
+                            <p>You've learned all about Earth and space!</p>
+                            <p>Remember: Earth is our home in the solar system, and it's just the right place for life!</p>
+                            <p>Great job exploring the amazing world of Earth and space! 🌍</p>
+                        `
+                    }
+                ]
+            },
+            machines: {
+                title: "Simple Machines",
                 icon: "⚡",
                 slides: [
                     {
