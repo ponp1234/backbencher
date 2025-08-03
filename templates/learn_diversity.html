@@ -59,10 +59,7 @@
                     <span id="slide-title-text">Diversity</span>
                 </h2>
             </span>
-            <span>
-                <div class="slide-counter" id="slide-counter" style="display:inline-block;">1 / 20</div>
-                <a href="{{ url_for('Primary4') }}" class="back-home-btn">🏠 Back to Home</a>
-            </span>
+      
         </div>
         <div class="slide-content" id="slide-content"></div>
         <div class="slide-navigation">
@@ -165,7 +162,7 @@ function nextSlide() {
         currentSlideIndex++;
         loadSlide();
     } else {
-        window.location.href = "{{ url_for('p4_science') }}";
+        
     }
 }
 
