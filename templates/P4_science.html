@@ -1334,19 +1334,14 @@
         function openSlideModal(topic) {
             currentTopic = topic;
             currentSlideIndex = 0;
-            
             const modal = document.getElementById('slide-modal');
             const slideIcon = document.getElementById('slide-icon');
             const slideTitle = document.getElementById('slide-title-text');
-            
             slideIcon.textContent = slideContent[topic].icon;
             slideTitle.textContent = slideContent[topic].title;
-            
             loadSlide();
             updateSlideProgress();
             modal.style.display = 'flex';
-            
-            // Prevent body scroll
             document.body.style.overflow = 'hidden';
         }
 
