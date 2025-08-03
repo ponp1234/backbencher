@@ -901,7 +901,7 @@
             </span>
             <span style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
                 <div class="slide-counter" id="slide-counter" style="display:inline-block;">1 / 20</div>
-                <a href="#" class="back-home-btn">🏠 Back to Home</a>
+                <a href="{{ url_for('learn', code='Primary4') }}" class="back-home-btn">🏠 Back to Home</a>
             </span>
         </div>
         <div class="slide-content" id="slide-content">
@@ -984,7 +984,11 @@ const slides = [
             <h2>Welcome to Diversity!</h2>
             <div class="video-container">
                 <div class="video-placeholder">
-                    📹 Introduction Video: What is Diversity?
+                   <iframe width="560" height="315" 
+                 src="<iframe src="https://www.youtube.com/embed/7kACexH5bIY?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>" 
+        frameborder="0" 
+        allowfullscreen>
+</iframe>
                 </div>
             </div>
             <p>Let's explore living and non-living things and the diversity of materials.</p>
