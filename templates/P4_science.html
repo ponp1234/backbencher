@@ -492,27 +492,27 @@
         <div class="welcome-card">
             <div class="welcome-header">
                 <div>
-                    <h1 class="welcome-title">Welcome back, k! 🎉</h1>
+                    <h1 class="welcome-title">Welcome{{ ' back, ' + current_user.username if current_user.is_authenticated else '' }}! 🎉</h1>
                     <p class="welcome-subtitle">Session #1 • Ready to explore science?</p>
                 </div>
                 <div class="stats-container">
                     <div class="stat-item">
                         <span class="stat-icon">🏆</span>
-                        <span id="points-display">0 Points</span>
+                        <span id="points-display">{{ total_points|default(0) }} Points</span>
                     </div>
                     <div class="stat-item">
                         <span class="stat-icon">⭐</span>
-                        <span id="topics-display">0/6 Topics</span>
+                        <span id="topics-display">{{ completed_topics|default(0) }}/6 Topics</span>
                     </div>
                 </div>
             </div>
             <div class="progress-section">
                 <div class="progress-label">
                     <span>Overall Progress</span>
-                    <span id="progress-percentage">0%</span>
+                    <span id="progress-percentage">{{ ((completed_topics|default(0) / 6) * 100) | round(0) }}%</span>
                 </div>
                 <div class="progress-bar">
-                    <div class="progress-fill" id="overall-progress" style="width: 0%"></div>
+                    <div class="progress-fill" id="overall-progress" style="width: {{ ((completed_topics|default(0) / 6) * 100) | round(0) }}%"></div>
                 </div>
             </div>
         </div>

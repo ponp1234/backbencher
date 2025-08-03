@@ -284,7 +284,11 @@ def dynamic_html(code):
     if mapping:
         try:
             # Render the specified HTML file dynamically
-            return render_template(mapping.html)
+            progress = LearningProgress.query.filter_by(user_id=current_user.id).all()
+            completed_topics = len([p for p in progress if p.completed])
+            # If you want to track points, add a points field to LearningProgress and sum here.
+            total_points = 10 * completed_topics  # Example: 10 points per completed topic
+            return render_template(mapping.html, completed_topics=completed_topics, total_points=total_points)
         except Exception:
             flash(f"HTML file '{mapping.html}' not found.", "danger")
             return redirect(url_for('home'))
