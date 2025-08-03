@@ -533,6 +533,10 @@
                 <div class="slide-counter" id="slide-counter">1 / 10</div>
                 <button class="close-slide-btn" onclick="closeSlideModal()">✕</button>
             </div>
+            <!-- Horizontal thumbnail bar -->
+            <div class="slide-thumbnails" id="slide-thumbnails" style="display:flex;overflow-x:auto;gap:8px;padding:10px 24px 0 24px;background:#f8fafc;">
+                <!-- Thumbnails will be generated here -->
+            </div>
             <div class="slide-content" id="slide-content">
                 <!-- Slides will be loaded here -->
             </div>
@@ -1264,10 +1268,6 @@
                     {
                         type: "content",
                         content: `
-                            <div class="slide-icon">⚙️</div>
-                            <h3>The Wheel and Axle</h3>
-                            <p>A wheel and axle work together! The wheel turns around the axle to make moving things easier.</p>
-                            <p><strong>🚗 Car wheels:</strong> Roll smoothly instead of sliding</p>
                             <p><strong>🚪 Doorknob:</strong> The round handle turns the axle inside</p>
                             <p><strong>🎡 Ferris wheel:</strong> A giant wheel that carries people around</p>
                             <p>Wheels reduce friction and make it much easier to move heavy things!</p>
