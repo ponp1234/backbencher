@@ -1441,20 +1441,22 @@
             counter.textContent = `${currentSlideIndex + 1} / ${totalSlides}`;
         }
 
-        function updateNavigationButtons() {
-            const prevBtn = document.getElementById('prev-slide-btn');
-            const nextBtn = document.getElementById('next-slide-btn');
-            const totalSlides = slideContent[currentTopic].slides.length;
-            
-            prevBtn.disabled = currentSlideIndex === 0;
-            nextBtn.disabled = currentSlideIndex === totalSlides - 1;
-            
-            if (currentSlideIndex === totalSlides - 1) {
-                nextBtn.textContent = 'Complete!';
-            } else {
-                nextBtn.textContent = 'Next →';
-            }
-        }
+function updateNavigationButtons() {
+    const prevBtn = document.getElementById('prev-slide-btn');
+    const nextBtn = document.getElementById('next-slide-btn');
+    const totalSlides = slideContent[currentTopic].slides.length;
+    
+    prevBtn.disabled = currentSlideIndex === 0;
+    // Remove this line:
+    // nextBtn.disabled = currentSlideIndex === totalSlides - 1;
+    nextBtn.disabled = false; // Always enabled unless you want to lock for a quiz
+    
+    if (currentSlideIndex === totalSlides - 1) {
+        nextBtn.textContent = 'Complete!';
+    } else {
+        nextBtn.textContent = 'Next →';
+    }
+}
 
         function updateSlideProgress() {
             const progressEl = document.getElementById('slide-progress');
