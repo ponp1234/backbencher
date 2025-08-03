@@ -456,18 +456,23 @@ def logout():
 @app.route("/user_home")
 @login_required
 def user_home():
-    # Get all past attempts by the current user
-    # Define today's and tomorrow's dates
+    # Get duedate from query params, default to 7 days from today
+    duedate_str = request.args.get('duedate')
     today = datetime.now().date()
-    tomorrow = today + timedelta(days=1)
-    
-    # Filter To-Do items by date
+    if duedate_str:
+        try:
+            duedate = datetime.strptime(duedate_str, "%Y-%m-%d").date()
+        except ValueError:
+            duedate = today + timedelta(days=7)
+    else:
+        duedate = today + timedelta(days=7)
+
+    # Filter To-Do items by date <= duedate
     todos = ToDo.query.filter(
         ToDo.user_id == current_user.id,
-        ToDo.date.in_([today, tomorrow])  # Filter for today and tomorrow
+        ToDo.date <= duedate
     ).order_by(ToDo.date.asc()).all()
     
-    print(todos)
     # Get the current user's student class
     user_class = current_user.student_class
     print(user_class)
