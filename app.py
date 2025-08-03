@@ -87,7 +87,7 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
-    student_class = db.Column(db.String(50), nullable=False)  
+    student_class = db.Column(db.String(50), unique=True, nullable=False)  
     wallet_balance = db.Column(db.Float, default=0.0)  # New field to store total balance
 
 class ExamMapping(db.Model):
@@ -292,10 +292,9 @@ def dynamic_html(code):
         try:
             # Render the specified HTML file dynamically
             progress = LearningProgress.query.filter_by(user_id=current_user.id).all()
-            print(progress)
             completed_topics = len([p for p in progress if p.completed])
-            print(completed_topics)
-            total_points = sum([p.points for p in progress])  # If you track points per topic
+            # If you want to track points, add a points field to LearningProgress and sum here.
+            total_points = 10 * completed_topics  # Example: 10 points per completed topic
             return render_template(mapping.html, completed_topics=completed_topics, total_points=total_points)
         except Exception:
             flash(f"HTML file '{mapping.html}' not found.", "danger")
