@@ -1,9 +1,48 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Diversity - P4 Science</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <style>
         * {
             box-sizing: border-box;
@@ -63,11 +102,11 @@
             border-radius: 8px;
             padding: 12px 14px;
             cursor: pointer;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             box-shadow: 0 2px 10px rgba(102,126,234,0.3);
             transition: all 0.3s ease;
-            min-height: 44px;
-            min-width: 44px;
+            min-height: 48px;
+            min-width: 48px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -106,7 +145,7 @@
             border-left: 4px solid transparent;
             width: 100%;
             display: block;
-            min-height: 44px;
+            min-height: 48px;
             line-height: 1.4;
         }
         .subtopic-btn.active, .subtopic-btn:hover {
@@ -219,7 +258,7 @@
             font-size: 1rem; 
             font-weight: 600; 
             cursor: pointer; 
-            min-height: 44px;
+            min-height: 48px;
             transition: all 0.2s ease;
         }
         .nav-btn:hover:not(:disabled) {
@@ -538,7 +577,7 @@
             width: 100%;
             max-width: 600px;
             transition: all 0.2s ease;
-            min-height: 44px;
+            min-height: 48px;
             text-align: left;
         }
         .quiz-option:hover {
@@ -604,10 +643,12 @@
             background: rgba(0,0,0,0.5);
             z-index: 999;
             display: none;
+            transition: opacity 0.3s ease;
         }
         
         .sidebar-overlay.show {
             display: block;
+            opacity: 1;
         }
 
         /* Mobile Optimizations */
@@ -619,26 +660,39 @@
                 padding-left: 0; 
             }
             
+            .menu-toggle { 
+                top: 16px;
+                left: 16px;
+                min-height: 50px;
+                min-width: 50px;
+                font-size: 1.3rem;
+                border-radius: 12px;
+            }
+            
             .menu-toggle.sidebar-open { 
-                left: 20px; 
+                left: 16px; 
+                background: linear-gradient(135deg, #ef4444, #dc2626);
+                transform: none;
             }
             
             .sidebar { 
                 width: 85vw;
                 max-width: 320px;
                 border-radius: 0 16px 16px 0;
+                padding-top: 70px; /* Space for close button */
             }
             
             .subtopic-header { 
-                font-size: 0.75rem;
-                padding: 10px 16px;
-                letter-spacing: 0.3px;
+                font-size: 0.8rem;
+                padding: 12px 20px;
+                letter-spacing: 0.4px;
             }
             
             .subtopic-btn { 
-                padding: 12px 20px; 
-                font-size: 0.9rem;
-                min-height: 48px;
+                padding: 14px 22px; 
+                font-size: 0.95rem;
+                min-height: 50px;
+                line-height: 1.5;
             }
             
             .slide-container { 
@@ -689,7 +743,7 @@
             .nav-btn {
                 font-size: 0.9rem;
                 padding: 10px 20px;
-                min-height: 44px;
+                min-height: 48px;
             }
             
             .slide-progress {
@@ -706,9 +760,10 @@
             
             .back-home-btn { 
                 font-size: 0.8rem; 
-                padding: 6px 10px; 
+                padding: 6px 12px; 
                 margin-left: 8px;
                 gap: 4px;
+                min-height: 40px;
             }
             
             .video-container {
@@ -741,16 +796,16 @@
             }
             
             .ai-help-toggle {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
+                width: 52px;
+                height: 52px;
+                font-size: 1.3rem;
             }
             
             .ai-help-panel {
                 width: calc(100vw - 40px);
                 max-width: 320px;
                 bottom: 70px;
-                right: -10px;
+                right: 10px;
                 max-height: 400px;
             }
             
@@ -770,20 +825,21 @@
             }
             
             .ai-input {
-                font-size: 16px; /* Prevents zoom on iOS */
+                font-size: 16px;
                 padding: 10px 12px;
             }
             
             .ai-suggestion {
                 font-size: 0.7rem;
                 padding: 6px 10px;
+                min-height: 36px;
             }
             
             .quiz-option {
                 font-size: 0.95rem;
                 padding: 14px 16px;
                 margin: 6px 0;
-                min-height: 48px;
+                min-height: 50px;
             }
             
             .quiz-explanation {
@@ -795,6 +851,18 @@
 
         /* Small mobile phones */
         @media (max-width: 480px) {
+            .menu-toggle {
+                top: 12px;
+                left: 12px;
+                min-height: 48px;
+                min-width: 48px;
+            }
+            
+            .sidebar {
+                width: 90vw;
+                max-width: 300px;
+            }
+            
             .slide-header {
                 padding: 12px 16px;
             }
@@ -822,6 +890,7 @@
             .nav-btn {
                 font-size: 0.85rem;
                 padding: 8px 16px;
+                min-height: 44px;
             }
             
             .notes-section {
@@ -832,6 +901,17 @@
             .video-placeholder {
                 height: 150px;
                 font-size: 0.85rem;
+            }
+            
+            .ai-help-toggle {
+                width: 48px;
+                height: 48px;
+                font-size: 1.2rem;
+            }
+            
+            .ai-help-panel {
+                width: calc(100vw - 30px);
+                right: 5px;
             }
         }
 
@@ -856,6 +936,11 @@
             .video-placeholder {
                 height: 140px;
             }
+            
+            .sidebar {
+                width: 70vw;
+                max-width: 280px;
+            }
         }
 
         /* Touch improvements */
@@ -863,14 +948,16 @@
             .nav-btn:hover,
             .menu-toggle:hover,
             .ai-help-toggle:hover,
-            .quiz-option:hover {
+            .quiz-option:hover,
+            .subtopic-btn:hover {
                 transform: none;
                 box-shadow: inherit;
             }
             
             .nav-btn:active,
             .menu-toggle:active,
-            .ai-help-toggle:active {
+            .ai-help-toggle:active,
+            .subtopic-btn:active {
                 transform: scale(0.98);
             }
             
@@ -881,7 +968,7 @@
     </style>
 </head>
 <body>
-<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
 
 <button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()">
     ☰
@@ -977,18 +1064,17 @@ const subtopicSections = [
 ];
 
 const slides = [
-    // Slides 0-9: General characteristics and classification...
     { 
         content: `
             <div class="slide-icon">🌱</div>
             <h2>Welcome to Diversity!</h2>
             <div class="video-container">
                 <div class="video-placeholder">
-                   <iframe width="560" height="315" 
-                 src="https://www.youtube.com/embed/SyaLcfMeeEM?rel=0&controls=1&showinfo=0&autoplay=1&mute=1" 
-        frameborder="0" 
-        allowfullscreen>
-</iframe>
+                    <iframe width="560" height="315" 
+                        src="https://www.youtube.com/embed/SyaLcfMeeEM?rel=0&controls=1&showinfo=0&autoplay=1&mute=1" 
+                        frameborder="0" 
+                        allowfullscreen>
+                    </iframe>
                 </div>
             </div>
             <p>Let's explore living and non-living things and the diversity of materials.</p>
@@ -1085,7 +1171,6 @@ const slides = [
             images: ["🔬 Microscope view", "🦠 Microorganism shapes"]
         }
     },
-    // Slides 10-17: Diversity of materials
     { 
         content: `
             <h3>Diversity of Materials</h3>
@@ -1150,7 +1235,6 @@ const slides = [
             images: ["🎯 Quiz preparation", "🧠 Knowledge check"]
         }
     },
-    // --- 2 quiz slides ---
     {
         content: `
         <div class="quiz-slide">
@@ -1194,6 +1278,8 @@ const slides = [
 let currentSlideIndex = 0;
 let sidebarOpen = false;
 let aiHelpOpen = false;
+let sidebarTouchStartX = 0;
+let sidebarTouchEndX = 0;
 
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
@@ -1209,8 +1295,6 @@ function toggleSidebar() {
         menuToggle.classList.add('sidebar-open');
         menuToggle.innerHTML = '✕';
         overlay.classList.add('show');
-        
-        // Prevent body scroll on mobile when sidebar is open
         document.body.style.overflow = 'hidden';
     } else {
         sidebar.classList.remove('open');
@@ -1218,8 +1302,6 @@ function toggleSidebar() {
         menuToggle.classList.remove('sidebar-open');
         menuToggle.innerHTML = '☰';
         overlay.classList.remove('show');
-        
-        // Restore body scroll
         document.body.style.overflow = '';
     }
 }
@@ -1254,16 +1336,13 @@ function sendAIMessage() {
     
     if (!question) return;
     
-    // Add user message
     const userMessage = document.createElement('div');
     userMessage.className = 'ai-message user';
     userMessage.textContent = question;
     messages.appendChild(userMessage);
     
-    // Clear input
     input.value = '';
     
-    // Add bot response (simulated)
     setTimeout(() => {
         const botMessage = document.createElement('div');
         botMessage.className = 'ai-message bot';
@@ -1306,7 +1385,6 @@ function renderSidebar() {
     sidebar.innerHTML = '';
     
     subtopicSections.forEach(section => {
-        // Create section header
         const headerDiv = document.createElement('div');
         headerDiv.className = 'subtopic-section';
         
@@ -1315,7 +1393,6 @@ function renderSidebar() {
         header.textContent = section.title;
         headerDiv.appendChild(header);
         
-        // Create subtopic buttons
         section.subtopics.forEach(subtopic => {
             const btn = document.createElement('button');
             btn.className = 'subtopic-btn' + (currentSlideIndex === subtopic.slideIndex ? ' active' : '');
@@ -1324,7 +1401,7 @@ function renderSidebar() {
                 currentSlideIndex = subtopic.slideIndex;
                 loadSlide();
                 if (window.innerWidth <= 768) {
-                    toggleSidebar(); // Auto-close on mobile after selection
+                    toggleSidebar();
                 }
             };
             headerDiv.appendChild(btn);
@@ -1337,10 +1414,8 @@ function renderSidebar() {
 function loadSlide() {
     const slideContentEl = document.getElementById('slide-content');
     
-    // Clear content
     slideContentEl.innerHTML = '';
     
-    // Add main slide area
     const mainArea = document.createElement('div');
     mainArea.className = 'main-slide-area';
     mainArea.id = 'main-slide-area';
@@ -1352,7 +1427,6 @@ function loadSlide() {
     
     slideContentEl.appendChild(mainArea);
     
-    // Add notes section if available
     if (slides[currentSlideIndex].notes) {
         const notesSection = document.createElement('div');
         notesSection.className = 'notes-section';
@@ -1408,7 +1482,6 @@ function nextSlide() {
         currentSlideIndex++;
         loadSlide();
     } else {
-        // Instead of redirecting, show completion message
         alert('Congratulations! You have completed the Diversity lesson!');
     }
 }
@@ -1424,20 +1497,17 @@ function selectQuizAnswer(button, isCorrect) {
     const options = button.parentElement.querySelectorAll('.quiz-option');
     const explanation = button.parentElement.nextElementSibling;
     
-    // Disable all options
     options.forEach(option => {
         option.disabled = true;
         option.style.pointerEvents = 'none';
     });
     
-    // Mark selected answer
     button.classList.add('selected');
     
     if (isCorrect) {
         button.classList.add('correct');
     } else {
         button.classList.add('incorrect');
-        // Show correct answer
         options.forEach(option => {
             if (option.onclick.toString().includes('true')) {
                 option.classList.add('correct');
@@ -1445,7 +1515,6 @@ function selectQuizAnswer(button, isCorrect) {
         });
     }
     
-    // Show explanation
     explanation.classList.add('show');
 }
 
@@ -1453,45 +1522,57 @@ function selectQuizAnswer(button, isCorrect) {
 let touchStartY = 0;
 let touchEndY = 0;
 
-// Swipe navigation for slides
 document.addEventListener('touchstart', function(event) {
     touchStartY = event.changedTouches[0].screenY;
+    if (sidebarOpen && event.target.closest('#sidebar')) {
+        sidebarTouchStartX = event.changedTouches[0].screenX;
+    }
 }, false);
 
 document.addEventListener('touchend', function(event) {
     touchEndY = event.changedTouches[0].screenY;
-    handleSwipe();
+    if (sidebarOpen && event.target.closest('#sidebar')) {
+        sidebarTouchEndX = event.changedTouches[0].screenX;
+        handleSidebarSwipe();
+    } else {
+        handleSlideSwipe();
+    }
 }, false);
 
-function handleSwipe() {
+function handleSlideSwipe() {
     const swipeThreshold = 50;
     const swipeDistance = touchEndY - touchStartY;
     
-    // Only handle horizontal swipes for slide navigation
     if (Math.abs(swipeDistance) > swipeThreshold) {
         if (swipeDistance > 0 && currentSlideIndex > 0) {
-            // Swipe down - previous slide
             previousSlide();
         } else if (swipeDistance < 0 && currentSlideIndex < slides.length - 1) {
-            // Swipe up - next slide
             nextSlide();
         }
     }
 }
 
-// Close sidebar when clicking outside on mobile
+function handleSidebarSwipe() {
+    const swipeThreshold = 50;
+    const swipeDistance = sidebarTouchEndX - sidebarTouchStartX;
+    
+    if (swipeDistance < -swipeThreshold && sidebarOpen) {
+        toggleSidebar();
+    }
+}
+
 document.addEventListener('click', function(event) {
     const sidebar = document.getElementById('sidebar');
     const menuToggle = document.getElementById('menu-toggle');
+    const overlay = document.getElementById('sidebar-overlay');
     
-    if (sidebarOpen && !sidebar.contains(event.target) && !menuToggle.contains(event.target)) {
+    if (sidebarOpen && !sidebar.contains(event.target) && !menuToggle.contains(event.target) && event.target === overlay) {
         if (window.innerWidth <= 768) {
             toggleSidebar();
         }
     }
 });
 
-// Close AI panel when clicking outside
 document.addEventListener('click', function(event) {
     const aiWidget = document.querySelector('.ai-help-widget');
     const aiPanel = document.getElementById('ai-help-panel');
@@ -1501,9 +1582,8 @@ document.addEventListener('click', function(event) {
     }
 });
 
-// Prevent zoom on double tap for iOS
 let lastTouchEnd = 0;
-document.addEventListener('touchend', function (event) {
+document.addEventListener('touchend', function(event) {
     const now = (new Date()).getTime();
     if (now - lastTouchEnd <= 300) {
         event.preventDefault();
@@ -1511,21 +1591,20 @@ document.addEventListener('touchend', function (event) {
     lastTouchEnd = now;
 }, false);
 
-// Handle orientation change
 window.addEventListener('orientationchange', function() {
     setTimeout(function() {
-        // Force a repaint to handle any layout issues
         document.body.style.display = 'none';
-        document.body.offsetHeight; // Trigger reflow
+        document.body.offsetHeight;
         document.body.style.display = '';
+        if (sidebarOpen) {
+            toggleSidebar();
+        }
     }, 100);
 });
 
-// Initialize on load
 window.onload = function() {
     loadSlide();
     
-    // Set proper viewport for mobile
     const viewport = document.querySelector('meta[name="viewport"]');
     if (viewport) {
         viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
