@@ -1353,25 +1353,17 @@
         function closeSlideModal() {
             const modal = document.getElementById('slide-modal');
             modal.style.display = 'none';
-            
-            // Restore body scroll
             document.body.style.overflow = 'auto';
         }
 
         function loadSlide() {
             const slideContentEl = document.getElementById('slide-content');
             const slides = slideContent[currentTopic].slides;
-            
-            // Clear previous slides
             slideContentEl.innerHTML = '';
-            
-            // Create slide element
             const slideEl = document.createElement('div');
             slideEl.className = 'slide active';
             slideEl.innerHTML = slides[currentSlideIndex].content;
-            
             slideContentEl.appendChild(slideEl);
-            
             updateSlideCounter();
             updateNavigationButtons();
         }
@@ -1382,29 +1374,23 @@
             counter.textContent = `${currentSlideIndex + 1} / ${totalSlides}`;
         }
 
-function updateNavigationButtons() {
-    const prevBtn = document.getElementById('prev-slide-btn');
-    const nextBtn = document.getElementById('next-slide-btn');
-    const totalSlides = slideContent[currentTopic].slides.length;
-    
-    prevBtn.disabled = currentSlideIndex === 0;
-    // Remove this line:
-    // nextBtn.disabled = currentSlideIndex === totalSlides - 1;
-    nextBtn.disabled = false; // Always enabled unless you want to lock for a quiz
-    
-    if (currentSlideIndex === totalSlides - 1) {
-        nextBtn.textContent = 'Complete!';
-    } else {
-        nextBtn.textContent = 'Next →';
-    }
-}
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prev-slide-btn');
+            const nextBtn = document.getElementById('next-slide-btn');
+            const totalSlides = slideContent[currentTopic].slides.length;
+            prevBtn.disabled = currentSlideIndex === 0;
+            nextBtn.disabled = false;
+            if (currentSlideIndex === totalSlides - 1) {
+                nextBtn.textContent = 'Complete!';
+            } else {
+                nextBtn.textContent = 'Next →';
+            }
+        }
 
         function updateSlideProgress() {
             const progressEl = document.getElementById('slide-progress');
             const totalSlides = slideContent[currentTopic].slides.length;
-            
             progressEl.innerHTML = '';
-            
             for (let i = 0; i < totalSlides; i++) {
                 const dot = document.createElement('div');
                 dot.className = `progress-dot ${i === currentSlideIndex ? 'active' : ''}`;
@@ -1414,13 +1400,11 @@ function updateNavigationButtons() {
 
         function nextSlide() {
             const totalSlides = slideContent[currentTopic].slides.length;
-            
             if (currentSlideIndex < totalSlides - 1) {
                 currentSlideIndex++;
                 loadSlide();
                 updateSlideProgress();
             } else {
-                // Completed topic
                 completeSlide();
             }
         }
@@ -1434,122 +1418,44 @@ function updateNavigationButtons() {
         }
 
         function completeSlide() {
-            // Add points and update progress
             totalPoints += 100;
             completedTopics++;
-            
-            // Update dashboard
             updateDashboard();
             closeSlideModal();
-            
-            // Send completion data to server
             fetch('/update_learning_progress', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ topic: currentTopic })
             });
-            
-            // Show completion message
             alert(`🎉 Congratulations! You've completed ${slideContent[currentTopic].title} and earned 100 points!`);
         }
 
         function selectQuizAnswer(button, isCorrect) {
             const options = button.parentElement.querySelectorAll('.quiz-option');
             const explanation = button.parentElement.nextElementSibling;
-            
-            // Disable all options
             options.forEach(option => {
                 option.disabled = true;
                 option.style.pointerEvents = 'none';
             });
-            
-            // Mark selected answer
             button.classList.add('selected');
-            
-            // Show correct/incorrect styling
             if (isCorrect) {
                 button.classList.add('correct');
-                totalPoints += 10; // Bonus points for correct answer
+                totalPoints += 10;
             } else {
                 button.classList.add('incorrect');
-                // Find and highlight correct answer
                 options.forEach(option => {
                     if (option.onclick.toString().includes('true')) {
                         option.classList.add('correct');
                     }
                 });
             }
-            
-            // Show explanation
             explanation.classList.add('show');
-            
             updateDashboard();
         }
 
         function updateDashboard() {
-            // Update points and topics display
             document.getElementById('points-display').textContent = `${totalPoints} Points`;
             document.getElementById('topics-display').textContent = `${completedTopics}/6 Topics`;
-            // Update progress bar
-            const percent = Math.round((completedTopics / 6) * 100);
-            document.getElementById('progress-percentage').textContent = `${percent}%`;
-            document.getElementById('overall-progress').style.width = `${percent}%`;
-        }
-
-        // Keyboard navigation (should only be registered once)
-        document.addEventListener('keydown', function(e) {
-            const modal = document.getElementById('slide-modal');
-            if (modal && modal.style.display === 'flex') {
-                if (e.key === 'ArrowLeft') {
-                    previousSlide();
-                } else if (e.key === 'ArrowRight') {
-                    nextSlide();
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ topic: currentTopic })
-            });
-            
-            // Show completion message
-            alert(`🎉 Congratulations! You've completed ${slideContent[currentTopic].title} and earned 100 points!`);
-        }
-
-        function selectQuizAnswer(button, isCorrect) {
-            const options = button.parentElement.querySelectorAll('.quiz-option');
-            const explanation = button.parentElement.nextElementSibling;
-            
-            // Disable all options
-            options.forEach(option => {
-                option.disabled = true;
-                option.style.pointerEvents = 'none';
-            });
-            
-            // Mark selected answer
-            button.classList.add('selected');
-            
-            // Show correct/incorrect styling
-            if (isCorrect) {
-                button.classList.add('correct');
-                totalPoints += 10; // Bonus points for correct answer
-            } else {
-                button.classList.add('incorrect');
-                // Find and highlight correct answer
-                options.forEach(option => {
-                    if (option.onclick.toString().includes('true')) {
-                        option.classList.add('correct');
-                    }
-                });
-            }
-            
-            // Show explanation
-            explanation.classList.add('show');
-            
-            updateDashboard();
-        }
-
-        function updateDashboard() {
-            // Update points and topics display
-            document.getElementById('points-display').textContent = `${totalPoints} Points`;
-            document.getElementById('topics-display').textContent = `${completedTopics}/6 Topics`;
-            // Update progress bar
             const percent = Math.round((completedTopics / 6) * 100);
             document.getElementById('progress-percentage').textContent = `${percent}%`;
             document.getElementById('overall-progress').style.width = `${percent}%`;
