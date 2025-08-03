@@ -1559,6 +1559,13 @@
             if (modal && modal.style.display === 'flex') {
                 if (e.key === 'ArrowLeft') {
                     previousSlide();
+                } else if (e.key === 'ArrowRight') {
+                    nextSlide();
+                } else if (e.key === 'Escape') {
+                    closeSlideModal();
+                }
+            }
+        });
     </script>
 </body>
 </html>
