@@ -292,7 +292,9 @@ def dynamic_html(code):
         try:
             # Render the specified HTML file dynamically
             progress = LearningProgress.query.filter_by(user_id=current_user.id).all()
+            print(progress)
             completed_topics = len([p for p in progress if p.completed])
+            print(completed_topics)
             total_points = sum([p.points for p in progress])  # If you track points per topic
             return render_template(mapping.html, completed_topics=completed_topics, total_points=total_points)
         except Exception:
