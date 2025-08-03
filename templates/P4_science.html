@@ -1541,6 +1541,21 @@
 
     <script>
 
+         // Previous JavaScript remains the same
+        // Add new function for dropdown toggle
+        function toggleDropdown() {
+            const dropdown = document.getElementById('logoutDropdown');
+            dropdown.classList.toggle('active');
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const profile = document.querySelector('.user-profile-info');
+                if (!profile.contains(event.target)) {
+                    dropdown.classList.remove('active');
+                }
+            });
+        }
+
   function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const mainContent = document.getElementById('main-content');
