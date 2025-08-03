@@ -995,6 +995,12 @@
             completedTopics++;
             updateDashboard();
             closeSlideModal();
+                        fetch('/update_learning_progress', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ topic: currentTopic })
+            });
+
             alert(`🎉 Congratulations! You've completed ${slideContent[currentTopic].title} and earned 100 points!`);
         }
 
