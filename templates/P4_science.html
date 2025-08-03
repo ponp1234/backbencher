@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: 'Segoe UI', Arial, sans-serif;
-            background: #cde2f8;
+             background: #f1f8ffff;
             margin: 0;
             padding: 0;
         }
@@ -15,7 +15,7 @@
             margin-left: 0;
             padding: 0;
             min-height: 100vh;
-            background: #cde2f8;
+            background: #f1f8ffff;
         }
         .header-bar {
             background: linear-gradient(90deg, #0360a5 0%, #0057b8 100%);
@@ -1493,17 +1493,17 @@ function updateNavigationButtons() {
             // Update progress bar
             const percent = Math.round((completedTopics / 6) * 100);
             document.getElementById('progress-percentage').textContent = `${percent}%`;
-            // Add points and update progress
-            totalPoints += 100;
-            completedTopics++;
-            
-            // Update dashboard
-            updateDashboard();
-            closeSlideModal();
-            
-            // Send completion data to server
-            fetch('/update_learning_progress', {
-                method: 'POST',
+            document.getElementById('overall-progress').style.width = `${percent}%`;
+        }
+
+        // Keyboard navigation (should only be registered once)
+        document.addEventListener('keydown', function(e) {
+            const modal = document.getElementById('slide-modal');
+            if (modal && modal.style.display === 'flex') {
+                if (e.key === 'ArrowLeft') {
+                    previousSlide();
+                } else if (e.key === 'ArrowRight') {
+                    nextSlide();
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ topic: currentTopic })
             });
