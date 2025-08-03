@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Diversity - P4 Science</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        /* Use your existing modal/slider CSS here for consistency */
+        body { margin:0; font-family: 'Segoe UI', Arial, sans-serif; background: #f6f8fa; }
+        .slide-modal { width: 100vw; height: 100vh; background: #f6f8fa; display: flex; align-items: center; justify-content: center; }
+        .slide-container { background: #fff; border-radius: 18px; width: 98vw; max-width: 900px; height: 95vh; box-shadow: 0 4px 24px rgba(0,0,0,0.08); display: flex; flex-direction: column; }
+        .slide-header { background: linear-gradient(135deg, #667eea, #764ba2); color: white; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; }
+        .slide-title { font-size: 1.5rem; font-weight: 700; display: flex; align-items: center; gap: 12px; }
+        .slide-counter { background: rgba(255,255,255,0.2); padding: 8px 16px; border-radius: 20px; font-weight: 600; }
+        .slide-content { flex: 1; overflow-y: auto; display: flex; align-items: center; justify-content: center; background: #f8fafc; }
+        .slide { width: 100%; max-width: 800px; margin: 0 auto; padding: 40px 20px; background: #fff; border-radius: 24px; box-shadow: 0 4px 24px rgba(102,126,234,0.08); display: flex; flex-direction: column; align-items: center; text-align: center; }
+        .slide-navigation { background: #fff; padding: 20px 32px; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e2e8f0; }
+        .nav-btn { background: linear-gradient(135deg, #667eea, #764ba2); color: white; border: none; border-radius: 12px; padding: 12px 24px; font-size: 1rem; font-weight: 600; cursor: pointer; }
+        .nav-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .slide-progress { display: flex; gap: 8px; align-items: center; }
+        .progress-dot { width: 12px; height: 12px; border-radius: 50%; background: #e2e8f0; }
+        .progress-dot.active { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .quiz-option { background: white; border: 2px solid #e2e8f0; border-radius: 12px; padding: 16px 20px; cursor: pointer; margin: 8px 0; font-size: 1.1rem; }
+        .quiz-option.selected { background: #dbeafe; border-color: #3b82f6; color: #1e40af; }
+        .quiz-option.correct { background: #dcfce7; border-color: #22c55e; color: #15803d; }
+        .quiz-option.incorrect { background: #fecaca; border-color: #ef4444; color: #dc2626; }
+        .quiz-explanation { background: #f0fdf4; border-radius: 12px; padding: 20px; border-left: 4px solid #22c55e; margin-top: 20px; display: none; }
+        .quiz-explanation.show { display: block; }
+        @media (max-width: 900px) {
+            .slide-container { width: 100vw; height: 100vh; border-radius: 0; }
+            .slide { padding: 12px 2vw; border-radius: 0; }
+            .slide-header, .slide-navigation { padding: 10px 8px; }
+        }
+    </style>
+</head>
+<body>
+<div class="slide-modal" id="slide-modal">
+    <div class="slide-container">
+        <div class="slide-header">
+            <h2 class="slide-title"><span id="slide-icon">🌱</span> <span id="slide-title-text">Diversity</span></h2>
+            <div class="slide-counter" id="slide-counter">1 / 20</div>
+        </div>
+        <div class="slide-content" id="slide-content"></div>
+        <div class="slide-navigation">
+            <button class="nav-btn" id="prev-slide-btn" onclick="previousSlide()" disabled>← Previous</button>
+            <div class="slide-progress" id="slide-progress"></div>
+            <button class="nav-btn" id="next-slide-btn" onclick="nextSlide()">Next →</button>
+        </div>
+    </div>
+</div>
+<script>
+const slides = [
+    // --- 18 content slides ---
+    { content: `<div class="slide-icon">🌱</div><h2>Welcome to Diversity!</h2><p>Let's explore living and non-living things and the diversity of materials.</p>` },
+    { content: `<h3>What is Diversity?</h3><p>Diversity means variety. In science, it refers to the many different types of things in our world.</p>` },
+    { content: `<h3>Living Things</h3><p>Living things can grow, move, breathe, reproduce, and respond to their environment.</p>` },
+    { content: `<h3>Non-Living Things</h3><p>Non-living things do not grow, move, or reproduce. Examples: rocks, water, air.</p>` },
+    { content: `<h3>Characteristics of Living Things</h3><p>They need food, water, air, and can reproduce.</p>` },
+    { content: `<h3>Classification</h3><p>We classify living things into groups: plants, animals, fungi, etc.</p>` },
+    { content: `<h3>Plants</h3><p>Plants make their own food using sunlight. They have roots, stems, and leaves.</p>` },
+    { content: `<h3>Animals</h3><p>Animals move around and eat other living things for food.</p>` },
+    { content: `<h3>Fungi</h3><p>Fungi like mushrooms do not make their own food. They break down dead things.</p>` },
+    { content: `<h3>Microorganisms</h3><p>Some living things are so small we need a microscope to see them!</p>` },
+    { content: `<h3>Diversity of Materials</h3><p>Materials can be natural (wood, cotton) or man-made (plastic, glass).</p>` },
+    { content: `<h3>Natural Materials</h3><p>Come from plants, animals, or the earth. Examples: wood, wool, stone.</p>` },
+    { content: `<h3>Man-made Materials</h3><p>Made by people. Examples: plastic, glass, steel.</p>` },
+    { content: `<h3>Uses of Materials</h3><p>We choose materials based on their properties: strong, waterproof, flexible, etc.</p>` },
+    { content: `<h3>Grouping Materials</h3><p>We can group materials by what they are made of or how they are used.</p>` },
+    { content: `<h3>Why is Diversity Important?</h3><p>Diversity helps living things survive and adapt to changes.</p>` },
+    { content: `<h3>Review</h3><p>Living things, non-living things, and materials are all around us!</p>` },
+    { content: `<h3>Get Ready for a Quiz!</h3><p>Let's test your knowledge about diversity!</p>` },
+    // --- 2 quiz slides ---
+    {
+        content: `
+        <div class="quiz-slide">
+            <h3>Quiz 1</h3>
+            <div class="quiz-question">Which of these is a living thing?</div>
+            <div class="quiz-options">
+                <button class="quiz-option" onclick="selectQuizAnswer(this, true)">A tree</button>
+                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">A rock</button>
+                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">A car</button>
+                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">A table</button>
+            </div>
+            <div class="quiz-explanation"><strong>Correct!</strong> A tree is a living thing because it grows and makes its own food.</div>
+        </div>
+        `
+    },
+    {
+        content: `
+        <div class="quiz-slide">
+            <h3>Quiz 2</h3>
+            <div class="quiz-question">Which is a man-made material?</div>
+            <div class="quiz-options">
+                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Wood</button>
+                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Cotton</button>
+                <button class="quiz-option" onclick="selectQuizAnswer(this, true)">Plastic</button>
+                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Wool</button>
+            </div>
+            <div class="quiz-explanation"><strong>Correct!</strong> Plastic is made by people from chemicals.</div>
+        </div>
+        `
+    }
+];
+
+let currentSlideIndex = 0;
+
+function loadSlide() {
+    const slideContentEl = document.getElementById('slide-content');
+    slideContentEl.innerHTML = '';
+    const slideEl = document.createElement('div');
+    slideEl.className = 'slide active';
+    slideEl.innerHTML = slides[currentSlideIndex].content;
+    slideContentEl.appendChild(slideEl);
+    updateSlideCounter();
+    updateNavigationButtons();
+    updateSlideProgress();
+}
+
+function updateSlideCounter() {
+    document.getElementById('slide-counter').textContent = `${currentSlideIndex + 1} / ${slides.length}`;
+}
+
+function updateNavigationButtons() {
+    document.getElementById('prev-slide-btn').disabled = currentSlideIndex === 0;
+    document.getElementById('next-slide-btn').disabled = false;
+    document.getElementById('next-slide-btn').textContent = (currentSlideIndex === slides.length - 1) ? 'Finish' : 'Next →';
+}
+
+function updateSlideProgress() {
+    const progressEl = document.getElementById('slide-progress');
+    progressEl.innerHTML = '';
+    for (let i = 0; i < slides.length; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'progress-dot' + (i === currentSlideIndex ? ' active' : '');
+        progressEl.appendChild(dot);
+    }
+}
+
+function nextSlide() {
+    if (currentSlideIndex < slides.length - 1) {
+        currentSlideIndex++;
+        loadSlide();
+    } else {
+        alert("🎉 You've completed the Diversity topic!");
+        // Optionally redirect or close
+    }
+}
+
+function previousSlide() {
+    if (currentSlideIndex > 0) {
+        currentSlideIndex--;
+        loadSlide();
+    }
+}
+
+function selectQuizAnswer(button, isCorrect) {
+    const options = button.parentElement.querySelectorAll('.quiz-option');
+    const explanation = button.parentElement.nextElementSibling;
+    options.forEach(option => {
+        option.disabled = true;
+        option.style.pointerEvents = 'none';
+    });
+    button.classList.add('selected');
+    if (isCorrect) {
+        button.classList.add('correct');
+    } else {
+        button.classList.add('incorrect');
+        options.forEach(option => {
+            if (option.onclick.toString().includes('true')) {
+                option.classList.add('correct');
+            }
+        });
+    }
+    explanation.classList.add('show');
+}
+
+window.onload = loadSlide;
+</script>
+</body>
+</html>
