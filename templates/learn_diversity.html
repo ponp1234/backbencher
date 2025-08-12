@@ -11,12 +11,10 @@
                 var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
                 var firstSheetName = workbook.SheetNames[0];
                 var worksheet = workbook.Sheets[firstSheetName];
-
                 // Convert sheet to JSON to filter blank rows
                 var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
                 // Filter out blank rows (rows where all cells are empty, null, or undefined)
                 var filteredData = jsonData.filter(row => row.some(filledCell));
-
                 // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
                 var headerRowIndex = filteredData.findIndex((row, index) =>
                   row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
@@ -25,7 +23,6 @@
                 if (headerRowIndex === -1 || headerRowIndex > 25) {
                   headerRowIndex = 0;
                 }
-
                 // Convert filtered JSON back to CSV
                 var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
                 csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
@@ -37,35 +34,36 @@
         }
         return gk_fileData[filename] || "";
         }
-        </script><!DOCTYPE html>
+</script>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Diversity - P4 Science</title>
+    <title>Living & Non-Living Things - P4 Science</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <style>
         * {
             box-sizing: border-box;
         }
         
-        body { 
-            margin: 0; 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif; 
-            background: #f1f5f9; 
-            overflow-x: hidden;
+        body {
+             margin: 0;
+             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+             background: #f1f5f9;
+             overflow-x: hidden;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             color: #0360a5;
         }
         
-        .slide-modal { 
-            width: 100vw; 
-            height: 100vh; 
-            background: #f1f5f9; 
-            display: flex; 
-            align-items: stretch; 
-            justify-content: center; 
-            transition: padding-left 0.3s ease;
+        .slide-modal {
+             width: 100vw;
+             height: 100vh;
+             background: #f1f5f9;
+             display: flex;
+             align-items: stretch;
+             justify-content: center;
+             transition: padding-left 0.3s ease;
             position: relative;
         }
         
@@ -158,54 +156,54 @@
             font-weight: 600;
         }
         
-        .slide-container { 
-            background: #ffffff; 
-            border-radius: 12px; 
-            width: 100vw; 
-            max-width: none; 
-            height: 95vh; 
-            box-shadow: 0 6px 24px rgba(0,0,0,0.1); 
-            display: flex; 
-            flex-direction: column; 
-            flex: 1; 
-            margin: 12px;
+        .slide-container {
+             background: #ffffff;
+             border-radius: 12px;
+             width: 100vw;
+             max-width: none;
+             height: 95vh;
+             box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+             display: flex;
+             flex-direction: column;
+             flex: 1;
+             margin: 12px;
             position: relative;
         }
         
-        .slide-header { 
-            background: linear-gradient(135deg, #1a2a44, #2c4a7e); 
-            color: white; 
-            padding: 20px 32px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            flex-shrink: 0;
+        .slide-header {
+             background: linear-gradient(135deg, #1a2a44, #2c4a7e);
+             color: white;
+             padding: 20px 32px;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             flex-shrink: 0;
             border-radius: 12px 12px 0 0;
         }
-        .slide-title { 
-            font-size: 1.5rem; 
-            font-weight: 700; 
-            display: flex; 
-            align-items: center; 
-            gap: 12px; 
-            margin: 0;
+        .slide-title {
+             font-size: 1.5rem;
+             font-weight: 700;
+             display: flex;
+             align-items: center;
+             gap: 12px;
+             margin: 0;
             letter-spacing: -0.02em;
         }
-        .slide-counter { 
-            background: rgba(255,255,255,0.15); 
-            padding: 8px 16px; 
-            border-radius: 20px; 
-            font-weight: 600; 
-            font-size: 0.9rem;
+        .slide-counter {
+             background: rgba(255,255,255,0.15);
+             padding: 8px 16px;
+             border-radius: 20px;
+             font-weight: 600;
+             font-size: 0.9rem;
         }
         
-        .slide-content { 
-            flex: 1; 
-            overflow-y: auto; 
-            display: flex; 
-            flex-direction: column;
-            background: #f8fafc; 
-            padding: 24px;
+        .slide-content {
+             flex: 1;
+             overflow-y: auto;
+             display: flex;
+             flex-direction: column;
+            background: #f8fafc;
+             padding: 24px;
             -webkit-overflow-scrolling: touch;
         }
         
@@ -217,18 +215,18 @@
             min-height: 600px;
         }
         
-        .slide { 
-            width: 100%; 
-            max-width: 900px; 
-            margin: 0 auto; 
-            padding: 32px 24px; 
-            background: #ffffff; 
-            border-radius: 16px; 
-            box-shadow: 0 4px 20px rgba(26,42,68,0.08); 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            text-align: center;
+        .slide {
+             width: 100%;
+             max-width: 900px;
+             margin: 0 auto;
+             padding: 32px 24px;
+             background: #ffffff;
+             border-radius: 16px;
+             box-shadow: 0 4px 20px rgba(26,42,68,0.08);
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             text-align: center;
             line-height: 1.6;
         }
         
@@ -245,56 +243,172 @@
             margin: 0 auto 16px;
             line-height: 1.7;
         }
+
+        .slide-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .info-card {
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .info-card h4 {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            color: #0360a5;
+        }
+
+        .info-card p {
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .info-card ul {
+            text-align: left;
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .info-card li {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .green-card { background: linear-gradient(135deg, #d4f4dd 0%, #a7f3d0 100%); }
+        .blue-card { background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%); }
+        .purple-card { background: linear-gradient(135deg, #e9d5ff 0%, #c4b5fd 100%); }
+        .yellow-card { background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%); }
+        .orange-card { background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%); }
+        .red-card { background: linear-gradient(135deg, #fecaca 0%, #f87171 100%); }
+        .gray-card { background: linear-gradient(135deg, #f3f4f6 0%, #d1d5db 100%); }
+
+        .mrs-gren {
+            background: linear-gradient(135deg, #d4f4dd 0%, #a7f3d0 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            max-width: 600px;
+            text-align: left;
+        }
+
+        .mrs-gren h4 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #065f46;
+            text-align: center;
+        }
+
+        .mrs-gren ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .mrs-gren li {
+            padding: 8px 0;
+            font-size: 1rem;
+            color: #047857;
+        }
+
+        .mrs-gren strong {
+            color: #064e3b;
+            font-size: 1.1rem;
+        }
+
+        .video-container {
+            width: 100%;
+            max-width: 700px;
+            margin: 24px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #0360a5, #2c4a7e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            text-align: center;
+            padding: 20px;
+        }
         
-        .slide-navigation { 
-            background: #ffffff; 
-            padding: 20px 32px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-top: 1px solid #e5e7eb; 
-            flex-shrink: 0;
+        .slide-navigation {
+             background: #ffffff;
+             padding: 20px 32px;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             border-top: 1px solid #e5e7eb;
+             flex-shrink: 0;
             border-radius: 0 0 12px 12px;
         }
         
-        .nav-btn { 
-            background: linear-gradient(135deg, #1a2a44, #2c4a7e); 
-            color: white; 
-            border: none; 
-            border-radius: 10px; 
-            padding: 12px 24px; 
-            font-size: 1rem; 
-            font-weight: 600; 
-            cursor: pointer; 
-            min-height: 50px;
+        .nav-btn {
+             background: linear-gradient(135deg, #1a2a44, #2c4a7e);
+             color: white;
+             border: none;
+             border-radius: 10px;
+             padding: 12px 24px;
+             font-size: 1rem;
+             font-weight: 600;
+             cursor: pointer;
+             min-height: 50px;
             transition: all 0.2s ease;
         }
         .nav-btn:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 4px 12px rgba(26,42,68,0.3);
         }
-        .nav-btn:disabled { 
-            opacity: 0.5; 
-            cursor: not-allowed; 
-            transform: none;
+        .nav-btn:disabled {
+             opacity: 0.5;
+             cursor: not-allowed;
+             transform: none;
             box-shadow: none;
         }
-        .slide-progress { 
-            display: flex; 
-            gap: 8px; 
-            align-items: center; 
-            flex-wrap: wrap;
+        .slide-progress {
+             display: flex;
+             gap: 8px;
+             align-items: center;
+             flex-wrap: wrap;
             justify-content: center;
         }
-        .progress-dot { 
-            width: 10px; 
-            height: 10px; 
-            border-radius: 50%; 
-            background: #d1d5db; 
-            transition: all 0.2s ease;
+        .progress-dot {
+             width: 10px;
+             height: 10px;
+             border-radius: 50%;
+             background: #d1d5db;
+             transition: all 0.2s ease;
         }
-        .progress-dot.active { 
-            background: linear-gradient(135deg, #1a2a44, #2c4a7e);
+        .progress-dot.active {
+             background: linear-gradient(135deg, #1a2a44, #2c4a7e);
             transform: scale(1.3);
         }
         
@@ -362,10 +476,10 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(45deg, #f3f4f6 25%, transparent 25%), 
-                        linear-gradient(-45deg, #f3f4f6 25%, transparent 25%), 
-                        linear-gradient(45deg, transparent 75%, #f3f4f6 75%), 
-                        linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
+            background: linear-gradient(45deg, #f3f4f6 25%, transparent 25%),
+                         linear-gradient(-45deg, #f3f4f6 25%, transparent 25%),
+                         linear-gradient(45deg, transparent 75%, #f3f4f6 75%),
+                         linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
             background-size: 15px 15px;
             background-position: 0 0, 0 7.5px, 7.5px -7.5px, -7.5px 0px;
             opacity: 0.1;
@@ -542,47 +656,17 @@
             background: #e6f0fa;
             color: #1a2a44;
         }
-        
-        /* Video Support */
-        .video-container {
-            width: 100%;
-            max-width: 700px;
-            margin: 24px 0;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-        }
-        
-        .video-container video {
-            width: 100%;
-            height: auto;
-            display: block;
-        }
-        
-        .video-placeholder {
-            width: 100%;
-            height: 250px;
-            background: linear-gradient(135deg, #0360a5, #2c4a7e);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 1.1rem;
-            border-radius: 12px;
-            text-align: center;
-            padding: 20px;
-        }
-        
+
         /* Quiz Styles */
-        .quiz-option { 
-            background: #ffffff; 
-            border: 2px solid #e5e7eb; 
-            border-radius: 10px; 
-            padding: 16px 20px; 
-            cursor: pointer; 
-            margin: 8px 0; 
-            font-size: 1rem; 
-            width: 100%;
+        .quiz-option {
+             background: #ffffff;
+             border: 2px solid #e5e7eb;
+             border-radius: 10px;
+             padding: 16px 20px;
+             cursor: pointer;
+             margin: 8px 0;
+             font-size: 1rem;
+             width: 100%;
             max-width: 600px;
             transition: all 0.2s ease;
             min-height: 50px;
@@ -593,29 +677,29 @@
             border-color: #2c4a7e;
             transform: translateY(-1px);
         }
-        .quiz-option.selected { 
-            background: #e6f0fa; 
-            border-color: #2c4a7e; 
-            color: #1a2a44; 
-        }
-        .quiz-option.correct { 
-            background: #dcfce7; 
-            border-color: #22c55e; 
-            color: #15803d; 
-        }
-        .quiz-option.incorrect { 
-            background: #fee2e2; 
-            border-color: #dc2626; 
-            color: #b91c1c; 
-        }
-        .quiz-explanation { 
-            background: #f0fdf4; 
-            border-radius: 10px; 
-            padding: 20px; 
-            border-left: 4px solid #22c55e; 
-            margin-top: 20px; 
-            display: none; 
-            max-width: 600px;
+        .quiz-option.selected {
+             background: #e6f0fa;
+             border-color: #2c4a7e;
+             color: #1a2a44;
+         }
+        .quiz-option.correct {
+             background: #dcfce7;
+             border-color: #22c55e;
+             color: #15803d;
+         }
+        .quiz-option.incorrect {
+             background: #fee2e2;
+             border-color: #dc2626;
+             color: #b91c1c;
+         }
+        .quiz-explanation {
+             background: #f0fdf4;
+             border-radius: 10px;
+             padding: 20px;
+             border-left: 4px solid #22c55e;
+             margin-top: 20px;
+             display: none;
+             max-width: 600px;
             font-size: 0.95rem;
             line-height: 1.6;
         }
@@ -663,15 +747,15 @@
 
         /* Mobile Optimizations */
         @media (max-width: 768px) {
-            .slide-modal { 
-                padding-left: 0 !important; 
-            }
-            .slide-modal.sidebar-open { 
-                padding-left: 0; 
-            }
+            .slide-modal {
+                 padding-left: 0 !important;
+             }
+            .slide-modal.sidebar-open {
+                 padding-left: 0;
+             }
             
-            .menu-toggle { 
-                top: 12px;
+            .menu-toggle {
+                 top: 12px;
                 left: 12px;
                 min-height: 48px;
                 min-width: 48px;
@@ -679,37 +763,37 @@
                 border-radius: 8px;
             }
             
-            .menu-toggle.sidebar-open { 
-                left: 12px; 
-                background: linear-gradient(135deg, #dc2626, #b91c1c);
+            .menu-toggle.sidebar-open {
+                 left: 12px;
+                 background: linear-gradient(135deg, #dc2626, #b91c1c);
                 transform: none;
             }
             
-            .sidebar { 
-                width: 85vw;
+            .sidebar {
+                 width: 85vw;
                 max-width: 320px;
                 border-radius: 0 16px 16px 0;
                 padding-top: 70px;
             }
             
-            .subtopic-header { 
-                font-size: 0.8rem;
+            .subtopic-header {
+                 font-size: 0.8rem;
                 padding: 12px 20px;
                 letter-spacing: 0.4px;
             }
             
-            .subtopic-btn { 
-                padding: 14px 22px; 
-                font-size: 0.95rem;
+            .subtopic-btn {
+                 padding: 14px 22px;
+                 font-size: 0.95rem;
                 min-height: 50px;
                 line-height: 1.5;
             }
             
-            .slide-container { 
-                width: 100vw; 
-                height: 100vh; 
-                border-radius: 0; 
-                margin: 0;
+            .slide-container {
+                 width: 100vw;
+                 height: 100vh;
+                 border-radius: 0;
+                 margin: 0;
             }
             
             .slide-header {
@@ -728,10 +812,10 @@
                 padding: 6px 12px;
             }
             
-            .slide { 
-                padding: 20px 16px; 
-                border-radius: 0; 
-                margin: 0;
+            .slide {
+                 padding: 20px 16px;
+                 border-radius: 0;
+                 margin: 0;
             }
             
             .slide h2, .slide h3 {
@@ -743,9 +827,14 @@
                 font-size: 1rem;
                 line-height: 1.6;
             }
+
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
             
-            .slide-navigation { 
-                padding: 16px 20px;
+            .slide-navigation {
+                 padding: 16px 20px;
                 flex-wrap: wrap;
                 gap: 12px;
             }
@@ -768,10 +857,10 @@
                 height: 8px;
             }
             
-            .back-home-btn { 
-                font-size: 0.8rem; 
-                padding: 6px 12px; 
-                margin-left: 8px;
+            .back-home-btn {
+                 font-size: 0.8rem;
+                 padding: 6px 12px;
+                 margin-left: 8px;
                 gap: 4px;
                 min-height: 40px;
             }
@@ -984,12 +1073,10 @@
                 transform: scale(0.99);
             }
         }
-
- 
-        
     </style>
 </head>
 <body>
+
 <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
 <button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()">
@@ -1000,22 +1087,25 @@
     <div class="sidebar" id="sidebar">
         <!-- Subtopics will be rendered here -->
     </div>
+    
     <div class="slide-container">
         <div class="slide-header">
             <span style="display:flex;align-items:center;">
                 <h2 class="slide-title" style="margin:0;">
                     <span id="slide-icon">🌱</span>
-                    <span id="slide-title-text">Diversity</span>
+                    <span id="slide-title-text">Living & Non-Living Things</span>
                 </h2>
             </span>
             <span style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
                 <div class="slide-counter" id="slide-counter" style="display:inline-block;">1 / 20</div>
-                <a href="{{ url_for('learn', code='Primary4') }}" class="back-home-btn">🏠 Back to Home</a>
+                <a href="#" class="back-home-btn">🏠 Back to Home</a>
             </span>
         </div>
+        
         <div class="slide-content" id="slide-content">
             <div class="main-slide-area" id="main-slide-area"></div>
         </div>
+        
         <div class="slide-navigation">
             <div class="slide-progress" id="slide-progress"></div>
             <button class="nav-btn" id="prev-slide-btn" onclick="previousSlide()" disabled>← Previous</button>
@@ -1052,122 +1142,512 @@
 </div>
 
 <script>
-const subtopicSections = [ 
+// Slide data
+const subtopicSections = [
     {
         title: "Living & Non-Living Things",
         subtopics: [
-            { title: "Introduction", slideIndex: 0 },
-            { title: "Characteristics of Living Things", slideIndex: 1 },
-            { title: "Examples of Living Things", slideIndex: 2 },
-            { title: "Characteristics of Non-Living Things", slideIndex: 3 },
-            { title: "Examples of Non-Living Things", slideIndex: 4 },
-            { title: "Differences Between Living & Non-Living", slideIndex: 5 },
-            { title: "Tips to Identify", slideIndex: 6 },
-            { title: "Fun Facts", slideIndex: 7 },
-            { title: "Practice Questions", slideIndex: 8 },
-            { title: "Summary", slideIndex: 9 }
+            { title: "Introduction to Diversity", slideIndex: 0 },
+            { title: "What is Diversity?", slideIndex: 1 },
+            { title: "Living Things", slideIndex: 2 },
+            { title: "Non-Living Things", slideIndex: 3 },
+            { title: "Characteristics of Living Things", slideIndex: 4 },
+            { title: "Classification Systems", slideIndex: 5 },
+            { title: "Plants", slideIndex: 6 },
+            { title: "Animals", slideIndex: 7 },
+            { title: "Fungi", slideIndex: 8 },
+            { title: "Microorganisms", slideIndex: 9 }
+        ]
+    },
+    {
+        title: "Diversity of Materials",
+        subtopics: [
+            { title: "Types of Materials", slideIndex: 10 },
+            { title: "Natural Materials", slideIndex: 11 },
+            { title: "Man-made Materials", slideIndex: 12 },
+            { title: "Uses of Materials", slideIndex: 13 },
+            { title: "Grouping Materials", slideIndex: 14 },
+            { title: "Importance of Diversity", slideIndex: 15 },
+            { title: "Review", slideIndex: 16 },
+            { title: "Quiz Preparation", slideIndex: 17 },
+            { title: "Quiz 1", slideIndex: 18 },
+            { title: "Quiz 2", slideIndex: 19 }
         ]
     }
 ];
 
 const slides = [
-    { 
-        content: `<h3>Introduction</h3>
-                  <p>Living things grow, need food, and can reproduce. Non-living things do not grow, need food, or reproduce. 
-                  In this lesson, we will explore their differences and importance.</p>`,
+    {
+        content: `
+            <div class="slide-icon">🌱</div>
+            <h2>Welcome to Diversity!</h2>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    🎬 Educational Video: Living vs Non-Living Things
+                </div>
+            </div>
+            <p>Let's explore living and non-living things and the diversity of materials.</p>
+        `,
         notes: {
-            text: "Living things have life processes like growth, reproduction, and movement. Non-living things don't have these processes.",
-            images: ["🌳 Tree", "🪨 Rock"]
+            text: "Diversity is everywhere around us! In this lesson, we'll discover how scientists classify the amazing variety of living and non-living things in our world. Pay attention to the key characteristics that help us tell living things apart from non-living things.",
+            images: ["🌳 Trees and plants", "🪨 Rocks and minerals"]
         }
     },
-    { 
-        content: `<h3>Characteristics of Living Things</h3>
-                  <ul>
-                    <li>Need food and water</li>
-                    <li>Move on their own</li>
-                    <li>Grow and change</li>
-                    <li>Reproduce</li>
-                    <li>Respond to surroundings</li>
-                  </ul>`,
+    {
+        content: `
+            <h3>What is Diversity?</h3>
+            <p>Diversity means variety. In science, it refers to the many different types of things in our world.</p>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🦋</div>
+                    <p><strong>Different Animals</strong></p>
+                </div>
+                <div class="info-card blue-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🌸</div>
+                    <p><strong>Various Plants</strong></p>
+                </div>
+            </div>
+        `,
         notes: {
-            text: "Remember: Movement, Respiration, Sensitivity, Growth, Reproduction, Excretion, Nutrition.",
-            images: ["🐶 Dog", "🌱 Growing plant"]
+            text: "Think about all the different animals, plants, and materials you see every day. From tiny ants to huge elephants, from soft cotton to hard steel - this variety is what we call diversity!",
+            images: ["🦋 Different butterflies", "🌸 Various flowers"]
         }
     },
-    { 
-        content: `<h3>Examples of Living Things</h3>
-                  <p>Humans, animals, plants, insects — all show life processes like breathing, growing, and reproducing.</p>`,
+    {
+        content: `
+            <h3>Living Things</h3>
+            <p>Living things can grow, move, breathe, reproduce, and respond to their environment.</p>
+            <div class="mrs-gren">
+                <h4>Remember MRS GREN:</h4>
+                <ul>
+                    <li><strong>M</strong>ovement - Can move or change position</li>
+                    <li><strong>R</strong>espiration - Need to breathe or get energy</li>
+                    <li><strong>S</strong>ensitivity - Respond to their environment</li>
+                    <li><strong>G</strong>rowth - Get bigger over time</li>
+                    <li><strong>R</strong>eproduction - Can make babies</li>
+                    <li><strong>E</strong>xcretion - Get rid of waste</li>
+                    <li><strong>N</strong>utrition - Need food or make their own</li>
+                </ul>
+            </div>
+        `,
         notes: {
-            text: "Think of your pet, a tree in the park, or even a small ant — all are living things.",
-            images: ["👩 Person", "🐜 Ant"]
+            text: "Remember MRS GREN to identify living things: Movement, Respiration, Sensitivity, Growth, Reproduction, Excretion, Nutrition. All living things need these seven characteristics!",
+            images: ["🐱 Animals moving", "🌱 Plants growing"]
         }
     },
-    { 
-        content: `<h3>Characteristics of Non-Living Things</h3>
-                  <p>Non-living things do not need food, water, or air. They do not grow, move on their own, or reproduce.</p>`,
+    {
+        content: `
+            <h3>Non-Living Things</h3>
+            <p>Non-living things do not grow, move, or reproduce on their own.</p>
+            <div class="grid-3">
+                <div class="info-card gray-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🪨</div>
+                    <p><strong>Rocks</strong></p>
+                </div>
+                <div class="info-card blue-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">💧</div>
+                    <p><strong>Water</strong></p>
+                </div>
+                <div class="info-card yellow-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">💨</div>
+                    <p><strong>Air</strong></p>
+                </div>
+            </div>
+        `,
         notes: {
-            text: "Non-living things can still be useful, like tools, buildings, and toys.",
-            images: ["🏠 House", "🪑 Chair"]
+            text: "Non-living things don't have the seven characteristics of life. They can't grow on their own, don't need food, and can't make babies. But they're still very important in our world!",
+            images: ["🪨 Different rocks", "💧 Water droplets"]
         }
     },
-    { 
-        content: `<h3>Examples of Non-Living Things</h3>
-                  <p>Rocks, water, air, chairs, toys — all do not have life processes.</p>`,
+    {
+        content: `
+            <h3>Characteristics of Living Things</h3>
+            <p>All living things share basic needs and abilities.</p>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <h4>Basic Needs:</h4>
+                    <ul>
+                        <li>🍎 Food or ability to make food</li>
+                        <li>💧 Water</li>
+                        <li>💨 Air (oxygen)</li>
+                        <li>🏠 Suitable environment</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>Life Processes:</h4>
+                    <ul>
+                        <li>📈 Growth and development</li>
+                        <li>👶 Reproduction</li>
+                        <li>🔄 Response to environment</li>
+                        <li>⚡ Energy use</li>
+                    </ul>
+                </div>
+            </div>
+        `,
         notes: {
-            text: "Some non-living things are natural (rocks, water) and some are man-made (toys, buildings).",
-            images: ["🪨 Rock", "💧 Water"]
+            text: "All living things share these basic needs. Plants make their own food through photosynthesis, while animals must eat other living things. Both need water and air to survive.",
+            images: ["🍎 Food sources", "💨 Air and breathing"]
         }
     },
-    { 
-        content: `<h3>Differences Between Living & Non-Living</h3>
-                  <p><strong>Living Things:</strong> Grow, need food/water, reproduce.<br>
-                     <strong>Non-Living Things:</strong> Do not grow, do not need food/water, cannot reproduce.</p>`,
+    {
+        content: `
+            <h3>Classification Systems</h3>
+            <p>Scientists organize living things into groups based on their similarities.</p>
+            <div class="info-card purple-card">
+                <div style="font-size: 2.5rem; margin-bottom: 15px;">🔬</div>
+                <h4>Main Groups of Living Things:</h4>
+                <div class="grid-2" style="margin-top: 15px;">
+                    <div>🌿 <strong>Plants</strong> - Make their own food</div>
+                    <div>🐾 <strong>Animals</strong> - Move and eat other living things</div>
+                    <div>🍄 <strong>Fungi</strong> - Break down dead things</div>
+                    <div>🦠 <strong>Microorganisms</strong> - Too small to see</div>
+                </div>
+            </div>
+        `,
         notes: {
-            text: "The key difference: life processes.",
-            images: ["🌿 Plant vs 🪑 Chair"]
+            text: "Scientists organize living things into groups based on their similarities. This makes it easier to study and understand the incredible diversity of life on Earth.",
+            images: ["📊 Classification chart", "🔬 Scientific grouping"]
         }
     },
-    { 
-        content: `<h3>Tips to Identify</h3>
-                  <ol>
-                    <li>Does it need food or water?</li>
-                    <li>Can it move on its own?</li>
-                    <li>Does it grow or change?</li>
-                    <li>Can it reproduce?</li>
-                  </ol>`,
+    {
+        content: `
+            <h3>Plants</h3>
+            <p>Plants make their own food using sunlight through photosynthesis.</p>
+            <div class="info-card green-card">
+                <h4>Plant Parts and Functions:</h4>
+                <div class="grid-2" style="margin-top: 15px;">
+                    <div><strong>🌿 Roots:</strong> Absorb water and nutrients</div>
+                    <div><strong>🌱 Stem:</strong> Support and transport</div>
+                    <div><strong>🍃 Leaves:</strong> Make food using sunlight</div>
+                    <div><strong>🌸 Flowers:</strong> Reproduction and seeds</div>
+                </div>
+            </div>
+            <div class="info-card yellow-card" style="margin-top: 20px;">
+                <p><strong>Photosynthesis:</strong> Plants use sunlight + water + carbon dioxide = food + oxygen</p>
+            </div>
+        `,
         notes: {
-            text: "If 'yes' to most, it's living.",
-            images: ["🔍 Magnifying glass", "✅ Checklist"]
+            text: "Plants are amazing food factories! They use sunlight, water, and carbon dioxide to make their own food through photosynthesis. The green substance chlorophyll helps capture sunlight.",
+            images: ["🌿 Plant parts diagram", "☀️ Sunlight and leaves"]
         }
     },
-    { 
-        content: `<h3>Fun Facts</h3>
-                  <p>Seeds look non-living, but they can grow into plants when given the right conditions.</p>`,
+    {
+        content: `
+            <h3>Animals</h3>
+            <p>Animals move around and eat other living things for food.</p>
+            <div class="grid-3">
+                <div class="info-card red-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🦁</div>
+                    <p><strong>Carnivores</strong></p>
+                    <p style="font-size: 0.9rem;">Eat other animals</p>
+                </div>
+                <div class="info-card green-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🐰</div>
+                    <p><strong>Herbivores</strong></p>
+                    <p style="font-size: 0.9rem;">Eat plants</p>
+                </div>
+                <div class="info-card orange-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🐻</div>
+                    <p><strong>Omnivores</strong></p>
+                    <p style="font-size: 0.9rem;">Eat both</p>
+                </div>
+            </div>
+            <p style="color: #718096;">Animals have different ways of getting food based on what they eat!</p>
+        `,
         notes: {
-            text: "Some things may appear non-living but are actually living in a dormant state.",
-            images: ["🌱 Seed sprouting"]
+            text: "Unlike plants, animals can't make their own food. They must eat plants or other animals to get energy. Animals can move from place to place to find food and shelter.",
+            images: ["🦁 Predator animals", "🐰 Herbivore animals"]
         }
     },
-    { 
-        content: `<h3>Practice Questions</h3>
-                  <ol>
-                    <li>Is a dog living or non-living?</li>
-                    <li>Is a bicycle living or non-living?</li>
-                    <li>Why is a tree living?</li>
-                    <li>Can a rock grow?</li>
-                  </ol>`,
+    {
+        content: `
+            <h3>Fungi</h3>
+            <p>Fungi like mushrooms cannot make their own food. They break down dead things.</p>
+            <div class="info-card orange-card">
+                <div style="font-size: 2.5rem; margin-bottom: 15px;">🍄</div>
+                <h4>Nature's Recyclers!</h4>
+                <div style="text-align: left; margin-top: 15px;">
+                    <p>🔄 <strong>Decomposers:</strong> Break down dead plants and animals</p>
+                    <p>🌱 <strong>Nutrient Cycle:</strong> Return nutrients to soil for new plants</p>
+                    <p>🏠 <strong>Hidden Life:</strong> Most fungi live underground or inside dead wood</p>
+                    <p>🍄 <strong>Mushrooms:</strong> Just the visible "fruit" of the fungus</p>
+                </div>
+            </div>
+        `,
         notes: {
-            text: "Answer based on life processes.",
-            images: ["🐕 Dog", "🚲 Bicycle"]
+            text: "Fungi are nature's recyclers! They break down dead plants and animals, returning nutrients to the soil. Mushrooms are just the visible part - most fungi live underground.",
+            images: ["🍄 Different mushrooms", "🧽 Fungi structures"]
         }
     },
-    { 
-        content: `<h3>Summary</h3>
-                  <p>Living things grow, move, and reproduce. Non-living things do not have these abilities. 
-                  Knowing the difference helps us understand the world better.</p>`,
+    {
+        content: `
+            <h3>Microorganisms</h3>
+            <p>Some living things are so small we need a microscope to see them!</p>
+            <div class="info-card blue-card">
+                <div style="font-size: 2.5rem; margin-bottom: 15px;">🔬</div>
+                <h4>The Microscopic World</h4>
+                <div class="grid-2" style="margin-top: 15px;">
+                    <div>
+                        <p>🦠 <strong>Bacteria:</strong> Single-celled organisms</p>
+                        <p>🌊 <strong>Algae:</strong> Tiny water plants</p>
+                    </div>
+                    <div>
+                        <p>🧫 <strong>Helpful:</strong> Help digest food, make medicine</p>
+                        <p>😷 <strong>Harmful:</strong> Some cause diseases</p>
+                    </div>
+                </div>
+            </div>
+        `,
         notes: {
-            text: "Living = life processes. Non-living = no life processes.",
-            images: ["🌎 Nature scene"]
+            text: "The microscopic world is full of tiny living things like bacteria and viruses. Some are helpful (like those that help us digest food), while others can make us sick.",
+            images: ["🔬 Microscope view", "🦠 Microorganism shapes"]
+        }
+    },
+    {
+        content: `
+            <h3>Diversity of Materials</h3>
+            <p>Materials around us can be natural or man-made.</p>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <h4>🌿 Natural Materials</h4>
+                    <ul>
+                        <li>🌲 Wood from trees</li>
+                        <li>🐑 Wool from sheep</li>
+                        <li>🌾 Cotton from plants</li>
+                        <li>🪨 Stone from earth</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>🏭 Man-made Materials</h4>
+                    <ul>
+                        <li>🥤 Plastic from oil</li>
+                        <li>🪟 Glass from sand</li>
+                        <li>🔩 Steel from iron</li>
+                        <li>🧱 Concrete from cement</li>
+                    </ul>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Look around you - everything is made of materials! Some come directly from nature, while others are created by humans using natural resources as starting materials.",
+            images: ["🌲 Natural materials", "🏭 Man-made materials"]
+        }
+    },
+    {
+        content: `
+            <h3>Natural Materials</h3>
+            <p>Come from plants, animals, or the earth. Examples: wood, wool, stone.</p>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🌲</div>
+                    <h4>From Plants</h4>
+                    <p>Wood, cotton, rubber, paper</p>
+                </div>
+                <div class="info-card orange-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🐑</div>
+                    <h4>From Animals</h4>
+                    <p>Wool, silk, leather, fur</p>
+                </div>
+            </div>
+            <div class="info-card gray-card" style="margin-top: 20px;">
+                <div style="font-size: 2rem; margin-bottom: 10px;">🪨</div>
+                <h4>From Earth</h4>
+                <p>Stone, metals, clay, sand</p>
+            </div>
+        `,
+        notes: {
+            text: "Natural materials are gifts from nature. Wood comes from trees, wool from sheep, cotton from plants, and metals from rocks deep in the earth.",
+            images: ["🐑 Wool from sheep", "🌰 Wood from trees"]
+        }
+    },
+    {
+        content: `
+            <h3>Man-made Materials</h3>
+            <p>Made by people using natural resources. Examples: plastic, glass, steel.</p>
+            <div class="grid-2">
+                <div class="info-card blue-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🥤</div>
+                    <h4>Plastics</h4>
+                    <p>Made from oil and chemicals</p>
+                </div>
+                <div class="info-card purple-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🪟</div>
+                    <h4>Glass</h4>
+                    <p>Made from sand heated very hot</p>
+                </div>
+            </div>
+            <div class="info-card gray-card" style="margin-top: 20px;">
+                <div style="font-size: 2rem; margin-bottom: 10px;">🔩</div>
+                <h4>Metals</h4>
+                <p>Steel, aluminum, processed from ores</p>
+            </div>
+        `,
+        notes: {
+            text: "Humans are clever inventors! We've learned to create new materials by mixing, heating, and changing natural materials. Plastic comes from oil, glass from sand!",
+            images: ["🥤 Plastic items", "🪟 Glass objects"]
+        }
+    },
+    {
+        content: `
+            <h3>Uses of Materials</h3>
+            <p>We choose materials based on their properties: strong, waterproof, flexible, etc.</p>
+            <div class="grid-2">
+                <div class="info-card blue-card">
+                    <h4>🏗️ Strong Materials</h4>
+                    <p>Steel for buildings, concrete for foundations</p>
+                </div>
+                <div class="info-card green-card">
+                    <h4>🧥 Flexible Materials</h4>
+                    <p>Cotton for clothes, rubber for tires</p>
+                </div>
+            </div>
+            <div class="grid-2" style="margin-top: 20px;">
+                <div class="info-card yellow-card">
+                    <h4>💧 Waterproof Materials</h4>
+                    <p>Plastic for raincoats, rubber for boots</p>
+                </div>
+                <div class="info-card purple-card">
+                    <h4>🔥 Heat-resistant Materials</h4>
+                    <p>Metal for cooking pots, ceramic for ovens</p>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Smart material choice is important! We use waterproof materials for raincoats, strong materials for buildings, and flexible materials for clothing.",
+            images: ["🏗️ Strong materials", "🧥 Flexible materials"]
+        }
+    },
+    {
+        content: `
+            <h3>Grouping Materials</h3>
+            <p>We can group materials by what they are made of or how they are used.</p>
+            <div class="info-card purple-card">
+                <h4>📋 Ways to Group Materials:</h4>
+                <div style="text-align: left; margin-top: 15px;">
+                    <p>🌿 <strong>By Source:</strong> Natural vs Man-made</p>
+                    <p>💪 <strong>By Properties:</strong> Hard vs Soft, Rough vs Smooth</p>
+                    <p>🏠 <strong>By Use:</strong> Building materials, Clothing materials</p>
+                    <p>🔧 <strong>By Behavior:</strong> Magnetic vs Non-magnetic</p>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Materials can be grouped in many ways: by their source (natural/man-made), by their properties (hard/soft), or by their use (building/clothing).",
+            images: ["📋 Material groups", "🔧 Material properties"]
+        }
+    },
+    {
+        content: `
+            <h3>Why is Diversity Important?</h3>
+            <p>Diversity helps living things survive and adapt to changes.</p>
+            <div class="info-card green-card">
+                <div style="font-size: 2.5rem; margin-bottom: 15px;">🌍</div>
+                <h4>Nature's Insurance Policy!</h4>
+                <div style="text-align: left; margin-top: 15px;">
+                    <p>🔄 <strong>Adaptation:</strong> Different species can survive different changes</p>
+                    <p>⚖️ <strong>Balance:</strong> Each species has a role in the ecosystem</p>
+                    <p>🧬 <strong>Genetics:</strong> Variety helps species stay healthy</p>
+                    <p>🌱 <strong>Resources:</strong> Different materials serve different purposes</p>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Diversity is like nature's insurance policy! When environments change, some species can survive because they're different. This keeps ecosystems healthy and balanced.",
+            images: ["🌍 Ecosystem balance", "🔄 Adaptation examples"]
+        }
+    },
+    {
+        content: `
+            <h3>Review</h3>
+            <p>Living things, non-living things, and materials are all around us!</p>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <h4>✅ Key Concepts:</h4>
+                    <ul>
+                        <li>MRS GREN characteristics</li>
+                        <li>Living vs Non-living</li>
+                        <li>Classification of life</li>
+                        <li>Natural vs Man-made materials</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>📚 What We Learned:</h4>
+                    <ul>
+                        <li>How to identify living things</li>
+                        <li>Different groups of organisms</li>
+                        <li>Material properties and uses</li>
+                        <li>Why diversity matters</li>
+                    </ul>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Great job learning about diversity! Remember the key differences between living and non-living things, and how we classify the amazing variety of materials in our world.",
+            images: ["✅ Review checklist", "📚 Key concepts"]
+        }
+    },
+    {
+        content: `
+            <h3>Get Ready for a Quiz!</h3>
+            <p>Let's test your knowledge about diversity!</p>
+            <div class="info-card yellow-card">
+                <div style="font-size: 2.5rem; margin-bottom: 15px;">🎯</div>
+                <h4>Quiz Topics:</h4>
+                <div style="text-align: left; margin-top: 15px;">
+                    <p>🌱 <strong>Living Things:</strong> MRS GREN characteristics</p>
+                    <p>🪨 <strong>Non-living Things:</strong> What makes them different</p>
+                    <p>🔬 <strong>Classification:</strong> Groups of living things</p>
+                    <p>🏭 <strong>Materials:</strong> Natural vs man-made</p>
+                    <p>🌍 <strong>Diversity:</strong> Why it's important</p>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Time to show what you've learned! Think about the characteristics of living things, the differences between natural and man-made materials, and why diversity matters.",
+            images: ["🎯 Quiz preparation", "🧠 Knowledge check"]
+        }
+    },
+    {
+        content: `
+            <h3>Quiz 1</h3>
+            <div style="margin: 20px 0;">
+                <div style="font-size: 1.2rem; margin-bottom: 20px; font-weight: 600;">Which of these is a living thing?</div>
+                <div style="display: flex; flex-direction: column; gap: 10px; max-width: 600px; margin: 0 auto;">
+                    <button-direction: column; gap: 10px; max-width: 600px; margin: 0 auto;">
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, true, 18)">A tree</button>
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, false, 18)">A rock</button>
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, false, 18)">A car</button>
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, false, 18)">A table</button>
+                </div>
+            </div>
+            <div class="quiz-explanation" id="explanation18">
+                <strong>Correct!</strong> A tree is a living thing because it grows, makes its own food through photosynthesis, and has all the MRS GREN characteristics.
+            </div>
+        `,
+        notes: {
+            text: "Remember MRS GREN! A tree can grow, reproduce (make seeds), respond to sunlight, and make its own food through photosynthesis.",
+            images: ["🌳 Tree characteristics", "📝 Living thing checklist"]
+        }
+    },
+    {
+        content: `
+            <h3>Quiz 2</h3>
+            <div style="margin: 20px 0;">
+                <div style="font-size: 1.2rem; margin-bottom: 20px; font-weight: 600;">Which is a man-made material?</div>
+                <div style="display: flex; flex-direction: column; gap: 10px; max-width: 600px; margin: 0 auto;">
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, false, 19)">Wood</button>
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, false, 19)">Cotton</button>
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, true, 19)">Plastic</button>
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, false, 19)">Wool</button>
+                </div>
+            </div>
+            <div class="quiz-explanation" id="explanation19">
+                <strong>Correct!</strong> Plastic is made by people from oil and chemicals. Wood comes from trees, cotton from plants, and wool from sheep - all natural sources!
+            </div>
+        `,
+        notes: {
+            text: "Plastic is created by humans from oil and chemicals. Wood comes from trees, cotton from plants, and wool from sheep - all natural sources!",
+            images: ["🏭 Plastic factory", "🌿 Natural sources"]
         }
     }
 ];
@@ -1379,7 +1859,7 @@ function nextSlide() {
         currentSlideIndex++;
         loadSlide();
     } else {
-        alert('Congratulations! You have completed the Diversity lesson!');
+        alert('Congratulations! You have completed the Living & Non-Living Things lesson!');
     }
 }
 
@@ -1390,9 +1870,9 @@ function previousSlide() {
     }
 }
 
-function selectQuizAnswer(button, isCorrect) {
+function selectQuizAnswer(button, isCorrect, slideNum) {
     const options = button.parentElement.querySelectorAll('.quiz-option');
-    const explanation = button.parentElement.nextElementSibling;
+    const explanation = document.getElementById(`explanation${slideNum}`);
     
     options.forEach(option => {
         option.disabled = true;
@@ -1507,5 +1987,6 @@ window.onload = function() {
     }
 };
 </script>
+
 </body>
 </html>
