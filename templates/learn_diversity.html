@@ -1052,251 +1052,122 @@
 </div>
 
 <script>
-const subtopicSections = [
+const subtopicSections = [ 
     {
         title: "Living & Non-Living Things",
         subtopics: [
-            { title: "Introduction to Diversity", slideIndex: 0 },
-            { title: "What is Diversity?", slideIndex: 1 },
-            { title: "Living Things", slideIndex: 2 },
-            { title: "Non-Living Things", slideIndex: 3 },
-            { title: "Characteristics of Living Things", slideIndex: 4 },
-            { title: "Classification Systems", slideIndex: 5 },
-            { title: "Plants", slideIndex: 6 },
-            { title: "Animals", slideIndex: 7 },
-            { title: "Fungi", slideIndex: 8 },
-            { title: "Microorganisms", slideIndex: 9 }
-        ]
-    },
-    {
-        title: "Diversity of Materials",
-        subtopics: [
-            { title: "Types of Materials", slideIndex: 10 },
-            { title: "Natural Materials", slideIndex: 11 },
-            { title: "Man-made Materials", slideIndex: 12 },
-            { title: "Uses of Materials", slideIndex: 13 },
-            { title: "Grouping Materials", slideIndex: 14 },
-            { title: "Importance of Diversity", slideIndex: 15 },
-            { title: "Review", slideIndex: 16 },
-            { title: "Quiz Preparation", slideIndex: 17 },
-            { title: "Quiz 1", slideIndex: 18 },
-            { title: "Quiz 2", slideIndex: 19 }
+            { title: "Introduction", slideIndex: 0 },
+            { title: "Characteristics of Living Things", slideIndex: 1 },
+            { title: "Examples of Living Things", slideIndex: 2 },
+            { title: "Characteristics of Non-Living Things", slideIndex: 3 },
+            { title: "Examples of Non-Living Things", slideIndex: 4 },
+            { title: "Differences Between Living & Non-Living", slideIndex: 5 },
+            { title: "Tips to Identify", slideIndex: 6 },
+            { title: "Fun Facts", slideIndex: 7 },
+            { title: "Practice Questions", slideIndex: 8 },
+            { title: "Summary", slideIndex: 9 }
         ]
     }
 ];
 
 const slides = [
     { 
-        content: `
-            <div class="slide-icon">🌱</div>
-            <h2>Welcome to Diversity!</h2>
-            <div class="video-container">
-                <div class="video-placeholder">
-                    <iframe width="560" height="315" 
-                        src="https://www.youtube.com/embed/SyaLcfMeeEM?rel=0&controls=1&showinfo=0&autoplay=1&mute=1" 
-                        frameborder="0" 
-                        allowfullscreen>
-                    </iframe>
-                </div>
-            </div>
-            <p>Let's explore living and non-living things and the diversity of materials.</p>
-        `,
+        content: `<h3>Introduction</h3>
+                  <p>Living things grow, need food, and can reproduce. Non-living things do not grow, need food, or reproduce. 
+                  In this lesson, we will explore their differences and importance.</p>`,
         notes: {
-            text: "Diversity is everywhere around us! In this lesson, we'll discover how scientists classify the amazing variety of living and non-living things in our world. Pay attention to the key characteristics that help us tell living things apart from non-living things.",
-            images: ["🌳 Trees and plants", "🪨 Rocks and minerals"]
+            text: "Living things have life processes like growth, reproduction, and movement. Non-living things don't have these processes.",
+            images: ["🌳 Tree", "🪨 Rock"]
         }
     },
     { 
-        content: `
-            <h3>What is Diversity?</h3>
-            <p>Diversity means variety. In science, it refers to the many different types of things in our world.</p>
-            <div class="video-container">
-                <div class="video-placeholder">
-                  <iframe width="560" height="315" 
-                        src="https://www.youtube.com/embed/SyaLcfMeeEM?rel=0&controls=1&showinfo=0&autoplay=1&mute=1" 
-                        frameborder="0" 
-                        allowfullscreen>
-                    </iframe>
-                </div>
-            </div>
-        `,
+        content: `<h3>Characteristics of Living Things</h3>
+                  <ul>
+                    <li>Need food and water</li>
+                    <li>Move on their own</li>
+                    <li>Grow and change</li>
+                    <li>Reproduce</li>
+                    <li>Respond to surroundings</li>
+                  </ul>`,
         notes: {
-            text: "Think about all the different animals, plants, and materials you see every day. From tiny ants to huge elephants, from soft cotton to hard steel - this variety is what we call diversity!",
-            images: ["🦋 Different butterflies", "🌸 Various flowers"]
+            text: "Remember: Movement, Respiration, Sensitivity, Growth, Reproduction, Excretion, Nutrition.",
+            images: ["🐶 Dog", "🌱 Growing plant"]
         }
     },
     { 
-        content: `
-            <h3>Living Things</h3>
-            <p>Living things can grow, move, breathe, reproduce, and respond to their environment.</p>
-            <div class="video-container">
-                <div class="video-placeholder">
-                    📹 Video: Characteristics of Living Things
-                </div>
-            </div>
-        `,
+        content: `<h3>Examples of Living Things</h3>
+                  <p>Humans, animals, plants, insects — all show life processes like breathing, growing, and reproducing.</p>`,
         notes: {
-            text: "Remember MRS GREN to identify living things: Movement, Respiration, Sensitivity, Growth, Reproduction, Excretion, Nutrition. All living things need these seven characteristics!",
-            images: ["🐱 Animals moving", "🌱 Plants growing"]
+            text: "Think of your pet, a tree in the park, or even a small ant — all are living things.",
+            images: ["👩 Person", "🐜 Ant"]
         }
     },
     { 
-        content: `<h3>Non-Living Things</h3><p>Non-living things do not grow, move, or reproduce. Examples: rocks, water, air.</p>`,
+        content: `<h3>Characteristics of Non-Living Things</h3>
+                  <p>Non-living things do not need food, water, or air. They do not grow, move on their own, or reproduce.</p>`,
         notes: {
-            text: "Non-living things don't have the seven characteristics of life. They can't grow on their own, don't need food, and can't make babies. But they're still very important in our world!",
-            images: ["🪨 Different rocks", "💧 Water droplets"]
+            text: "Non-living things can still be useful, like tools, buildings, and toys.",
+            images: ["🏠 House", "🪑 Chair"]
         }
     },
     { 
-        content: `<h3>Characteristics of Living Things</h3><p>They need food, water, air, and can reproduce.</p>`,
+        content: `<h3>Examples of Non-Living Things</h3>
+                  <p>Rocks, water, air, chairs, toys — all do not have life processes.</p>`,
         notes: {
-            text: "All living things share these basic needs. Plants make their own food through photosynthesis, while animals must eat other living things. Both need water and air to survive.",
-            images: ["🍎 Food sources", "💨 Air and breathing"]
+            text: "Some non-living things are natural (rocks, water) and some are man-made (toys, buildings).",
+            images: ["🪨 Rock", "💧 Water"]
         }
     },
     { 
-        content: `<h3>Classification</h3><p>We classify living things into groups: plants, animals, fungi, etc.</p>`,
+        content: `<h3>Differences Between Living & Non-Living</h3>
+                  <p><strong>Living Things:</strong> Grow, need food/water, reproduce.<br>
+                     <strong>Non-Living Things:</strong> Do not grow, do not need food/water, cannot reproduce.</p>`,
         notes: {
-            text: "Scientists organize living things into groups based on their similarities. This makes it easier to study and understand the incredible diversity of life on Earth.",
-            images: ["📊 Classification chart", "🔬 Scientific grouping"]
+            text: "The key difference: life processes.",
+            images: ["🌿 Plant vs 🪑 Chair"]
         }
     },
     { 
-        content: `
-            <h3>Plants</h3>
-            <p>Plants make their own food using sunlight. They have roots, stems, and leaves.</p>
-            <div class="video-container">
-                <div class="video-placeholder">
-                    📹 Video: How Plants Make Food (Photosynthesis)
-                </div>
-            </div>
-        `,
+        content: `<h3>Tips to Identify</h3>
+                  <ol>
+                    <li>Does it need food or water?</li>
+                    <li>Can it move on its own?</li>
+                    <li>Does it grow or change?</li>
+                    <li>Can it reproduce?</li>
+                  </ol>`,
         notes: {
-            text: "Plants are amazing food factories! They use sunlight, water, and carbon dioxide to make their own food through photosynthesis. The green substance chlorophyll helps capture sunlight.",
-            images: ["🌿 Plant parts diagram", "☀️ Sunlight and leaves"]
+            text: "If 'yes' to most, it's living.",
+            images: ["🔍 Magnifying glass", "✅ Checklist"]
         }
     },
     { 
-        content: `<h3>Animals</h3><p>Animals move around and eat other living things for food.</p>`,
+        content: `<h3>Fun Facts</h3>
+                  <p>Seeds look non-living, but they can grow into plants when given the right conditions.</p>`,
         notes: {
-            text: "Unlike plants, animals can't make their own food. They must eat plants or other animals to get energy. Animals can move from place to place to find food and shelter.",
-            images: ["🦁 Predator animals", "🐰 Herbivore animals"]
+            text: "Some things may appear non-living but are actually living in a dormant state.",
+            images: ["🌱 Seed sprouting"]
         }
     },
     { 
-        content: `<h3>Fungi</h3><p>Fungi like mushrooms do not make their own food. They break down dead things.</p>`,
+        content: `<h3>Practice Questions</h3>
+                  <ol>
+                    <li>Is a dog living or non-living?</li>
+                    <li>Is a bicycle living or non-living?</li>
+                    <li>Why is a tree living?</li>
+                    <li>Can a rock grow?</li>
+                  </ol>`,
         notes: {
-            text: "Fungi are nature's recyclers! They break down dead plants and animals, returning nutrients to the soil. Mushrooms are just the visible part - most fungi live underground.",
-            images: ["🍄 Different mushrooms", "🧽 Fungi structures"]
+            text: "Answer based on life processes.",
+            images: ["🐕 Dog", "🚲 Bicycle"]
         }
     },
     { 
-        content: `<h3>Microorganisms</h3><p>Some living things are so small we need a microscope to see them!</p>`,
+        content: `<h3>Summary</h3>
+                  <p>Living things grow, move, and reproduce. Non-living things do not have these abilities. 
+                  Knowing the difference helps us understand the world better.</p>`,
         notes: {
-            text: "The microscopic world is full of tiny living things like bacteria and viruses. Some are helpful (like those that help us digest food), while others can make us sick.",
-            images: ["🔬 Microscope view", "🦠 Microorganism shapes"]
-        }
-    },
-    { 
-        content: `
-            <h3>Diversity of Materials</h3>
-            <p>Materials can be natural (wood, cotton) or man-made (plastic, glass).</p>
-            <div class="video-container">
-                <div class="video-placeholder">
-                    📹 Video: Natural vs Man-made Materials
-                </div>
-            </div>
-        `,
-        notes: {
-            text: "Look around you - everything is made of materials! Some come directly from nature, while others are created by humans using natural resources as starting materials.",
-            images: ["🌲 Natural materials", "🏭 Man-made materials"]
-        }
-    },
-    { 
-        content: `<h3>Natural Materials</h3><p>Come from plants, animals, or the earth. Examples: wood, wool, stone.</p>`,
-        notes: {
-            text: "Natural materials are gifts from nature. Wood comes from trees, wool from sheep, cotton from plants, and metals from rocks deep in the earth.",
-            images: ["🐑 Wool from sheep", "🌰 Wood from trees"]
-        }
-    },
-    { 
-        content: `<h3>Man-made Materials</h3><p>Made by people. Examples: plastic, glass, steel.</p>`,
-        notes: {
-            text: "Humans are clever inventors! We've learned to create new materials by mixing, heating, and changing natural materials. Plastic comes from oil, glass from sand!",
-            images: ["🥤 Plastic items", "🪟 Glass objects"]
-        }
-    },
-    { 
-        content: `<h3>Uses of Materials</h3><p>We choose materials based on their properties: strong, waterproof, flexible, etc.</p>`,
-        notes: {
-            text: "Smart material choice is important! We use waterproof materials for raincoats, strong materials for buildings, and flexible materials for clothing.",
-            images: ["🏗️ Strong materials", "🧥 Flexible materials"]
-        }
-    },
-    { 
-        content: `<h3>Grouping Materials</h3><p>We can group materials by what they are made of or how they are used.</p>`,
-        notes: {
-            text: "Materials can be grouped in many ways: by their source (natural/man-made), by their properties (hard/soft), or by their use (building/clothing).",
-            images: ["📋 Material groups", "🔧 Material properties"]
-        }
-    },
-    { 
-        content: `<h3>Why is Diversity Important?</h3><p>Diversity helps living things survive and adapt to changes.</p>`,
-        notes: {
-            text: "Diversity is like nature's insurance policy! When environments change, some species can survive because they're different. This keeps ecosystems healthy and balanced.",
-            images: ["🌍 Ecosystem balance", "🔄 Adaptation examples"]
-        }
-    },
-    { 
-        content: `<h3>Review</h3><p>Living things, non-living things, and materials are all around us!</p>`,
-        notes: {
-            text: "Great job learning about diversity! Remember the key differences between living and non-living things, and how we classify the amazing variety of materials in our world.",
-            images: ["✅ Review checklist", "📚 Key concepts"]
-        }
-    },
-    { 
-        content: `<h3>Get Ready for a Quiz!</h3><p>Let's test your knowledge about diversity!</p>`,
-        notes: {
-            text: "Time to show what you've learned! Think about the characteristics of living things, the differences between natural and man-made materials, and why diversity matters.",
-            images: ["🎯 Quiz preparation", "🧠 Knowledge check"]
-        }
-    },
-    {
-        content: `
-        <div class="quiz-slide">
-            <h3>Quiz 1</h3>
-            <div class="quiz-question">Which of these is a living thing?</div>
-            <div class="quiz-options">
-                <button class="quiz-option" onclick="selectQuizAnswer(this, true)">A tree</button>
-                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">A rock</button>
-                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">A car</button>
-                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">A table</button>
-            </div>
-            <div class="quiz-explanation"><strong>Correct!</strong> A tree is a living thing because it grows and makes its own food.</div>
-        </div>
-        `,
-        notes: {
-            text: "Remember MRS GREN! A tree can grow, reproduce (make seeds), respond to sunlight, and make its own food through photosynthesis.",
-            images: ["🌳 Tree characteristics", "📝 Living thing checklist"]
-        }
-    },
-    {
-        content: `
-        <div class="quiz-slide">
-            <h3>Quiz 2</h3>
-            <div class="quiz-question">Which is a man-made material?</div>
-            <div class="quiz-options">
-                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Wood</button>
-                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Cotton</button>
-                <button class="quiz-option" onclick="selectQuizAnswer(this, true)">Plastic</button>
-                <button class="quiz-option" onclick="selectQuizAnswer(this, false)">Wool</button>
-            </div>
-            <div class="quiz-explanation"><strong>Correct!</strong> Plastic is made by people from chemicals.</div>
-        </div>
-        `,
-        notes: {
-            text: "Plastic is created by humans from oil and chemicals. Wood comes from trees, cotton from plants, and wool from sheep - all natural sources!",
-            images: ["🏭 Plastic factory", "🌿 Natural sources"]
+            text: "Living = life processes. Non-living = no life processes.",
+            images: ["🌎 Nature scene"]
         }
     }
 ];
