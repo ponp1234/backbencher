@@ -1,0 +1,4322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Systems - P4 Science</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+             margin: 0;
+             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+             background: #f1f5f9;
+             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: #0360a5;
+        }
+        
+        .slide-modal {
+             width: 100vw;
+             height: 100vh;
+             background: #f1f5f9;
+             display: flex;
+             align-items: stretch;
+             justify-content: center;
+             transition: padding-left 0.3s ease;
+            position: relative;
+        }
+        
+        .slide-modal.sidebar-open { padding-left: 280px; }
+        
+        .sidebar {
+            width: 280px;
+            background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            padding: 20px 0 0 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow-y: auto;
+            position: fixed;
+            left: -280px;
+            top: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .sidebar.open { left: 0; }
+        
+        .menu-toggle {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1001;
+            background: linear-gradient(135deg, #0360a5, #2c4a7e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 14px;
+            cursor: pointer;
+            font-size: 1.3rem;
+            box-shadow: 0 3px 12px rgba(26,42,68,0.3);
+            transition: all 0.3s ease;
+            min-height: 50px;
+            min-width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .menu-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26,42,68,0.4);
+        }
+        
+        .menu-toggle.sidebar-open {
+            left: 16px;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: none;
+        }
+        
+        .subtopic-section {
+            margin-bottom: 16px;
+        }
+        .subtopic-header {
+            background: #e5e7eb;
+            padding: 12px 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #0360a5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .subtopic-btn {
+            background: none;
+            border: none;
+            text-align: left;
+            padding: 14px 24px;
+            font-size: 0.95rem;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+            width: 100%;
+            display: block;
+            min-height: 50px;
+            line-height: 1.5;
+        }
+        .subtopic-btn.active, .subtopic-btn:hover {
+            background: #e6f0fa;
+            color: #1a2a44;
+            border-left: 4px solid #2c4a7e;
+            font-weight: 600;
+        }
+        
+        .slide-container {
+             background: #ffffff;
+             border-radius: 12px;
+             width: 100vw;
+             max-width: none;
+             height: 95vh;
+             box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+             display: flex;
+             flex-direction: column;
+             flex: 1;
+             margin: 12px;
+            position: relative;
+        }
+        
+        .slide-header {
+             background: linear-gradient(135deg, #1a2a44, #2c4a7e);
+             color: white;
+             padding: 20px 32px;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             flex-shrink: 0;
+            border-radius: 12px 12px 0 0;
+        }
+        .slide-title {
+             font-size: 1.5rem;
+             font-weight: 700;
+             display: flex;
+             align-items: center;
+             gap: 12px;
+             margin: 0;
+            letter-spacing: -0.02em;
+        }
+        .slide-counter {
+             background: rgba(255,255,255,0.15);
+             padding: 8px 16px;
+             border-radius: 20px;
+             font-weight: 600;
+             font-size: 0.9rem;
+        }
+        
+        .slide-content {
+             flex: 1;
+             overflow-y: auto;
+             display: flex;
+             flex-direction: column;
+            background: #f8fafc;
+             padding: 24px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .main-slide-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            min-height: 600px;
+        }
+        
+        .slide {
+             width: 100%;
+             max-width: 900px;
+             margin: 0 auto;
+             padding: 32px 24px;
+             background: #ffffff;
+             border-radius: 16px;
+             box-shadow: 0 4px 20px rgba(26,42,68,0.08);
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             text-align: center;
+            line-height: 1.6;
+        }
+        
+        .slide h2, .slide h3 {
+            color: #0360a5;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+        
+        .slide p {
+            color: #374151;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 16px;
+            line-height: 1.7;
+        }
+
+        .slide-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .info-card {
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .info-card h4 {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            color: #0360a5;
+        }
+
+        .info-card p {
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .info-card ul {
+            text-align: left;
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .info-card li {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .green-card { background: linear-gradient(135deg, #d4f4dd 0%, #a7f3d0 100%); }
+        .blue-card { background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%); }
+        .purple-card { background: linear-gradient(135deg, #e9d5ff 0%, #c4b5fd 100%); }
+        .yellow-card { background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%); }
+        .orange-card { background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%); }
+        .red-card { background: linear-gradient(135deg, #fecaca 0%, #f87171 100%); }
+        .gray-card { background: linear-gradient(135deg, #f3f4f6 0%, #d1d5db 100%); }
+        .pink-card { background: linear-gradient(135deg, #fce7f3 0%, #f9a8d4 100%); }
+
+        .system-diagram {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            max-width: 700px;
+            text-align: left;
+            border: 2px solid #0ea5e9;
+        }
+
+        .system-diagram h4 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #0c4a6e;
+            text-align: center;
+        }
+
+        .system-diagram ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .system-diagram li {
+            padding: 8px 0;
+            font-size: 1rem;
+            color: #0369a1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .system-diagram strong {
+            color: #0c4a6e;
+            font-size: 1.1rem;
+        }
+
+        .process-flow {
+            background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            max-width: 700px;
+            text-align: left;
+            border: 2px solid #f59e0b;
+        }
+
+        .process-flow h4 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #92400e;
+            text-align: center;
+        }
+
+        .process-step {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            gap: 15px;
+        }
+
+        .step-number {
+            background: #f59e0b;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content strong {
+            color: #92400e;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .step-content p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #a16207;
+        }
+
+        .video-container {
+            width: 100%;
+            max-width: 700px;
+            margin: 24px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #0360a5, #2c4a7e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .anatomy-diagram {
+            background: #ffffff;
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .anatomy-part {
+            position: absolute;
+            background: #0360a5;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .anatomy-part:hover {
+            background: #2c4a7e;
+            transform: scale(1.1);
+        }
+
+        .fun-fact {
+            background: linear-gradient(135deg, #fce7f3 0%, #f9a8d4 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            max-width: 600px;
+            border-left: 4px solid #ec4899;
+        }
+
+        .fun-fact h4 {
+            color: #be185d;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fun-fact p {
+            color: #be185d;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        
+        .slide-navigation {
+             background: #ffffff;
+             padding: 20px 32px;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             border-top: 1px solid #e5e7eb;
+             flex-shrink: 0;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        .nav-btn {
+             background: linear-gradient(135deg, #1a2a44, #2c4a7e);
+             color: white;
+             border: none;
+             border-radius: 10px;
+             padding: 12px 24px;
+             font-size: 1rem;
+             font-weight: 600;
+             cursor: pointer;
+             min-height: 50px;
+            transition: all 0.2s ease;
+        }
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26,42,68,0.3);
+        }
+        .nav-btn:disabled {
+             opacity: 0.5;
+             cursor: not-allowed;
+             transform: none;
+            box-shadow: none;
+        }
+        .slide-progress {
+             display: flex;
+             gap: 8px;
+             align-items: center;
+             flex-wrap: wrap;
+            justify-content: center;
+        }
+        .progress-dot {
+             width: 10px;
+             height: 10px;
+             border-radius: 50%;
+             background: #d1d5db;
+             transition: all 0.2s ease;
+        }
+        .progress-dot.active {
+             background: linear-gradient(135deg, #1a2a44, #2c4a7e);
+            transform: scale(1.3);
+        }
+        
+        /* Notes Section */
+        .notes-section {
+            background: #ffffff;
+            border-radius: 12px;
+            margin-top: 24px;
+            padding: 24px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+            border-top: 3px solid #2c4a7e;
+        }
+        
+        .notes-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            color: #0360a5;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .notes-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+        
+        .notes-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #374151;
+        }
+        
+        .notes-images {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .bw-image {
+            width: 100%;
+            height: 120px;
+            background: #f7f7f7;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #6b7280;
+            filter: grayscale(100%);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            padding: 12px;
+        }
+        
+        .bw-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, #f3f4f6 25%, transparent 25%),
+                         linear-gradient(-45deg, #f3f4f6 25%, transparent 25%),
+                         linear-gradient(45deg, transparent 75%, #f3f4f6 75%),
+                         linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
+            background-size: 15px 15px;
+            background-position: 0 0, 0 7.5px, 7.5px -7.5px, -7.5px 0px;
+            opacity: 0.1;
+        }
+        
+        /* AI Help Floating Widget */
+        .ai-help-widget {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1002;
+            font-family: inherit;
+        }
+        
+        .ai-help-toggle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .ai-help-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.5);
+        }
+        
+        .ai-help-toggle.active {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .ai-help-panel {
+            position: absolute;
+            top: 70px;
+            right: 0;
+            width: 340px;
+            max-height: 480px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border: 1px solid #e5e7eb;
+            transform: translateY(-20px) scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-help-panel.open {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .ai-help-header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .ai-help-content {
+            padding: 20px;
+            max-height: 320px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .ai-chat-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+            min-height: 80px;
+        }
+        
+        .ai-message {
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        
+        .ai-message.user {
+            background: #e6f0fa;
+            color: #1a2a44;
+            align-self: flex-end;
+            max-width: 80%;
+        }
+        
+        .ai-message.bot {
+            background: #f0fdf4;
+            color: #166534;
+            align-self: flex-start;
+            max-width: 90%;
+        }
+        
+        .ai-input-area {
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 16px;
+        }
+        
+        .ai-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+            min-height: 40px;
+        }
+        
+        .ai-input:focus {
+            border-color: #10b981;
+        }
+        
+        .ai-send-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .ai-send-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .ai-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .ai-suggestion {
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 36px;
+        }
+        
+        .ai-suggestion:hover {
+            background: #e6f0fa;
+            color: #1a2a44;
+        }
+
+        /* Quiz Styles */
+        .quiz-option {
+             background: #ffffff;
+             border: 2px solid #e5e7eb;
+             border-radius: 10px;
+             padding: 16px 20px;
+             cursor: pointer;
+             margin: 8px 0;
+             font-size: 1rem;
+             width: 100%;
+            max-width: 600px;
+            transition: all 0.2s ease;
+            min-height: 50px;
+            text-align: left;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .quiz-option:hover {
+            border-color: #2c4a7e;
+            transform: translateY(-1px);
+        }
+        .quiz-option.selected {
+             background: #e6f0fa;
+             border-color: #2c4a7e;
+             color: #1a2a44;
+         }
+        .quiz-option.correct {
+             background: #dcfce7;
+             border-color: #22c55e;
+             color: #15803d;
+         }
+        .quiz-option.incorrect {
+             background: #fee2e2;
+             border-color: #dc2626;
+             color: #b91c1c;
+         }
+        .quiz-explanation {
+             background: #f0fdf4;
+             border-radius: 10px;
+             padding: 20px;
+             border-left: 4px solid #22c55e;
+             margin-top: 20px;
+             display: none;
+             max-width: 600px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .quiz-explanation.show { display: block; }
+        
+        .back-home-btn {
+            background: #ffffff;
+            color: #2c4a7e;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 8px 16px;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(26,42,68,0.1);
+            font-size: 0.9rem;
+            border: none;
+            margin-left: 12px;
+            transition: all 0.2s ease;
+            min-height: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .back-home-btn:hover {
+            background: #e6f0fa;
+            color: #1a2a44;
+        }
+        
+        /* Overlay for mobile menu */
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .sidebar-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        /* Interactive Plant Diagram Styles */
+        .interactive-plant-diagram {
+            background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 30%, #90EE90 30%, #90EE90 70%, #8B4513 70%, #8B4513 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            max-width: 600px;
+            height: 400px;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .plant-part {
+            position: absolute;
+            background: #0360a5;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .plant-part:hover {
+            background: #2c4a7e;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .plant-part.active {
+            background: #dc2626;
+            transform: scale(1.2);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4); }
+            50% { box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6); }
+        }
+
+        .plant-visual {
+            position: absolute;
+            font-size: 3rem;
+            transition: all 0.3s ease;
+        }
+
+        .plant-visual.highlight {
+            transform: scale(1.2);
+            filter: brightness(1.3);
+        }
+
+        .plant-info-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #0360a5;
+            min-height: 150px;
+            transition: all 0.3s ease;
+        }
+
+        .plant-info-panel.show {
+            border-left-color: #dc2626;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        }
+
+        .plant-info-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #0360a5;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .plant-info-panel.show .plant-info-title {
+            color: #dc2626;
+        }
+
+        .plant-info-content {
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .plant-info-content ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .plant-info-content li {
+            margin-bottom: 8px;
+        }
+
+        .plant-info-content strong {
+            color: #0360a5;
+        }
+
+        .plant-info-panel.show .plant-info-content strong {
+            color: #dc2626;
+        }
+
+        .reset-plant-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .reset-plant-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+        }
+
+        /* Plant Growth Animation Styles */
+        .growth-animation-container {
+            background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 30%, #90EE90 30%, #90EE90 70%, #8B4513 70%, #8B4513 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            max-width: 600px;
+            height: 350px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .growth-stage {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            opacity: 0;
+            transition: all 1s ease;
+            text-align: center;
+        }
+
+        .growth-stage.active {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        .growth-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .growth-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .growth-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+        }
+
+        .growth-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .growth-progress {
+            background: #e5e7eb;
+            height: 6px;
+            border-radius: 3px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .growth-progress-bar {
+            background: linear-gradient(135deg, #10b981, #059669);
+            height: 100%;
+            width: 0%;
+            transition: width 1s ease;
+            border-radius: 3px;
+        }
+
+        /* Photosynthesis Simulator Styles */
+        .photosynthesis-simulator {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            max-width: 700px;
+            border: 2px solid #0ea5e9;
+        }
+
+        .simulator-controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-control {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .input-slider {
+            width: 100%;
+            margin: 10px 0;
+            -webkit-appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+        }
+
+        .input-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #0360a5;
+            cursor: pointer;
+        }
+
+        .simulator-equation {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #0369a1;
+            margin: 20px 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .simulator-output {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .output-display {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .output-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #10b981;
+            margin: 10px 0;
+        }
+
+        /* Plant vs Animal Comparison Styles */
+        .comparison-container {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            max-width: 800px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .comparison-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .comparison-tab {
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .comparison-tab.active {
+            background: linear-gradient(135deg, #0360a5, #2c4a7e);
+            color: white;
+        }
+
+        .comparison-content {
+            display: none;
+        }
+
+        .comparison-content.active {
+            display: block;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .comparison-side {
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .plant-side {
+            background: linear-gradient(135deg, #d4f4dd 0%, #a7f3d0 100%);
+        }
+
+        .animal-side {
+            background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%);
+        }
+
+        /* Plant Identification Game Styles */
+        .identification-game {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            max-width: 700px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .game-score {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .game-question {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .game-image {
+            font-size: 4rem;
+            margin: 20px 0;
+        }
+
+        .game-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .game-option {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 15px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            font-weight: 600;
+        }
+
+        .game-option:hover {
+            border-color: #0360a5;
+            background: #f0f9ff;
+        }
+
+        .game-option.correct {
+            background: #dcfce7;
+            border-color: #22c55e;
+            color: #15803d;
+        }
+
+        .game-option.incorrect {
+            background: #fee2e2;
+            border-color: #dc2626;
+            color: #b91c1c;
+        }
+
+        .game-feedback {
+            background: #f0fdf4;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 4px solid #22c55e;
+            display: none;
+        }
+
+        .game-feedback.show {
+            display: block;
+        }
+
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .game-btn {
+            background: linear-gradient(135deg, #0360a5, #2c4a7e);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .game-btn:hover {
+            background: linear-gradient(135deg, #2c4a7e, #1e3a5f);
+            transform: translateY(-1px);
+        }
+
+        .game-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Virtual Greenhouse Styles */
+        .virtual-greenhouse {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            max-width: 800px;
+            border: 2px solid #0ea5e9;
+        }
+
+        .greenhouse-display {
+            background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 30%, #90EE90 30%, #90EE90 70%, #8B4513 70%, #8B4513 100%);
+            border-radius: 10px;
+            height: 300px;
+            position: relative;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .greenhouse-plant {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 3rem;
+            transition: all 0.5s ease;
+        }
+
+        .greenhouse-conditions {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+        }
+
+        .greenhouse-controls {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .greenhouse-control {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .control-slider {
+            width: 100%;
+            margin: 10px 0;
+            -webkit-appearance: none;
+            height: 6px;
+            border-radius: 3px;
+            background: #e5e7eb;
+            outline: none;
+        }
+
+        .control-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #0360a5;
+            cursor: pointer;
+        }
+
+        .greenhouse-status {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+
+        .status-healthy { background: #22c55e; }
+        .status-warning { background: #f59e0b; }
+        .status-danger { background: #dc2626; }
+
+        /* Mobile Optimizations */
+        @media (max-width: 768px) {
+            .slide-modal {
+                 padding-left: 0 !important;
+             }
+            .slide-modal.sidebar-open {
+                 padding-left: 0;
+             }
+            
+            .menu-toggle {
+                 top: 12px;
+                left: 12px;
+                min-height: 48px;
+                min-width: 48px;
+                font-size: 1.2rem;
+                border-radius: 8px;
+            }
+            
+            .menu-toggle.sidebar-open {
+                 left: 12px;
+                 background: linear-gradient(135deg, #dc2626, #b91c1c);
+                transform: none;
+            }
+            
+            .sidebar {
+                 width: 85vw;
+                max-width: 320px;
+                border-radius: 0 16px 16px 0;
+                padding-top: 70px;
+            }
+            
+            .subtopic-header {
+                 font-size: 0.8rem;
+                padding: 12px 20px;
+                letter-spacing: 0.4px;
+            }
+            
+            .subtopic-btn {
+                 padding: 14px 22px;
+                 font-size: 0.95rem;
+                min-height: 50px;
+                line-height: 1.5;
+            }
+            
+            .slide-container {
+                 width: 100vw;
+                 height: 100vh;
+                 border-radius: 0;
+                 margin: 0;
+            }
+            
+            .slide-header {
+                padding: 16px 20px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .slide-title {
+                font-size: 1.2rem;
+                gap: 8px;
+            }
+            
+            .slide-counter {
+                font-size: 0.8rem;
+                padding: 6px 12px;
+            }
+            
+            .slide {
+                 padding: 20px 16px;
+                 border-radius: 0;
+                 margin: 0;
+            }
+            
+            .slide h2, .slide h3 {
+                font-size: 1.3rem;
+                margin-bottom: 12px;
+            }
+            
+            .slide p {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .simulator-controls, .comparison-grid, .game-options, .greenhouse-controls {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+            
+            .slide-navigation {
+                 padding: 16px 20px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            
+            .nav-btn {
+                font-size: 0.9rem;
+                padding: 10px 20px;
+                min-height: 48px;
+            }
+            
+            .slide-progress {
+                order: -1;
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 8px;
+            }
+            
+            .progress-dot {
+                width: 8px;
+                height: 8px;
+            }
+            
+            .back-home-btn {
+                 font-size: 0.8rem;
+                 padding: 6px 12px;
+                 margin-left: 8px;
+                gap: 4px;
+                min-height: 40px;
+            }
+            
+            .video-container {
+                margin: 16px 0;
+            }
+            
+            .video-placeholder {
+                height: 180px;
+                font-size: 0.9rem;
+                padding: 16px;
+            }
+            
+            .notes-content {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .notes-text {
+                font-size: 0.9rem;
+            }
+            
+            .bw-image {
+                height: 100px;
+                font-size: 0.8rem;
+            }
+            
+            .ai-help-widget {
+                top: 12px;
+                right: 12px;
+            }
+            
+            .ai-help-toggle {
+                width: 52px;
+                height: 52px;
+                font-size: 1.3rem;
+            }
+            
+            .ai-help-panel {
+                width: calc(100vw - 40px);
+                max-width: 320px;
+                top: 70px;
+                right: 10px;
+                max-height: 400px;
+            }
+            
+            .ai-help-header {
+                padding: 14px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .ai-help-content {
+                padding: 16px;
+                max-height: 280px;
+            }
+            
+            .ai-message {
+                font-size: 0.8rem;
+                padding: 8px 10px;
+            }
+            
+            .ai-input {
+                font-size: 16px;
+                padding: 10px 12px;
+            }
+            
+            .ai-suggestion {
+                font-size: 0.7rem;
+                padding: 6px 10px;
+                min-height: 36px;
+            }
+            
+            .quiz-option {
+                font-size: 0.95rem;
+                padding: 14px 16px;
+                margin: 6px 0;
+                min-height: 50px;
+            }
+            
+            .quiz-explanation {
+                font-size: 0.9rem;
+                padding: 16px;
+                margin-top: 16px;
+            }
+
+            .interactive-plant-diagram, .growth-animation-container, .greenhouse-display {
+                height: 300px;
+            }
+
+            .comparison-tabs {
+                flex-direction: column;
+                gap: 5px;
+            }
+        }
+
+        /* Small mobile phones */
+        @media (max-width: 480px) {
+            .menu-toggle {
+                top: 10px;
+                left: 10px;
+                min-height: 48px;
+                min-width: 48px;
+            }
+            
+            .sidebar {
+                width: 90vw;
+                max-width: 300px;
+            }
+            
+            .slide-header {
+                padding: 12px 16px;
+            }
+            
+            .slide-title {
+                font-size: 1.1rem;
+            }
+            
+            .slide {
+                padding: 16px 12px;
+            }
+            
+            .slide h2, .slide h3 {
+                font-size: 1.2rem;
+            }
+            
+            .slide p {
+                font-size: 0.95rem;
+            }
+            
+            .slide-navigation {
+                padding: 12px 16px;
+            }
+            
+            .nav-btn {
+                font-size: 0.85rem;
+                padding: 8px 16px;
+                min-height: 44px;
+            }
+            
+            .notes-section {
+                padding: 16px;
+                margin-top: 16px;
+            }
+            
+            .video-placeholder {
+                height: 150px;
+                font-size: 0.85rem;
+            }
+            
+            .ai-help-widget {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .ai-help-toggle {
+                width: 48px;
+                height: 48px;
+                font-size: 1.2rem;
+            }
+            
+            .ai-help-panel {
+                width: calc(100vw - 30px);
+                right: 5px;
+            }
+
+            .interactive-plant-diagram, .growth-animation-container, .greenhouse-display {
+                height: 250px;
+            }
+        }
+
+        /* Landscape mobile orientation */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .slide-container {
+                height: 100vh;
+            }
+            
+            .slide-content {
+                padding: 16px;
+            }
+            
+            .slide {
+                padding: 16px;
+            }
+            
+            .main-slide-area {
+                min-height: 200px;
+            }
+            
+            .video-placeholder {
+                height: 140px;
+            }
+            
+            .sidebar {
+                width: 70vw;
+                max-width: 280px;
+            }
+
+            .interactive-plant-diagram, .growth-animation-container, .greenhouse-display {
+                height: 200px;
+            }
+        }
+
+        /* Touch improvements */
+        @media (hover: none) and (pointer: coarse) {
+            .nav-btn:hover,
+            .menu-toggle:hover,
+            .ai-help-toggle:hover,
+            .quiz-option:hover,
+            .subtopic-btn:hover,
+            .back-home-btn:hover,
+            .ai-suggestion:hover {
+                transform: none;
+                box-shadow: inherit;
+            }
+            
+            .nav-btn:active,
+            .menu-toggle:active,
+            .ai-help-toggle:active,
+            .subtopic-btn:active,
+            .back-home-btn:active,
+            .ai-suggestion:active {
+                transform: scale(0.98);
+            }
+            
+            .quiz-option:active {
+                transform: scale(0.99);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()">
+    ☰
+</button>
+
+<div class="slide-modal" id="slide-modal">
+    <div class="sidebar" id="sidebar">
+        <!-- Subtopics will be rendered here -->
+    </div>
+    
+    <div class="slide-container">
+        <div class="slide-header">
+            <span style="display:flex;align-items:center;">
+                <h2 class="slide-title" style="margin:0;">
+                    <span id="slide-icon">🔬</span>
+                    <span id="slide-title-text">Systems</span>
+                </h2>
+            </span>
+            <span style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
+                <div class="slide-counter" id="slide-counter" style="display:inline-block;">1 / 25</div>
+                <a href="#" class="back-home-btn">🏠 Back to Home</a>
+            </span>
+        </div>
+        
+        <div class="slide-content" id="slide-content">
+            <div class="main-slide-area" id="main-slide-area"></div>
+        </div>
+        
+        <div class="slide-navigation">
+            <div class="slide-progress" id="slide-progress"></div>
+            <button class="nav-btn" id="prev-slide-btn" onclick="previousSlide()" disabled>← Previous</button>
+            <button class="nav-btn" id="next-slide-btn" onclick="nextSlide()">Next →</button>
+        </div>
+    </div>
+</div>
+
+<!-- AI Help Widget -->
+<div class="ai-help-widget">
+    <button class="ai-help-toggle" id="ai-help-toggle" onclick="toggleAIHelp()">🤖</button>
+    <div class="ai-help-panel" id="ai-help-panel">
+        <div class="ai-help-header">
+            <span>🤖</span>
+            <span>BB AI Assistant</span>
+        </div>
+        <div class="ai-help-content">
+            <div class="ai-suggestions">
+                <button class="ai-suggestion" onclick="askAI('Explain plant systems')">Explain plant systems</button>
+                <button class="ai-suggestion" onclick="askAI('How does digestion work?')">How does digestion work?</button>
+                <button class="ai-suggestion" onclick="askAI('Help with quiz')">Help with quiz</button>
+            </div>
+            <div class="ai-chat-messages" id="ai-chat-messages">
+                <div class="ai-message bot">
+                    Hi! I'm BB AI, your learning assistant. Ask me anything about plant and human systems! 🔬
+                </div>
+            </div>
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="ai-input" placeholder="Ask me anything..." onkeypress="handleAIKeyPress(event)">
+                <button class="ai-send-btn" onclick="sendAIMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Slide data with all new interactive features
+const subtopicSections = [
+    {
+        title: "Introduction to Systems",
+        subtopics: [
+            { title: "What are Systems?", slideIndex: 0 },
+            { title: "Types of Systems", slideIndex: 1 },
+            { title: "How Systems Work", slideIndex: 2 },
+            { title: "Systems in Nature", slideIndex: 3 }
+        ]
+    },
+    {
+        title: "Plant Systems",
+        subtopics: [
+            { title: "Interactive Plant Parts", slideIndex: 4 },
+            { title: "Plant Growth Animation", slideIndex: 5 },
+            { title: "Root System", slideIndex: 6 },
+            { title: "Stem System", slideIndex: 7 },
+            { title: "Leaf System", slideIndex: 8 },
+            { title: "Flower & Reproduction", slideIndex: 9 },
+            { title: "Photosynthesis Simulator", slideIndex: 10 },
+            { title: "How Plant Systems Work Together", slideIndex: 11 }
+        ]
+    },
+    {
+        title: "Interactive Learning",
+        subtopics: [
+            { title: "Plant vs Animal Comparison", slideIndex: 12 },
+            { title: "Plant Identification Game", slideIndex: 13 },
+            { title: "Virtual Greenhouse", slideIndex: 14 }
+        ]
+    },
+    {
+        title: "Human Digestive System",
+        subtopics: [
+            { title: "Digestive System Overview", slideIndex: 15 },
+            { title: "Mouth & Teeth", slideIndex: 16 },
+            { title: "Esophagus & Stomach", slideIndex: 17 },
+            { title: "Small Intestine", slideIndex: 18 },
+            { title: "Large Intestine", slideIndex: 19 },
+            { title: "Digestion Process", slideIndex: 20 },
+            { title: "Review & Summary", slideIndex: 21 },
+            { title: "Quiz 1", slideIndex: 22 },
+            { title: "Quiz 2", slideIndex: 23 },
+            { title: "Final Challenge", slideIndex: 24 }
+        ]
+    }
+];
+
+const slides = [
+    {
+        content: `
+            <div class="slide-icon">🔬</div>
+            <h2>What are Systems?</h2>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    🎬 Educational Video: Introduction to Systems
+                </div>
+            </div>
+            <p>A system is a group of parts that work together to perform a specific function or job.</p>
+            <div class="system-diagram">
+                <h4>Key Features of Systems:</h4>
+                <ul>
+                    <li>🔧 <strong>Parts:</strong> Different components that make up the system</li>
+                    <li>🔄 <strong>Function:</strong> The job or purpose the system performs</li>
+                    <li>🤝 <strong>Cooperation:</strong> Parts work together, not alone</li>
+                    <li>⚡ <strong>Efficiency:</strong> Systems make tasks easier and more effective</li>
+                </ul>
+            </div>
+        `,
+        notes: {
+            text: "Systems are everywhere around us! From the human body to plants, from computers to transportation - everything works as a system. Understanding how parts work together helps us appreciate the complexity and beauty of nature.",
+            images: ["🔬 System diagrams", "⚙️ Working parts"]
+        }
+    },
+    {
+        content: `
+            <h3>Types of Systems</h3>
+            <p>There are many different types of systems in our world. Let's explore some examples!</p>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🌱</div>
+                    <h4>Natural Systems</h4>
+                    <p>Found in nature - plants, animals, weather</p>
+                </div>
+                <div class="info-card blue-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🏭</div>
+                    <h4>Human-made Systems</h4>
+                    <p>Created by people - machines, computers, buildings</p>
+                </div>
+            </div>
+            <div class="grid-2" style="margin-top: 20px;">
+                <div class="info-card purple-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">❤️</div>
+                    <h4>Body Systems</h4>
+                    <p>Digestive, circulatory, respiratory systems</p>
+                </div>
+                <div class="info-card yellow-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🌍</div>
+                    <h4>Environmental Systems</h4>
+                    <p>Ecosystems, water cycle, food chains</p>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Systems can be classified in many ways. Natural systems have evolved over millions of years, while human-made systems are designed to solve specific problems. Both types follow the same basic principle: parts working together.",
+            images: ["🌿 Natural examples", "🔧 Human-made examples"]
+        }
+    },
+    {
+        content: `
+            <h3>How Systems Work</h3>
+            <p>All systems follow the same basic pattern: Input → Process → Output</p>
+            <div class="process-flow">
+                <h4>System Process Flow</h4>
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Input</strong>
+                        <p>What goes into the system (materials, energy, information)</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <strong>Process</strong>
+                        <p>What the system does to change or transform the input</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>Output</strong>
+                        <p>What comes out of the system (products, results, waste)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="fun-fact">
+                <h4>🎯 Fun Fact!</h4>
+                <p>Your body is made up of 11 different systems, all working together 24/7 to keep you alive and healthy!</p>
+            </div>
+        `,
+        notes: {
+            text: "The Input-Process-Output model helps us understand any system. For example, in a plant: Input (sunlight, water, CO2) → Process (photosynthesis) → Output (oxygen, glucose, growth).",
+            images: ["📊 Flow diagrams", "⚙️ Process examples"]
+        }
+    },
+    {
+        content: `
+            <h3>Systems in Nature</h3>
+            <p>Nature is full of amazing systems that have evolved over millions of years.</p>
+            <div class="grid-3">
+                <div class="info-card green-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🌳</div>
+                    <h4>Plant Systems</h4>
+                    <p>Roots, stems, leaves working together</p>
+                </div>
+                <div class="info-card red-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">❤️</div>
+                    <h4>Animal Systems</h4>
+                    <p>Digestive, circulatory, nervous systems</p>
+                </div>
+                <div class="info-card blue-card">
+                    <div style="font-size: 2rem; margin-bottom: 10px;">🌊</div>
+                    <h4>Water Cycle</h4>
+                    <p>Evaporation, condensation, precipitation</p>
+                </div>
+            </div>
+            <div class="system-diagram" style="margin-top: 20px;">
+                <h4>Why Natural Systems are Amazing:</h4>
+                <ul>
+                    <li>🔄 <strong>Self-maintaining:</strong> They repair and maintain themselves</li>
+                    <li>♻️ <strong>Efficient:</strong> No waste - everything is recycled</li>
+                    <li>🎯 <strong>Adaptive:</strong> They can change to survive</li>
+                    <li>⚖️ <strong>Balanced:</strong> All parts work in harmony</li>
+                </ul>
+            </div>
+        `,
+        notes: {
+            text: "Natural systems are incredibly efficient and have inspired many human inventions. Scientists study how plants and animals work to create better technology and solve human problems.",
+            images: ["🌿 Plant structures", "🦋 Animal systems"]
+        }
+    },
+    {
+        content: `
+            <h3>Interactive Plant Parts</h3>
+            <p>Click on different parts of the plant below to learn about their functions!</p>
+            <div class="interactive-plant-diagram" id="plant-diagram">
+                <!-- Sky background -->
+                <div style="position: absolute; top: 10px; right: 20px; font-size: 2rem;">☀️</div>
+                <div style="position: absolute; top: 15px; left: 30px; font-size: 1.5rem;">☁️</div>
+                
+                <!-- Flower -->
+                <div class="plant-visual" style="top: 40px; left: 45%; font-size: 2.5rem;" id="flower-visual">🌸</div>
+                <div class="plant-part" style="top: 30px; right: 25%;" onclick="showPlantInfo('flower')" id="flower-btn">
+                    🌸 Flower
+                </div>
+                
+                <!-- Leaves -->
+                <div class="plant-visual" style="top: 80px; left: 25%; font-size: 2rem;" id="leaf1-visual">🍃</div>
+                <div class="plant-visual" style="top: 100px; right: 25%; font-size: 2rem;" id="leaf2-visual">🍃</div>
+                <div class="plant-visual" style="top: 140px; left: 35%; font-size: 1.8rem;" id="leaf3-visual">🍃</div>
+                <div class="plant-part" style="top: 90px; left: 10%;" onclick="showPlantInfo('leaves')" id="leaves-btn">
+                    🍃 Leaves
+                </div>
+                
+                <!-- Stem -->
+                <div class="plant-visual" style="top: 120px; left: 48%; width: 8px; height: 150px; background: #228B22; border-radius: 4px;" id="stem-visual"></div>
+                <div class="plant-part" style="top: 180px; right: 35%;" onclick="showPlantInfo('stem')" id="stem-btn">
+                    🌱 Stem
+                </div>
+                
+                <!-- Roots -->
+                <div class="plant-visual" style="bottom: 40px; left: 35%; font-size: 2rem;" id="root1-visual">🌿</div>
+                <div class="plant-visual" style="bottom: 50px; left: 50%; font-size: 1.8rem;" id="root2-visual">🌿</div>
+                <div class="plant-visual" style="bottom: 45px; right: 35%; font-size: 1.5rem;" id="root3-visual">🌿</div>
+                <div class="plant-part" style="bottom: 20px; left: 20%;" onclick="showPlantInfo('roots')" id="roots-btn">
+                    🌿 Roots
+                </div>
+                
+                <!-- Soil line -->
+                <div style="position: absolute; bottom: 120px; left: 0; right: 0; height: 2px; background: #8B4513; opacity: 0.7;"></div>
+                <div style="position: absolute; bottom: 100px; left: 10px; font-size: 0.8rem; color: #8B4513; font-weight: bold;">Soil Level</div>
+            </div>
+            
+            <div class="plant-info-panel" id="plant-info-panel">
+                <div class="plant-info-title" id="plant-info-title">
+                    🌱 Click on any plant part above to learn more!
+                </div>
+                <div class="plant-info-content" id="plant-info-content">
+                    Plants are amazing living systems where every part has a special job. Each part works together with the others to help the plant survive, grow, and reproduce. Explore each part to discover their unique functions!
+                </div>
+                <button class="reset-plant-btn" onclick="resetPlantDiagram()" style="display: none;" id="reset-plant-btn">
+                    🔄 Reset View
+                </button>
+            </div>
+            
+            <div class="fun-fact" style="margin-top: 20px;">
+                <h4>🎯 Try This!</h4>
+                <p>Click on each plant part and notice how they all work together as a system. Can you identify which parts work above ground and which work below ground?</p>
+            </div>
+        `,
+        notes: {
+            text: "This interactive diagram helps students understand that plants are integrated systems. Each part has a specific function, but they all depend on each other. The visual and interactive approach makes learning more engaging and memorable.",
+            images: ["🌱 Plant system diagram", "🔬 Interactive learning"]
+        }
+    },
+    {
+        content: `
+            <h3>Plant Growth Animation</h3>
+            <p>Watch how a plant grows from a tiny seed to a full-grown plant! Control the growth stages to see the amazing transformation.</p>
+            
+            <div class="growth-animation-container" id="growth-container">
+                <!-- Sky background -->
+                <div style="position: absolute; top: 10px; right: 20px; font-size: 2rem;">☀️</div>
+                <div style="position: absolute; top: 15px; left: 30px; font-size: 1.5rem;">☁️</div>
+                
+                <!-- Growth stages -->
+                <div class="growth-stage active" id="stage-0" style="font-size: 1rem;">
+                    🌰 Seed
+                </div>
+                <div class="growth-stage" id="stage-1" style="font-size: 1.5rem;">
+                    🌱 Sprout
+                </div>
+                <div class="growth-stage" id="stage-2" style="font-size: 2rem;">
+                    🌿 Seedling
+                </div>
+                <div class="growth-stage" id="stage-3" style="font-size: 2.5rem;">
+                    🌳 Young Plant
+                </div>
+                <div class="growth-stage" id="stage-4" style="font-size: 3rem;">
+                    🌸🌳 Mature Plant
+                </div>
+                
+                <!-- Soil line -->
+                <div style="position: absolute; bottom: 120px; left: 0; right: 0; height: 2px; background: #8B4513; opacity: 0.7;"></div>
+                <div style="position: absolute; bottom: 100px; left: 10px; font-size: 0.8rem; color: #8B4513; font-weight: bold;">Soil Level</div>
+            </div>
+            
+            <div class="growth-progress">
+                <div class="growth-progress-bar" id="growth-progress-bar"></div>
+            </div>
+            
+            <div class="growth-controls">
+                <button class="growth-btn" onclick="previousGrowthStage()" id="prev-growth-btn" disabled>⏮️ Previous</button>
+                <button class="growth-btn" onclick="playGrowthAnimation()" id="play-growth-btn">▶️ Play Animation</button>
+                <button class="growth-btn" onclick="nextGrowthStage()" id="next-growth-btn">Next ⏭️</button>
+                <button class="growth-btn" onclick="resetGrowthAnimation()" id="reset-growth-btn">🔄 Reset</button>
+            </div>
+            
+            <div class="system-diagram" style="margin-top: 20px;">
+                <h4 id="growth-stage-info">🌰 Seed Stage</h4>
+                <p id="growth-stage-description">The journey begins with a tiny seed containing all the genetic information needed to grow into a full plant. Seeds can remain dormant for months or even years until conditions are right for germination!</p>
+            </div>
+            
+            <div class="fun-fact">
+                <h4>🌟 Amazing Growth Facts!</h4>
+                <p>Some bamboo plants can grow up to 3 feet in a single day! The fastest-growing plant on Earth can add several inches to its height in just one hour.</p>
+            </div>
+        `,
+        notes: {
+            text: "Plant growth is a fascinating process that demonstrates how systems develop over time. Each stage requires different resources and conditions, showing how plants adapt and change as they mature.",
+            images: ["🌱 Growth stages", "⏰ Time-lapse photography"]
+        }
+    },
+    {
+        content: `
+            <h3>Root System</h3>
+            <p>Roots are like the plant's underground network - they anchor the plant and gather resources.</p>
+            <div class="system-diagram">
+                <h4>Root System Functions:</h4>
+                <ul>
+                    <li>⚓ <strong>Anchoring:</strong> Keep the plant firmly in the ground</li>
+                    <li>💧 <strong>Water Absorption:</strong> Soak up water from the soil</li>
+                    <li>🍽️ <strong>Nutrient Uptake:</strong> Absorb minerals and nutrients</li>
+                    <li>🏪 <strong>Storage:</strong> Store food and energy for the plant</li>
+                    <li>🌱 <strong>New Growth:</strong> Some roots can grow new plants</li>
+                </ul>
+            </div>
+            <div class="grid-2">
+                <div class="info-card orange-card">
+                    <h4>Types of Roots:</h4>
+                    <ul>
+                        <li><strong>Taproot:</strong> One main thick root (carrot, radish)</li>
+                        <li><strong>Fibrous:</strong> Many thin roots (grass, rice)</li>
+                        <li><strong>Aerial:</strong> Roots that grow above ground</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>Root Hairs:</h4>
+                    <p>Tiny extensions that increase the surface area for better water and nutrient absorption - like having millions of tiny straws!</p>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Root systems are incredibly efficient. A single rye plant can have over 14 billion root hairs! This massive surface area helps the plant absorb maximum water and nutrients from the soil.",
+            images: ["🌿 Root structures", "🔬 Root hair microscopy"]
+        }
+    },
+    {
+        content: `
+            <h3>Stem System</h3>
+            <p>The stem is like the plant's highway system - it connects all parts and transports materials.</p>
+            <div class="system-diagram">
+                <h4>Stem System Functions:</h4>
+                <ul>
+                    <li>🏗️ <strong>Support:</strong> Hold up leaves, flowers, and fruits</li>
+                    <li>🚛 <strong>Transport:</strong> Move water up and food down</li>
+                    <li>📍 <strong>Positioning:</strong> Place leaves in the best light</li>
+                    <li>🌱 <strong>Growth:</strong> Allow the plant to grow taller</li>
+                    <li>🏪 <strong>Storage:</strong> Store water and nutrients</li>
+                </ul>
+            </div>
+            <div class="process-flow">
+                <h4>Transport System in Stems:</h4>
+                <div class="process-step">
+                    <div class="step-number">💧</div>
+                    <div class="step-content">
+                        <strong>Xylem</strong>
+                        <p>Tubes that carry water and minerals UP from roots to leaves</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">🍯</div>
+                    <div class="step-content">
+                        <strong>Phloem</strong>
+                        <p>Tubes that carry food (sugar) DOWN from leaves to all parts</p>
+                    </div>
+                </div>
+            </div>
+            <div class="fun-fact">
+                <h4>🌟 Amazing Fact!</h4>
+                <p>Some tree stems (trunks) can transport water over 100 meters high - that's like lifting water to the top of a 30-story building!</p>
+            </div>
+        `,
+        notes: {
+            text: "The stem's transport system is like a two-way highway. Xylem carries water up (like an elevator), while phloem carries food down (like a delivery system). This allows plants to be very tall while still feeding all their parts.",
+            images: ["🌱 Stem cross-sections", "🔬 Xylem and phloem"]
+        }
+    },
+    {
+        content: `
+            <h3>Leaf System</h3>
+            <p>Leaves are the plant's food factories - they make food using sunlight, water, and air.</p>
+            <div class="system-diagram">
+                <h4>Leaf System Functions:</h4>
+                <ul>
+                    <li>🍽️ <strong>Food Production:</strong> Make glucose through photosynthesis</li>
+                    <li>💨 <strong>Gas Exchange:</strong> Take in CO₂, release oxygen</li>
+                    <li>💧 <strong>Water Regulation:</strong> Control water loss through stomata</li>
+                    <li>☀️ <strong>Light Capture:</strong> Absorb sunlight for energy</li>
+                    <li>🌡️ <strong>Temperature Control:</strong> Cool the plant through transpiration</li>
+                </ul>
+            </div>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <h4>Leaf Parts:</h4>
+                    <ul>
+                        <li><strong>Blade:</strong> Flat part that captures light</li>
+                        <li><strong>Petiole:</strong> Leaf stalk connecting to stem</li>
+                        <li><strong>Veins:</strong> Transport water and food</li>
+                        <li><strong>Stomata:</strong> Tiny pores for gas exchange</li>
+                    </ul>
+                </div>
+                <div class="info-card yellow-card">
+                    <h4>Chlorophyll Magic:</h4>
+                    <p>The green substance in leaves that captures sunlight and converts it into chemical energy. It's like solar panels for plants!</p>
+                </div>
+            </div>
+            <div class="process-flow">
+                <h4>Photosynthesis Equation:</h4>
+                <div style="text-align: center; font-size: 1.1rem; color: #0369a1; font-weight: bold; padding: 20px; background: rgba(255,255,255,0.8); border-radius: 10px;">
+                    Sunlight + Water + Carbon Dioxide → Glucose + Oxygen
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Leaves are incredibly efficient solar panels. They convert sunlight into chemical energy with amazing precision. A single leaf can have over 500,000 chloroplasts, each one a tiny food factory!",
+            images: ["🍃 Leaf structures", "🔬 Chloroplast details"]
+        }
+    },
+    {
+        content: `
+            <h3>Flower & Reproduction System</h3>
+            <p>Flowers are the plant's reproductive system - they help plants make seeds and create new plants.</p>
+            <div class="grid-4">
+                <div class="info-card pink-card">
+                    <div style="font-size: 1.5rem; margin-bottom: 8px;">🌸</div>
+                    <h4>Petals</h4>
+                    <p>Colorful parts that attract pollinators</p>
+                </div>
+                <div class="info-card yellow-card">
+                    <div style="font-size: 1.5rem; margin-bottom: 8px;">🌾</div>
+                    <h4>Stamen</h4>
+                    <p>Male part that produces pollen</p>
+                </div>
+                <div class="info-card green-card">
+                    <div style="font-size: 1.5rem; margin-bottom: 8px;">🌺</div>
+                    <h4>Pistil</h4>
+                    <p>Female part that receives pollen</p>
+                </div>
+                <div class="info-card orange-card">
+                    <div style="font-size: 1.5rem; margin-bottom: 8px;">🌰</div>
+                    <h4>Seeds</h4>
+                    <p>Baby plants waiting to grow</p>
+                </div>
+            </div>
+            <div class="process-flow">
+                <h4>Plant Reproduction Process:</h4>
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Pollination</strong>
+                        <p>Pollen travels from stamen to pistil (by wind, insects, or animals)</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <strong>Fertilization</strong>
+                        <p>Pollen joins with egg cells inside the flower</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>Seed Formation</strong>
+                        <p>Fertilized eggs develop into seeds with baby plants inside</p>
+                    </div>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Flowers have evolved amazing strategies to ensure reproduction. Some smell sweet to attract bees, others are bright red for hummingbirds, and some even smell like rotting meat to attract flies!",
+            images: ["🌸 Flower anatomy", "🐝 Pollination process"]
+        }
+    },
+    {
+        content: `
+            <h3>Photosynthesis Simulator</h3>
+            <p>Experiment with the inputs of photosynthesis and see how they affect the outputs! Adjust the sliders to control sunlight, water, and CO₂ levels.</p>
+            
+            <div class="photosynthesis-simulator">
+                <h4 style="text-align: center; color: #0c4a6e; margin-bottom: 20px;">🔬 Interactive Photosynthesis Lab</h4>
+                
+                <div class="simulator-controls">
+                    <div class="input-control">
+                        <h5>☀️ Sunlight</h5>
+                        <input type="range" class="input-slider" id="sunlight-slider" min="0" max="100" value="50" oninput="updatePhotosynthesis()">
+                        <div id="sunlight-value">50%</div>
+                    </div>
+                    <div class="input-control">
+                        <h5>💧 Water</h5>
+                        <input type="range" class="input-slider" id="water-slider" min="0" max="100" value="50" oninput="updatePhotosynthesis()">
+                        <div id="water-value">50%</div>
+                    </div>
+                    <div class="input-control">
+                        <h5>💨 CO₂</h5>
+                        <input type="range" class="input-slider" id="co2-slider" min="0" max="100" value="50" oninput="updatePhotosynthesis()">
+                        <div id="co2-value">50%</div>
+                    </div>
+                </div>
+                
+                <div class="simulator-equation" id="photosynthesis-equation">
+                    6CO₂ + 6H₂O + Light Energy → C₆H₁₂O₆ + 6O₂
+                </div>
+                
+                <div class="simulator-output">
+                    <div class="output-display">
+                        <h5>🍯 Glucose Production</h5>
+                        <div class="output-value" id="glucose-output">50</div>
+                        <div>Energy Units</div>
+                    </div>
+                    <div class="output-display">
+                        <h5>🌬️ Oxygen Release</h5>
+                        <div class="output-value" id="oxygen-output">50</div>
+                        <div>O₂ Molecules</div>
+                    </div>
+                </div>
+                
+                <div class="fun-fact" style="margin-top: 20px;">
+                    <h4>🧪 Experiment Tips!</h4>
+                    <p id="simulator-tip">Try adjusting each input to see how it affects photosynthesis. What happens when one input is very low? What's the optimal combination?</p>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "This simulator helps students understand that photosynthesis requires balanced inputs. If any one factor is limiting (like low light or water), the entire process slows down, demonstrating the concept of limiting factors in biological systems.",
+            images: ["🔬 Photosynthesis lab", "📊 Input-output relationships"]
+        }
+    },
+    {
+        content: `
+            <h3>How Plant Systems Work Together</h3>
+            <p>All plant parts work as one integrated system - each part depends on the others!</p>
+            <div class="system-diagram">
+                <h4>Plant System Teamwork:</h4>
+                <ul>
+                    <li>🌿 <strong>Roots → Stem → Leaves:</strong> Water and nutrients flow upward</li>
+                    <li>🍃 <strong>Leaves → Stem → Roots:</strong> Food (glucose) flows downward</li>
+                    <li>🌸 <strong>Flowers → Seeds:</strong> Reproduction creates new plants</li>
+                    <li>🔄 <strong>All Parts:</strong> Share resources and support each other</li>
+                </ul>
+            </div>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <h4>What happens if one part fails?</h4>
+                    <ul>
+                        <li>No roots = No water, plant dies</li>
+                        <li>No leaves = No food, plant starves</li>
+                        <li>Damaged stem = No transport, parts disconnect</li>
+                        <li>No flowers = No seeds, no new plants</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>Plant System Benefits:</h4>
+                    <ul>
+                        <li>Efficient resource use</li>
+                        <li>Maximum survival chance</li>
+                        <li>Adaptation to environment</li>
+                        <li>Successful reproduction</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="fun-fact">
+                <h4>🌟 Amazing Teamwork!</h4>
+                <p>A single corn plant can transport over 200 liters of water from roots to leaves in one growing season - that's like 400 bottles of water!</p>
+            </div>
+        `,
+        notes: {
+            text: "Plant systems demonstrate perfect teamwork. Every part has a job, and every job is essential. This cooperation allows plants to survive in many different environments and grow to amazing sizes.",
+            images: ["🌱 System integration", "🔄 Resource flow"]
+        }
+    },
+    {
+        content: `
+            <h3>Plant vs Animal Comparison</h3>
+            <p>Explore the fascinating differences and similarities between plant and animal systems!</p>
+            
+            <div class="comparison-container">
+                <div class="comparison-tabs">
+                    <button class="comparison-tab active" onclick="showComparison('structure')" id="structure-tab">🏗️ Structure</button>
+                    <button class="comparison-tab" onclick="showComparison('nutrition')" id="nutrition-tab">🍽️ Nutrition</button>
+                    <button class="comparison-tab" onclick="showComparison('reproduction')" id="reproduction-tab">🌱 Reproduction</button>
+                    <button class="comparison-tab" onclick="showComparison('movement')" id="movement-tab">🏃 Movement</button>
+                </div>
+                
+                <div class="comparison-content active" id="structure-content">
+                    <h4 style="text-align: center; margin-bottom: 20px;">🏗️ Structural Differences</h4>
+                    <div class="comparison-grid">
+                        <div class="comparison-side plant-side">
+                            <h5>🌱 Plants</h5>
+                            <ul>
+                                <li><strong>Cell Walls:</strong> Rigid structure for support</li>
+                                <li><strong>Chloroplasts:</strong> For photosynthesis</li>
+                                <li><strong>Fixed Position:</strong> Rooted in place</li>
+                                <li><strong>Branching Growth:</strong> Stems and roots branch out</li>
+                                <li><strong>Specialized Tissues:</strong> Xylem and phloem for transport</li>
+                            </ul>
+                        </div>
+                        <div class="comparison-side animal-side">
+                            <h5>🐾 Animals</h5>
+                            <ul>
+                                <li><strong>Flexible Membranes:</strong> Allow movement and shape change</li>
+                                <li><strong>Mitochondria:</strong> Powerhouses for energy</li>
+                                <li><strong>Mobile:</strong> Can move to find resources</li>
+                                <li><strong>Organ Systems:</strong> Heart, lungs, brain, etc.</li>
+                                <li><strong>Circulatory System:</strong> Blood carries materials</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="comparison-content" id="nutrition-content">
+                    <h4 style="text-align: center; margin-bottom: 20px;">🍽️ How They Get Food</h4>
+                    <div class="comparison-grid">
+                        <div class="comparison-side plant-side">
+                            <h5>🌱 Plants (Autotrophs)</h5>
+                            <ul>
+                                <li><strong>Make Their Own Food:</strong> Through photosynthesis</li>
+                                <li><strong>Use Sunlight:</strong> Convert light energy to chemical energy</li>
+                                <li><strong>Absorb Nutrients:</strong> From soil through roots</li>
+                                <li><strong>Produce Oxygen:</strong> As a byproduct</li>
+                                <li><strong>Primary Producers:</strong> Base of food chains</li>
+                            </ul>
+                        </div>
+                        <div class="comparison-side animal-side">
+                            <h5>🐾 Animals (Heterotrophs)</h5>
+                            <ul>
+                                <li><strong>Consume Other Organisms:</strong> Cannot make own food</li>
+                                <li><strong>Digest Food:</strong> Break down complex molecules</li>
+                                <li><strong>Hunt or Graze:</strong> Active food seeking</li>
+                                <li><strong>Use Oxygen:</strong> For cellular respiration</li>
+                                <li><strong>Consumers:</strong> Depend on producers</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="comparison-content" id="reproduction-content">
+                    <h4 style="text-align: center; margin-bottom: 20px;">🌱 Reproduction Methods</h4>
+                    <div class="comparison-grid">
+                        <div class="comparison-side plant-side">
+                            <h5>🌱 Plants</h5>
+                            <ul>
+                                <li><strong>Sexual:</strong> Flowers, pollen, seeds</li>
+                                <li><strong>Asexual:</strong> Runners, bulbs, fragmentation</li>
+                                <li><strong>Wind/Animal Pollination:</strong> External help needed</li>
+                                <li><strong>Seed Dispersal:</strong> Various methods to spread</li>
+                                <li><strong>Alternation of Generations:</strong> Complex life cycles</li>
+                            </ul>
+                        </div>
+                        <div class="comparison-side animal-side">
+                            <h5>🐾 Animals</h5>
+                            <ul>
+                                <li><strong>Sexual:</strong> Male and female gametes</li>
+                                <li><strong>Asexual:</strong> Budding, fragmentation (rare)</li>
+                                <li><strong>Mating Behaviors:</strong> Courtship and selection</li>
+                                <li><strong>Parental Care:</strong> Protect and nurture young</li>
+                                <li><strong>Live Birth or Eggs:</strong> Different development strategies</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="comparison-content" id="movement-content">
+                    <h4 style="text-align: center; margin-bottom: 20px;">🏃 Movement and Response</h4>
+                    <div class="comparison-grid">
+                        <div class="comparison-side plant-side">
+                            <h5>🌱 Plants</h5>
+                            <ul>
+                                <li><strong>Tropisms:</strong> Grow toward/away from stimuli</li>
+                                <li><strong>Slow Response:</strong> Hours to days for changes</li>
+                                <li><strong>Growth Movement:</strong> Stems reach for light</li>
+                                <li><strong>Chemical Signals:</strong> Hormones coordinate responses</li>
+                                <li><strong>Seasonal Changes:</strong> Dormancy, leaf drop</li>
+                            </ul>
+                        </div>
+                        <div class="comparison-side animal-side">
+                            <h5>🐾 Animals</h5>
+                            <ul>
+                                <li><strong>Locomotion:</strong> Walking, swimming, flying</li>
+                                <li><strong>Rapid Response:</strong> Seconds to minutes</li>
+                                <li><strong>Nervous System:</strong> Quick signal transmission</li>
+                                <li><strong>Behavioral Adaptation:</strong> Learning and memory</li>
+                                <li><strong>Migration:</strong> Seasonal movement patterns</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="fun-fact" style="margin-top: 20px;">
+                    <h4>🤝 Similarities!</h4>
+                    <p id="comparison-similarity">Both plants and animals are made of cells, respond to their environment, reproduce, grow, and maintain homeostasis. They're more alike than different!</p>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Comparing plant and animal systems helps students understand the diversity of life strategies. While they solve similar problems (getting energy, reproducing, responding to environment), they use very different approaches.",
+            images: ["🔬 Comparative biology", "🌿🐾 System differences"]
+        }
+    },
+    {
+        content: `
+            <h3>Plant Identification Game</h3>
+            <p>Test your knowledge! Can you identify plant parts and their functions? Challenge yourself with this interactive game!</p>
+            
+            <div class="identification-game">
+                <div class="game-header">
+                    <h4>🎯 Plant Parts Challenge</h4>
+                    <div class="game-score" id="game-score">Score: 0/0</div>
+                </div>
+                
+                <div class="game-question" id="game-question">
+                    <div class="game-image" id="game-image">🌱</div>
+                    <h5 id="question-text">Which plant part is responsible for absorbing water and nutrients from the soil?</h5>
+                    
+                    <div class="game-options" id="game-options">
+                        <button class="game-option" onclick="selectGameAnswer(this, false, 0)">🍃 Leaves</button>
+                        <button class="game-option" onclick="selectGameAnswer(this, true, 0)">🌿 Roots</button>
+                        <button class="game-option" onclick="selectGameAnswer(this, false, 0)">🌱 Stem</button>
+                        <button class="game-option" onclick="selectGameAnswer(this, false, 0)">🌸 Flower</button>
+                    </div>
+                    
+                    <div class="game-feedback" id="game-feedback">
+                        <strong>Correct!</strong> Roots are the plant's underground network that absorbs water and nutrients from the soil. They also anchor the plant firmly in place.
+                    </div>
+                </div>
+                
+                <div class="game-controls">
+                    <button class="game-btn" onclick="nextGameQuestion()" id="next-question-btn" disabled>Next Question ➡️</button>
+                    <button class="game-btn" onclick="restartGame()" id="restart-game-btn">🔄 Restart Game</button>
+                </div>
+                
+                <div class="system-diagram" style="margin-top: 20px;">
+                    <h4>🏆 Game Progress</h4>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Question <span id="current-question">1</span> of <span id="total-questions">5</span></span>
+                        <span>Accuracy: <span id="accuracy">0%</span></span>
+                    </div>
+                    <div class="growth-progress" style="margin-top: 10px;">
+                        <div class="growth-progress-bar" id="game-progress-bar"></div>
+                    </div>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Interactive games make learning more engaging and help reinforce key concepts. This identification game tests students' understanding of plant parts and their functions while providing immediate feedback.",
+            images: ["🎮 Educational games", "🧠 Active learning"]
+        }
+    },
+    {
+        content: `
+            <h3>Virtual Greenhouse</h3>
+            <p>Control the growing conditions in your virtual greenhouse! Adjust light, water, temperature, and nutrients to see how plants respond.</p>
+            
+            <div class="virtual-greenhouse">
+                <h4 style="text-align: center; color: #0c4a6e; margin-bottom: 20px;">🏠 Virtual Plant Laboratory</h4>
+                
+                <div class="greenhouse-display" id="greenhouse-display">
+                    <!-- Sky and environment -->
+                    <div style="position: absolute; top: 10px; right: 20px; font-size: 2rem;" id="sun-icon">☀️</div>
+                    <div style="position: absolute; top: 15px; left: 30px; font-size: 1.5rem;" id="cloud-icon">☁️</div>
+                    
+                    <!-- Plant -->
+                    <div class="greenhouse-plant" id="greenhouse-plant">🌱</div>
+                    
+                    <!-- Environmental conditions display -->
+                    <div class="greenhouse-conditions" id="greenhouse-conditions">
+                        <div>🌡️ Temp: <span id="temp-display">22°C</span></div>
+                        <div>💧 Humidity: <span id="humidity-display">60%</span></div>
+                        <div>☀️ Light: <span id="light-display">50%</span></div>
+                    </div>
+                    
+                    <!-- Soil line -->
+                    <div style="position: absolute; bottom: 120px; left: 0; right: 0; height: 2px; background: #8B4513; opacity: 0.7;"></div>
+                </div>
+                
+                <div class="greenhouse-controls">
+                    <div class="greenhouse-control">
+                        <h5>☀️ Light</h5>
+                        <input type="range" class="control-slider" id="light-control" min="0" max="100" value="50" oninput="updateGreenhouse()">
+                        <div id="light-level">50%</div>
+                    </div>
+                    <div class="greenhouse-control">
+                        <h5>💧 Water</h5>
+                        <input type="range" class="control-slider" id="water-control" min="0" max="100" value="50" oninput="updateGreenhouse()">
+                        <div id="water-level">50%</div>
+                    </div>
+                    <div class="greenhouse-control">
+                        <h5>🌡️ Temperature</h5>
+                        <input type="range" class="control-slider" id="temp-control" min="10" max="40" value="22" oninput="updateGreenhouse()">
+                        <div id="temp-level">22°C</div>
+                    </div>
+                    <div class="greenhouse-control">
+                        <h5>🌱 Nutrients</h5>
+                        <input type="range" class="control-slider" id="nutrient-control" min="0" max="100" value="50" oninput="updateGreenhouse()">
+                        <div id="nutrient-level">50%</div>
+                    </div>
+                </div>
+                
+                <div class="greenhouse-status">
+                    <h5>🌿 Plant Health Status</h5>
+                    <div id="plant-status">
+                        <span class="status-indicator status-healthy"></span>
+                        <span id="status-text">Healthy - All conditions are optimal for growth!</span>
+                    </div>
+                    <div style="margin-top: 10px;">
+                        <strong>Growth Rate:</strong> <span id="growth-rate">Normal</span> | 
+                        <strong>Photosynthesis:</strong> <span id="photosynthesis-rate">Active</span>
+                    </div>
+                </div>
+                
+                <div class="fun-fact" style="margin-top: 20px;">
+                    <h4>🧪 Experiment Ideas!</h4>
+                    <p id="greenhouse-tip">Try extreme conditions! What happens with too much or too little of each factor? Can you find the perfect balance for maximum growth?</p>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "The virtual greenhouse demonstrates how environmental factors affect plant growth. Students can experiment with different conditions and observe immediate feedback, learning about optimal growing conditions and limiting factors.",
+            images: ["🏠 Greenhouse technology", "🌱 Plant responses"]
+        }
+    },
+    {
+        content: `
+            <h3>Human Digestive System Overview</h3>
+            <p>The digestive system breaks down food into nutrients your body can use for energy and growth.</p>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    🎬 Educational Video: Journey Through the Digestive System
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Digestive System Functions:</h4>
+                <ul>
+                    <li>🍽️ <strong>Ingestion:</strong> Taking food into the body</li>
+                    <li>⚡ <strong>Digestion:</strong> Breaking down food into smaller pieces</li>
+                    <li>🩸 <strong>Absorption:</strong> Taking nutrients into the bloodstream</li>
+                    <li>🚮 <strong>Elimination:</strong> Removing waste from the body</li>
+                </ul>
+            </div>
+            <div class="grid-2">
+                <div class="info-card blue-card">
+                    <h4>Main Digestive Organs:</h4>
+                    <ul>
+                        <li>👄 Mouth & Teeth</li>
+                        <li>🫁 Esophagus</li>
+                        <li>🫃 Stomach</li>
+                        <li>🌀 Small Intestine</li>
+                        <li>📏 Large Intestine</li>
+                    </ul>
+                </div>
+                <div class="info-card green-card">
+                    <h4>Helper Organs:</h4>
+                    <ul>
+                        <li>👅 Tongue</li>
+                        <li>🦷 Salivary Glands</li>
+                        <li>🫘 Liver</li>
+                        <li>🟢 Gallbladder</li>
+                        <li>🥞 Pancreas</li>
+                    </ul>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "The digestive system is like a 30-foot long processing plant inside your body! It takes about 24-72 hours for food to complete the entire journey from mouth to elimination.",
+            images: ["🫃 Digestive anatomy", "🔬 System overview"]
+        }
+    },
+    {
+        content: `
+            <h3>Mouth & Teeth</h3>
+            <p>Digestion begins in your mouth - it's the first stop on the food journey!</p>
+            <div class="system-diagram">
+                <h4>What Happens in Your Mouth:</h4>
+                <ul>
+                    <li>🦷 <strong>Mechanical Digestion:</strong> Teeth cut, tear, and grind food</li>
+                    <li>💧 <strong>Chemical Digestion:</strong> Saliva starts breaking down starches</li>
+                    <li>👅 <strong>Taste & Texture:</strong> Tongue helps identify and position food</li>
+                    <li>🌊 <strong>Moistening:</strong> Saliva makes food easier to swallow</li>
+                </ul>
+            </div>
+            <div class="grid-3">
+                <div class="info-card yellow-card">
+                    <h4>🦷 Types of Teeth</h4>
+                    <ul>
+                        <li><strong>Incisors:</strong> Cut food</li>
+                        <li><strong>Canines:</strong> Tear food</li>
+                        <li><strong>Molars:</strong> Grind food</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>💧 Saliva Power</h4>
+                    <ul>
+                        <li>Contains enzymes</li>
+                        <li>Kills harmful bacteria</li>
+                        <li>Moistens food</li>
+                        <li>Helps with taste</li>
+                    </ul>
+                </div>
+                <div class="info-card green-card">
+                    <h4>👅 Tongue Jobs</h4>
+                    <ul>
+                        <li>Moves food around</li>
+                        <li>Mixes with saliva</li>
+                        <li>Forms food bolus</li>
+                        <li>Pushes food back</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="fun-fact">
+                <h4>🤯 Amazing Facts!</h4>
+                <p>You produce about 1-2 liters of saliva every day - that's like 2-4 bottles of water! Your mouth also has over 700 types of bacteria (most are helpful!).</p>
+            </div>
+        `,
+        notes: {
+            text: "The mouth is incredibly efficient at starting digestion. Chewing increases the surface area of food by thousands of times, making it much easier for enzymes to work on it later in the digestive process.",
+            images: ["🦷 Tooth types", "👅 Mouth anatomy"]
+        }
+    },
+    {
+        content: `
+            <h3>Esophagus & Stomach</h3>
+            <p>After swallowing, food travels down the esophagus to the stomach for serious digestion!</p>
+            <div class="process-flow">
+                <h4>The Swallowing Journey:</h4>
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Esophagus</strong>
+                        <p>25cm tube that pushes food down using wave-like muscle contractions (peristalsis)</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <strong>Stomach Entry</strong>
+                        <p>Food enters the stomach through a muscular valve called the cardiac sphincter</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>Stomach Processing</strong>
+                        <p>Stomach churns food and mixes it with powerful digestive juices for 2-4 hours</p>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="info-card red-card">
+                    <h4>🫃 Stomach Functions</h4>
+                    <ul>
+                        <li><strong>Storage:</strong> Holds up to 1.5 liters of food</li>
+                        <li><strong>Mixing:</strong> Churns food into liquid (chyme)</li>
+                        <li><strong>Acid Production:</strong> Makes hydrochloric acid</li>
+                        <li><strong>Protein Digestion:</strong> Breaks down proteins</li>
+                    </ul>
+                </div>
+                <div class="info-card orange-card">
+                    <h4>🧪 Stomach Acid</h4>
+                    <ul>
+                        <li>pH of 1.5-2 (very acidic!)</li>
+                        <li>Kills harmful bacteria</li>
+                        <li>Activates digestive enzymes</li>
+                        <li>Breaks down food structure</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="fun-fact">
+                <h4>🛡️ Protection System!</h4>
+                <p>Your stomach produces a thick mucus layer to protect itself from its own acid. Without this, your stomach would digest itself!</p>
+            </div>
+        `,
+        notes: {
+            text: "The stomach is like a powerful blender and chemical factory combined. Its acid is so strong it could dissolve metal, but the stomach protects itself with a special mucus lining that regenerates every few days.",
+            images: ["🫃 Stomach structure", "🧪 Digestive juices"]
+        }
+    },
+    {
+        content: `
+            <h3>Small Intestine</h3>
+            <p>The small intestine is where most digestion and absorption happens - it's the star of the digestive system!</p>
+            <div class="system-diagram">
+                <h4>Small Intestine Amazing Facts:</h4>
+                <ul>
+                    <li>📏 <strong>Length:</strong> About 6-7 meters long (20-23 feet!)</li>
+                    <li>🌀 <strong>Surface Area:</strong> Inner surface has millions of tiny villi</li>
+                    <li>⏱️ <strong>Transit Time:</strong> Food spends 3-5 hours here</li>
+                    <li>🩸 <strong>Absorption:</strong> 90% of nutrients absorbed here</li>
+                </ul>
+            </div>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <h4>🌀 Three Sections</h4>
+                    <ul>
+                        <li><strong>Duodenum:</strong> First part, receives digestive juices</li>
+                        <li><strong>Jejunum:</strong> Middle part, major absorption area</li>
+                        <li><strong>Ileum:</strong> Last part, absorbs remaining nutrients</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>🏠 Villi Structure</h4>
+                    <ul>
+                        <li>Tiny finger-like projections</li>
+                        <li>Increase absorption surface area</li>
+                        <li>Contain blood vessels</li>
+                        <li>Move nutrients to bloodstream</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="process-flow">
+                <h4>Digestion Helpers:</h4>
+                <div class="process-step">
+                    <div class="step-number">🫘</div>
+                    <div class="step-content">
+                        <strong>Liver</strong>
+                        <p>Produces bile to break down fats into smaller droplets</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">🥞</div>
+                    <div class="step-content">
+                        <strong>Pancreas</strong>
+                        <p>Produces enzymes to digest proteins, carbohydrates, and fats</p>
+                    </div>
+                </div>
+            </div>
+            <div class="fun-fact">
+                <h4>🤯 Mind-Blowing Fact!</h4>
+                <p>If you could unfold all the villi in your small intestine, the surface area would be about the size of a tennis court!</p>
+            </div>
+        `,
+        notes: {
+            text: "The small intestine is a marvel of biological engineering. Despite being called 'small,' it's actually the longest part of the digestive system and does the most important work of extracting nutrients from food.",
+            images: ["🌀 Intestinal villi", "🔬 Absorption process"]
+        }
+    },
+    {
+        content: `
+            <h3>Large Intestine</h3>
+            <p>The large intestine is the final stop in the digestive journey - it processes waste and absorbs water.</p>
+            <div class="system-diagram">
+                <h4>Large Intestine Functions:</h4>
+                <ul>
+                    <li>💧 <strong>Water Absorption:</strong> Removes water from waste material</li>
+                    <li>🧂 <strong>Salt Recovery:</strong> Absorbs important minerals</li>
+                    <li>🦠 <strong>Bacterial Action:</strong> Helpful bacteria break down remaining material</li>
+                    <li>🗑️ <strong>Waste Formation:</strong> Forms solid waste (feces)</li>
+                    <li>🚮 <strong>Elimination:</strong> Stores waste until removal</li>
+                </ul>
+            </div>
+            <div class="grid-3">
+                <div class="info-card blue-card">
+                    <h4>📏 Structure</h4>
+                    <ul>
+                        <li><strong>Length:</strong> 1.5 meters</li>
+                        <li><strong>Width:</strong> 6cm (wider than small intestine)</li>
+                        <li><strong>Sections:</strong> Cecum, colon, rectum</li>
+                    </ul>
+                </div>
+                <div class="info-card green-card">
+                    <h4>🦠 Gut Bacteria</h4>
+                    <ul>
+                        <li>Trillions of helpful bacteria</li>
+                        <li>Make some vitamins</li>
+                        <li>Fight harmful germs</li>
+                        <li>Help immune system</li>
+                    </ul>
+                </div>
+                <div class="info-card yellow-card">
+                    <h4>⏱️ Timeline</h4>
+                    <ul>
+                        <li><strong>Transit time:</strong> 12-48 hours</li>
+                        <li><strong>Water absorbed:</strong> 1-2 liters per day</li>
+                        <li><strong>Waste storage:</strong> Until elimination</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="process-flow">
+                <h4>Final Processing Steps:</h4>
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Water Extraction</strong>
+                        <p>Large intestine absorbs most remaining water from waste</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <strong>Bacterial Processing</strong>
+                        <p>Beneficial bacteria break down remaining materials and produce vitamins</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>Waste Formation</strong>
+                        <p>Solid waste is formed and stored until elimination</p>
+                    </div>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "The large intestine hosts trillions of beneficial bacteria that help with digestion and immune function. This 'gut microbiome' is so important that scientists sometimes call it our 'second brain'!",
+            images: ["📏 Large intestine anatomy", "🦠 Gut bacteria"]
+        }
+    },
+    {
+        content: `
+            <h3>Complete Digestion Process</h3>
+            <p>Let's follow a piece of food through the entire digestive journey from start to finish!</p>
+            <div class="process-flow">
+                <h4>The Complete Food Journey:</h4>
+                <div class="process-step">
+                    <div class="step-number">👄</div>
+                    <div class="step-content">
+                        <strong>Mouth (0-30 seconds)</strong>
+                        <p>Chewing breaks food down, saliva starts starch digestion</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">🫁</div>
+                    <div class="step-content">
+                        <strong>Esophagus (10 seconds)</strong>
+                        <p>Muscle contractions push food down to stomach</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">🫃</div>
+                    <div class="step-content">
+                        <strong>Stomach (2-4 hours)</strong>
+                        <p>Acid and enzymes break down proteins, food becomes liquid</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">🌀</div>
+                    <div class="step-content">
+                        <strong>Small Intestine (3-5 hours)</strong>
+                        <p>Most digestion and absorption happens here</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">📏</div>
+                    <div class="step-content">
+                        <strong>Large Intestine (12-48 hours)</strong>
+                        <p>Water absorption and waste formation</p>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <h4>🍎 What Gets Absorbed:</h4>
+                    <ul>
+                        <li><strong>Carbohydrates:</strong> Broken down to glucose for energy</li>
+                        <li><strong>Proteins:</strong> Broken down to amino acids for growth</li>
+                        <li><strong>Fats:</strong> Broken down to fatty acids for energy storage</li>
+                        <li><strong>Vitamins & Minerals:</strong> Essential for body functions</li>
+                        <li><strong>Water:</strong> Keeps body hydrated</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>⏱️ Total Journey Time:</h4>
+                    <ul>
+                        <li><strong>Fast foods:</strong> 24-72 hours total</li>
+                        <li><strong>High fiber foods:</strong> Can take longer</li>
+                        <li><strong>Liquids:</strong> Move faster than solids</li>
+                        <li><strong>Individual variation:</strong> Everyone is different!</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="fun-fact">
+                <h4>🌟 Amazing Efficiency!</h4>
+                <p>Your digestive system processes about 40 tons of food in your lifetime - that's like eating 8 elephants! And it extracts almost every useful nutrient.</p>
+            </div>
+        `,
+        notes: {
+            text: "The digestive system is incredibly efficient, extracting maximum nutrition from everything we eat. The entire process is carefully coordinated by hormones and the nervous system to ensure optimal digestion.",
+            images: ["🔄 Digestion timeline", "📊 Nutrient absorption"]
+        }
+    },
+    {
+        content: `
+            <h3>Review & Summary</h3>
+            <p>Let's review what we've learned about plant systems and human digestive systems!</p>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <h4>🌱 Plant Systems Review:</h4>
+                    <ul>
+                        <li><strong>Roots:</strong> Absorb water and nutrients</li>
+                        <li><strong>Stem:</strong> Transport and support</li>
+                        <li><strong>Leaves:</strong> Make food through photosynthesis</li>
+                        <li><strong>Flowers:</strong> Reproduction and seeds</li>
+                        <li><strong>Teamwork:</strong> All parts work together</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>🫃 Digestive System Review:</h4>
+                    <ul>
+                        <li><strong>Mouth:</strong> Chewing and saliva</li>
+                        <li><strong>Stomach:</strong> Acid digestion</li>
+                        <li><strong>Small Intestine:</strong> Main absorption</li>
+                        <li><strong>Large Intestine:</strong> Water and waste</li>
+                        <li><strong>Process:</strong> Input → Process → Output</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Key System Principles:</h4>
+                <ul>
+                    <li>🤝 <strong>Cooperation:</strong> All parts work together for a common goal</li>
+                    <li>⚡ <strong>Efficiency:</strong> Systems make complex tasks manageable</li>
+                    <li>🔄 <strong>Process Flow:</strong> Input → Process → Output pattern</li>
+                    <li>🎯 <strong>Specialization:</strong> Each part has a specific function</li>
+                    <li>🛡️ <strong>Interdependence:</strong> Parts depend on each other</li>
+                </ul>
+            </div>
+            <div class="grid-2" style="margin-top: 20px;">
+                <div class="info-card yellow-card">
+                    <h4>🌟 Plant System Benefits:</h4>
+                    <ul>
+                        <li>Produces oxygen we breathe</li>
+                        <li>Creates food from sunlight</li>
+                        <li>Removes CO₂ from air</li>
+                        <li>Provides materials and medicine</li>
+                    </ul>
+                </div>
+                <div class="info-card purple-card">
+                    <h4>💪 Digestive System Benefits:</h4>
+                    <ul>
+                        <li>Extracts nutrients from food</li>
+                        <li>Provides energy for activities</li>
+                        <li>Supports growth and repair</li>
+                        <li>Eliminates harmful waste</li>
+                    </ul>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "Both plant and human systems demonstrate the power of organization and cooperation. When parts work together efficiently, they can accomplish amazing things that no single part could do alone.",
+            images: ["📚 System comparison", "🔄 Process review"]
+        }
+    },
+    {
+        content: `
+            <h3>Quiz 1</h3>
+            <div style="margin: 20px 0;">
+                <div style="font-size: 1.2rem; margin-bottom: 20px; font-weight: 600;">Which plant part is responsible for making food through photosynthesis?</div>
+                <div style="display: flex; flex-direction: column; gap: 10px; max-width: 600px; margin: 0 auto;">
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, false, 22)">Roots</button>
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, false, 22)">Stem</button>
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, true, 22)">Leaves</button>
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, false, 22)">Flowers</button>
+                </div>
+            </div>
+            <div class="quiz-explanation" id="explanation22">
+                <strong>Correct!</strong> Leaves contain chlorophyll, which captures sunlight and uses it along with water and carbon dioxide to make glucose through photosynthesis. This process also produces the oxygen we breathe!
+            </div>
+        `,
+        notes: {
+            text: "Leaves are the food factories of plants. They contain millions of chloroplasts with chlorophyll that can capture light energy and convert it into chemical energy through photosynthesis.",
+            images: ["🍃 Leaf structure", "☀️ Photosynthesis process"]
+        }
+    },
+    {
+        content: `
+            <h3>Quiz 2</h3>
+            <div style="margin: 20px 0;">
+                <div style="font-size: 1.2rem; margin-bottom: 20px; font-weight: 600;">Where does most nutrient absorption occur in the human digestive system?</div>
+                <div style="display: flex; flex-direction: column; gap: 10px; max-width: 600px; margin: 0 auto;">
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, false, 23)">Mouth</button>
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, false, 23)">Stomach</button>
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, true, 23)">Small Intestine</button>
+                    <button class="quiz-option" onclick="selectQuizAnswer(this, false, 23)">Large Intestine</button>
+                </div>
+            </div>
+            <div class="quiz-explanation" id="explanation23">
+                <strong>Correct!</strong> The small intestine is where about 90% of nutrient absorption occurs. Its inner surface has millions of tiny villi that increase the surface area for maximum absorption of nutrients into the bloodstream.
+            </div>
+        `,
+        notes: {
+            text: "The small intestine is the star of the digestive system. Despite being called 'small,' it's actually the longest part and does the most important work of extracting nutrients from our food.",
+            images: ["🌀 Small intestine", "🔬 Villi structure"]
+        }
+    },
+    {
+        content: `
+            <h3>Final Challenge</h3>
+            <p>Congratulations! You've completed your journey through plant and human systems. Test your mastery with this final challenge!</p>
+            
+            <div class="identification-game">
+                <div class="game-header">
+                    <h4>🏆 Systems Mastery Challenge</h4>
+                    <div class="game-score" id="final-game-score">Score: 0/0</div>
+                </div>
+                
+                <div class="game-question" id="final-game-question">
+                    <div class="game-image" id="final-game-image">🌱🫃</div>
+                    <h5 id="final-question-text">Both plant and human systems follow the same basic pattern. What is this pattern called?</h5>
+                    
+                    <div class="game-options" id="final-game-options">
+                        <button class="game-option" onclick="selectFinalAnswer(this, false, 0)">Structure → Function → Purpose</button>
+                        <button class="game-option" onclick="selectFinalAnswer(this, true, 0)">Input → Process → Output</button>
+                        <button class="game-option" onclick="selectFinalAnswer(this, false, 0)">Beginning → Middle → End</button>
+                        <button class="game-option" onclick="selectFinalAnswer(this, false, 0)">Problem → Solution → Result</button>
+                    </div>
+                    
+                    <div class="game-feedback" id="final-game-feedback">
+                        <strong>Excellent!</strong> Both plant and human systems follow the Input → Process → Output pattern. Plants take in sunlight, water, and CO₂ (input), perform photosynthesis (process), and produce glucose and oxygen (output). Similarly, humans take in food (input), digest it (process), and absorb nutrients while eliminating waste (output).
+                    </div>
+                </div>
+                
+                <div class="game-controls">
+                    <button class="game-btn" onclick="nextFinalQuestion()" id="next-final-btn" disabled>Next Question ➡️</button>
+                    <button class="game-btn" onclick="completeCourse()" id="complete-course-btn" style="display: none;">🎓 Complete Course</button>
+                </div>
+                
+                <div class="system-diagram" style="margin-top: 20px;">
+                    <h4>🎯 Final Challenge Progress</h4>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>Question <span id="final-current-question">1</span> of <span id="final-total-questions">3</span></span>
+                        <span>Mastery Level: <span id="final-accuracy">0%</span></span>
+                    </div>
+                    <div class="growth-progress" style="margin-top: 10px;">
+                        <div class="growth-progress-bar" id="final-progress-bar"></div>
+                    </div>
+                </div>
+                
+                <div class="fun-fact" style="margin-top: 20px;">
+                    <h4>🌟 You've Learned So Much!</h4>
+                    <p>From clickable plant diagrams to virtual greenhouses, from growth animations to system comparisons - you've explored the amazing world of biological systems. Great job on your learning journey!</p>
+                </div>
+            </div>
+        `,
+        notes: {
+            text: "This final challenge brings together all the concepts learned throughout the lesson, testing students' understanding of system principles that apply to both plants and humans.",
+            images: ["🏆 Achievement unlocked", "🎓 Course completion"]
+        }
+    }
+];
+
+// Global variables for interactive features
+let currentSlideIndex = 0;
+let sidebarOpen = false;
+let aiHelpOpen = false;
+let sidebarTouchStartX = 0;
+let sidebarTouchEndX = 0;
+
+// Plant growth animation variables
+let currentGrowthStage = 0;
+let growthAnimationPlaying = false;
+let growthAnimationInterval;
+
+// Game variables
+let gameQuestions = [];
+let currentGameQuestion = 0;
+let gameScore = 0;
+let gameAnswered = false;
+
+// Final challenge variables
+let finalQuestions = [];
+let currentFinalQuestion = 0;
+let finalScore = 0;
+let finalAnswered = false;
+
+// Photosynthesis simulator variables
+let photosynthesisInputs = { sunlight: 50, water: 50, co2: 50 };
+
+// Greenhouse variables
+let greenhouseConditions = { light: 50, water: 50, temperature: 22, nutrients: 50 };
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const slideModal = document.getElementById('slide-modal');
+    const menuToggle = document.getElementById('menu-toggle');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    sidebarOpen = !sidebarOpen;
+    
+    if (sidebarOpen) {
+        sidebar.classList.add('open');
+        slideModal.classList.add('sidebar-open');
+        menuToggle.classList.add('sidebar-open');
+        menuToggle.innerHTML = '✕';
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    } else {
+        sidebar.classList.remove('open');
+        slideModal.classList.remove('sidebar-open');
+        menuToggle.classList.remove('sidebar-open');
+        menuToggle.innerHTML = '☰';
+        overlay.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+}
+
+function toggleAIHelp() {
+    const panel = document.getElementById('ai-help-panel');
+    const toggle = document.getElementById('ai-help-toggle');
+    
+    aiHelpOpen = !aiHelpOpen;
+    
+    if (aiHelpOpen) {
+        panel.classList.add('open');
+        toggle.classList.add('active');
+        toggle.innerHTML = '✕';
+    } else {
+        panel.classList.remove('open');
+        toggle.classList.remove('active');
+        toggle.innerHTML = '🤖';
+    }
+}
+
+function askAI(question) {
+    const input = document.getElementById('ai-input');
+    input.value = question;
+    sendAIMessage();
+}
+
+function sendAIMessage() {
+    const input = document.getElementById('ai-input');
+    const messages = document.getElementById('ai-chat-messages');
+    const question = input.value.trim();
+    
+    if (!question) return;
+    
+    const userMessage = document.createElement('div');
+    userMessage.className = 'ai-message user';
+    userMessage.textContent = question;
+    messages.appendChild(userMessage);
+    
+    input.value = '';
+    
+    setTimeout(() => {
+        const botMessage = document.createElement('div');
+        botMessage.className = 'ai-message bot';
+        botMessage.textContent = generateAIResponse(question);
+        messages.appendChild(botMessage);
+        messages.scrollTop = messages.scrollHeight;
+    }, 1000);
+    
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function generateAIResponse(question) {
+    const responses = {
+        'explain plant systems': 'Plant systems work together beautifully! Roots absorb water and nutrients, stems transport materials and provide support, leaves make food through photosynthesis, and flowers help with reproduction. Each part depends on the others! 🌱',
+        'how does digestion work': 'Digestion is like a food processing factory! It starts in your mouth with chewing and saliva, continues in the stomach with acid breakdown, then the small intestine absorbs most nutrients, and finally the large intestine processes waste. Amazing teamwork! 🫃',
+        'help with quiz': 'Remember the key functions: Leaves make food through photosynthesis using sunlight, water, and CO₂. The small intestine is where most nutrient absorption happens thanks to millions of tiny villi. You\'ve got this! 💪',
+        'photosynthesis': 'Photosynthesis is amazing! Plants use sunlight + water + carbon dioxide to make glucose (food) and oxygen. The equation is: 6CO₂ + 6H₂O + light energy → C₆H₁₂O₆ + 6O₂. It happens in the chloroplasts of leaves! ☀️',
+        'digestive system': 'The digestive system has four main functions: ingestion (taking in food), digestion (breaking it down), absorption (taking nutrients into blood), and elimination (removing waste). It\'s like a 30-foot processing plant! 🔬',
+        'plant growth': 'Plants grow through amazing stages! From tiny seeds to mature plants with flowers. Each stage needs different conditions - water, sunlight, nutrients, and the right temperature. Try the growth animation to see it in action! 🌱',
+        'greenhouse': 'The virtual greenhouse shows how environmental factors affect plant growth. Light, water, temperature, and nutrients all need to be balanced. Too much or too little of any factor can stress the plant! 🏠',
+        'plant vs animal': 'Plants and animals solve similar problems differently! Plants make their own food (autotrophs) while animals eat others (heterotrophs). Plants are rooted while animals move. But both respond to their environment and reproduce! 🌱🐾'
+    };
+    
+    const key = question.toLowerCase();
+    for (const [keyword, response] of Object.entries(responses)) {
+        if (key.includes(keyword.replace(/\s+/g, '')) || key.includes(keyword)) {
+            return response;
+        }
+    }
+    
+    return `That's a great question about systems! Based on slide ${currentSlideIndex + 1}, I'd suggest focusing on how different parts work together to achieve a common goal. Feel free to ask more specific questions! 🔬`;
+}
+
+function handleAIKeyPress(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        sendAIMessage();
+    }
+}
+
+function renderSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.innerHTML = '';
+    
+    subtopicSections.forEach(section => {
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'subtopic-section';
+        
+        const header = document.createElement('div');
+        header.className = 'subtopic-header';
+        header.textContent = section.title;
+        headerDiv.appendChild(header);
+        
+        section.subtopics.forEach(subtopic => {
+            const btn = document.createElement('button');
+            btn.className = 'subtopic-btn' + (currentSlideIndex === subtopic.slideIndex ? ' active' : '');
+            btn.textContent = subtopic.title;
+            btn.onclick = () => {
+                currentSlideIndex = subtopic.slideIndex;
+                loadSlide();
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            };
+            headerDiv.appendChild(btn);
+        });
+        
+        sidebar.appendChild(headerDiv);
+    });
+}
+
+function loadSlide() {
+    const slideContentEl = document.getElementById('slide-content');
+    
+    slideContentEl.innerHTML = '';
+    
+    const mainArea = document.createElement('div');
+    mainArea.className = 'main-slide-area';
+    mainArea.id = 'main-slide-area';
+    
+    const slideEl = document.createElement('div');
+    slideEl.className = 'slide active';
+    slideEl.innerHTML = slides[currentSlideIndex].content;
+    mainArea.appendChild(slideEl);
+    
+    slideContentEl.appendChild(mainArea);
+    
+    if (slides[currentSlideIndex].notes) {
+        const notesSection = document.createElement('div');
+        notesSection.className = 'notes-section';
+        
+        notesSection.innerHTML = `
+            <div class="notes-header">
+                <span>📝</span>
+                <span>Study Notes</span>
+            </div>
+            <div class="notes-content">
+                <div class="notes-text">
+                    ${slides[currentSlideIndex].notes.text}
+                </div>
+                <div class="notes-images">
+                    ${slides[currentSlideIndex].notes.images.map(img => 
+                        `<div class="bw-image">${img}</div>`
+                    ).join('')}
+                </div>
+            </div>
+        `;
+        
+        slideContentEl.appendChild(notesSection);
+    }
+    
+    // Initialize interactive features based on slide content
+    initializeSlideFeatures();
+    
+    updateSlideCounter();
+    updateNavigationButtons();
+    updateSlideProgress();
+    renderSidebar();
+}
+
+function initializeSlideFeatures() {
+    // Initialize plant growth animation if on that slide
+    if (currentSlideIndex === 5) {
+        initializeGrowthAnimation();
+    }
+    
+    // Initialize photosynthesis simulator if on that slide
+    if (currentSlideIndex === 10) {
+        initializePhotosynthesisSimulator();
+    }
+    
+    // Initialize comparison tabs if on that slide
+    if (currentSlideIndex === 12) {
+        initializeComparisonTabs();
+    }
+    
+    // Initialize plant identification game if on that slide
+    if (currentSlideIndex === 13) {
+        initializeIdentificationGame();
+    }
+    
+    // Initialize virtual greenhouse if on that slide
+    if (currentSlideIndex === 14) {
+        initializeVirtualGreenhouse();
+    }
+    
+    // Initialize final challenge if on that slide
+    if (currentSlideIndex === 24) {
+        initializeFinalChallenge();
+    }
+}
+
+function updateSlideCounter() {
+    document.getElementById('slide-counter').textContent = `${currentSlideIndex + 1} / ${slides.length}`;
+}
+
+function updateNavigationButtons() {
+    document.getElementById('prev-slide-btn').disabled = currentSlideIndex === 0;
+    document.getElementById('next-slide-btn').disabled = false;
+    document.getElementById('next-slide-btn').textContent = (currentSlideIndex === slides.length - 1) ? 'Finish' : 'Next →';
+}
+
+function updateSlideProgress() {
+    const progressEl = document.getElementById('slide-progress');
+    progressEl.innerHTML = '';
+    for (let i = 0; i < slides.length; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'progress-dot' + (i === currentSlideIndex ? ' active' : '');
+        progressEl.appendChild(dot);
+    }
+}
+
+function nextSlide() {
+    if (currentSlideIndex < slides.length - 1) {
+        currentSlideIndex++;
+        loadSlide();
+    } else {
+        alert('Congratulations! You have completed the Systems lesson!');
+    }
+}
+
+function previousSlide() {
+    if (currentSlideIndex > 0) {
+        currentSlideIndex--;
+        loadSlide();
+    }
+}
+
+function selectQuizAnswer(button, isCorrect, slideNum) {
+    const options = button.parentElement.querySelectorAll('.quiz-option');
+    const explanation = document.getElementById(`explanation${slideNum}`);
+    
+    options.forEach(option => {
+        option.disabled = true;
+        option.style.pointerEvents = 'none';
+    });
+    
+    button.classList.add('selected');
+    
+    if (isCorrect) {
+        button.classList.add('correct');
+    } else {
+        button.classList.add('incorrect');
+        options.forEach(option => {
+            if (option.onclick.toString().includes('true')) {
+                option.classList.add('correct');
+            }
+        });
+    }
+    
+    explanation.classList.add('show');
+}
+
+// Plant diagram interaction functions
+const plantPartInfo = {
+    flower: {
+        icon: '🌸',
+        title: 'Flower - Reproduction System',
+        content: `
+            <p><strong>Main Function:</strong> Flowers are the plant's reproductive organs that help create seeds for new plants.</p>
+            <ul>
+                <li><strong>Petals:</strong> Colorful parts that attract bees, butterflies, and other pollinators</li>
+                <li><strong>Stamen:</strong> Male part that produces pollen (the plant's sperm)</li>
+                <li><strong>Pistil:</strong> Female part that receives pollen and contains eggs</li>
+                <li><strong>Nectar:</strong> Sweet liquid that rewards pollinators for their help</li>
+            </ul>
+            <p><strong>Amazing Fact:</strong> Some flowers can change color to signal when they have nectar available!</p>
+        `,
+        highlights: ['flower-visual']
+    },
+    leaves: {
+        icon: '🍃',
+        title: 'Leaves - Food Factory System',
+        content: `
+            <p><strong>Main Function:</strong> Leaves are the plant's food factories that make glucose through photosynthesis.</p>
+            <ul>
+                <li><strong>Chlorophyll:</strong> Green substance that captures sunlight energy</li>
+                <li><strong>Stomata:</strong> Tiny pores that let CO₂ in and oxygen out</li>
+                <li><strong>Veins:</strong> Transport water in and food out</li>
+                <li><strong>Blade:</strong> Flat surface that maximizes light capture</li>
+            </ul>
+            <p><strong>Amazing Fact:</strong> A single leaf can have over 500,000 tiny chloroplasts working as mini solar panels!</p>
+        `,
+        highlights: ['leaf1-visual', 'leaf2-visual', 'leaf3-visual']
+    },
+    stem: {
+        icon: '🌱',
+        title: 'Stem - Transport Highway System',
+        content: `
+            <p><strong>Main Function:</strong> The stem supports the plant and acts like a two-way highway for materials.</p>
+            <ul>
+                <li><strong>Xylem:</strong> Tubes that carry water and minerals UP from roots to leaves</li>
+                <li><strong>Phloem:</strong> Tubes that carry food (sugar) DOWN from leaves to all parts</li>
+                <li><strong>Support:</strong> Holds up leaves, flowers, and fruits toward sunlight</li>
+                <li><strong>Storage:</strong> Can store water and nutrients for tough times</li>
+            </ul>
+            <p><strong>Amazing Fact:</strong> Some tree stems can transport water over 100 meters high - like a 30-story building!</p>
+        `,
+        highlights: ['stem-visual']
+    },
+    roots: {
+        icon: '🌿',
+        title: 'Roots - Underground Support System',
+        content: `
+            <p><strong>Main Function:</strong> Roots anchor the plant and gather water and nutrients from the soil.</p>
+            <ul>
+                <li><strong>Absorption:</strong> Soak up water and dissolved minerals from soil</li>
+                <li><strong>Anchoring:</strong> Keep the plant firmly planted in the ground</li>
+                <li><strong>Storage:</strong> Store extra food and energy for the plant</li>
+                <li><strong>Root Hairs:</strong> Millions of tiny extensions that increase absorption area</li>
+            </ul>
+            <p><strong>Amazing Fact:</strong> A single rye plant can have over 14 billion root hairs - that's more than twice the number of people on Earth!</p>
+        `,
+        highlights: ['root1-visual', 'root2-visual', 'root3-visual']
+    }
+};
+
+function showPlantInfo(partName) {
+    const info = plantPartInfo[partName];
+    const panel = document.getElementById('plant-info-panel');
+    const title = document.getElementById('plant-info-title');
+    const content = document.getElementById('plant-info-content');
+    const resetBtn = document.getElementById('reset-plant-btn');
+    
+    // Reset all highlights and active states
+    resetPlantHighlights();
+    
+    // Set active state for clicked button
+    document.getElementById(partName + '-btn').classList.add('active');
+    
+    // Highlight corresponding visual elements
+    info.highlights.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.classList.add('highlight');
+        }
+    });
+    
+    // Update panel content
+    title.innerHTML = info.icon + ' ' + info.title;
+    content.innerHTML = info.content;
+    panel.classList.add('show');
+    resetBtn.style.display = 'inline-block';
+    
+    // Scroll to panel on mobile
+    if (window.innerWidth <= 768) {
+        setTimeout(() => {
+            panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 300);
+    }
+}
+
+function resetPlantDiagram() {
+    const panel = document.getElementById('plant-info-panel');
+    const title = document.getElementById('plant-info-title');
+    const content = document.getElementById('plant-info-content');
+    const resetBtn = document.getElementById('reset-plant-btn');
+    
+    // Reset all highlights and active states
+    resetPlantHighlights();
+    
+    // Reset panel content
+    title.innerHTML = '🌱 Click on any plant part above to learn more!';
+    content.innerHTML = 'Plants are amazing living systems where every part has a special job. Each part works together with the others to help the plant survive, grow, and reproduce. Explore each part to discover their unique functions!';
+    panel.classList.remove('show');
+    resetBtn.style.display = 'none';
+}
+
+function resetPlantHighlights() {
+    // Remove active class from all buttons
+    document.querySelectorAll('.plant-part').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    
+    // Remove highlight class from all visual elements
+    document.querySelectorAll('.plant-visual').forEach(visual => {
+        visual.classList.remove('highlight');
+    });
+}
+
+// Plant growth animation functions
+function initializeGrowthAnimation() {
+    currentGrowthStage = 0;
+    updateGrowthDisplay();
+}
+
+function nextGrowthStage() {
+    if (currentGrowthStage < 4) {
+        currentGrowthStage++;
+        updateGrowthDisplay();
+    }
+}
+
+function previousGrowthStage() {
+    if (currentGrowthStage > 0) {
+        currentGrowthStage--;
+        updateGrowthDisplay();
+    }
+}
+
+function playGrowthAnimation() {
+    if (growthAnimationPlaying) return;
+    
+    growthAnimationPlaying = true;
+    currentGrowthStage = 0;
+    
+    const playBtn = document.getElementById('play-growth-btn');
+    playBtn.disabled = true;
+    playBtn.textContent = '⏸️ Playing...';
+    
+    growthAnimationInterval = setInterval(() => {
+        updateGrowthDisplay();
+        currentGrowthStage++;
+        
+        if (currentGrowthStage > 4) {
+            clearInterval(growthAnimationInterval);
+            growthAnimationPlaying = false;
+            playBtn.disabled = false;
+            playBtn.textContent = '▶️ Play Animation';
+            currentGrowthStage = 4;
+        }
+    }, 2000);
+}
+
+function resetGrowthAnimation() {
+    if (growthAnimationPlaying) {
+        clearInterval(growthAnimationInterval);
+        growthAnimationPlaying = false;
+        const playBtn = document.getElementById('play-growth-btn');
+        playBtn.disabled = false;
+        playBtn.textContent = '▶️ Play Animation';
+    }
+    
+    currentGrowthStage = 0;
+    updateGrowthDisplay();
+}
+
+function updateGrowthDisplay() {
+    // Hide all stages
+    for (let i = 0; i <= 4; i++) {
+        const stage = document.getElementById(`stage-${i}`);
+        if (stage) {
+            stage.classList.remove('active');
+        }
+    }
+    
+    // Show current stage
+    const currentStage = document.getElementById(`stage-${currentGrowthStage}`);
+    if (currentStage) {
+        currentStage.classList.add('active');
+    }
+    
+    // Update progress bar
+    const progressBar = document.getElementById('growth-progress-bar');
+    if (progressBar) {
+        progressBar.style.width = `${(currentGrowthStage / 4) * 100}%`;
+    }
+    
+    // Update buttons
+    const prevBtn = document.getElementById('prev-growth-btn');
+    const nextBtn = document.getElementById('next-growth-btn');
+    
+    if (prevBtn) prevBtn.disabled = currentGrowthStage === 0;
+    if (nextBtn) nextBtn.disabled = currentGrowthStage === 4;
+    
+    // Update stage information
+    const stageInfo = [
+        { title: '🌰 Seed Stage', description: 'The journey begins with a tiny seed containing all the genetic information needed to grow into a full plant. Seeds can remain dormant for months or even years until conditions are right for germination!' },
+        { title: '🌱 Sprout Stage', description: 'When conditions are right (water, warmth, oxygen), the seed begins to germinate. The first root (radicle) emerges to anchor the plant and absorb water.' },
+        { title: '🌿 Seedling Stage', description: 'The first leaves (cotyledons) appear and begin photosynthesis. The young plant starts making its own food while still using energy stored in the seed.' },
+        { title: '🌳 Young Plant Stage', description: 'True leaves develop and the plant grows taller and stronger. The root system expands to gather more water and nutrients from the soil.' },
+        { title: '🌸🌳 Mature Plant Stage', description: 'The plant reaches maturity and produces flowers for reproduction. It can now create seeds to start the cycle all over again!' }
+    ];
+    
+    const infoTitle = document.getElementById('growth-stage-info');
+    const infoDesc = document.getElementById('growth-stage-description');
+    
+    if (infoTitle && infoDesc && stageInfo[currentGrowthStage]) {
+        infoTitle.textContent = stageInfo[currentGrowthStage].title;
+        infoDesc.textContent = stageInfo[currentGrowthStage].description;
+    }
+}
+
+// Photosynthesis simulator functions
+function initializePhotosynthesisSimulator() {
+    updatePhotosynthesis();
+}
+
+function updatePhotosynthesis() {
+    // Get slider values
+    const sunlight = document.getElementById('sunlight-slider')?.value || 50;
+    const water = document.getElementById('water-slider')?.value || 50;
+    const co2 = document.getElementById('co2-slider')?.value || 50;
+    
+    // Update display values
+    const sunlightValue = document.getElementById('sunlight-value');
+    const waterValue = document.getElementById('water-value');
+    const co2Value = document.getElementById('co2-value');
+    
+    if (sunlightValue) sunlightValue.textContent = `${sunlight}%`;
+    if (waterValue) waterValue.textContent = `${water}%`;
+    if (co2Value) co2Value.textContent = `${co2}%`;
+    
+    // Calculate outputs (limiting factor principle)
+    const limitingFactor = Math.min(sunlight, water, co2);
+    const glucose = Math.round(limitingFactor * 1.2);
+    const oxygen = Math.round(limitingFactor * 0.8);
+    
+    // Update outputs
+    const glucoseOutput = document.getElementById('glucose-output');
+    const oxygenOutput = document.getElementById('oxygen-output');
+    
+    if (glucoseOutput) glucoseOutput.textContent = glucose;
+    if (oxygenOutput) oxygenOutput.textContent = oxygen;
+    
+    // Update tip based on conditions
+    const tip = document.getElementById('simulator-tip');
+    if (tip) {
+        if (limitingFactor < 30) {
+            tip.textContent = 'One or more factors are too low! Plants need balanced conditions for optimal photosynthesis.';
+        } else if (limitingFactor > 80) {
+            tip.textContent = 'Excellent conditions! The plant is producing maximum glucose and oxygen.';
+        } else {
+            tip.textContent = 'Good conditions! Try adjusting the inputs to see how they affect the outputs.';
+        }
+    }
+}
+
+// Comparison functions
+function initializeComparisonTabs() {
+    showComparison('structure');
+}
+
+function showComparison(category) {
+    // Hide all content
+    document.querySelectorAll('.comparison-content').forEach(content => {
+        content.classList.remove('active');
+    });
+    
+    // Remove active class from all tabs
+    document.querySelectorAll('.comparison-tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    
+    // Show selected content and activate tab
+    const content = document.getElementById(`${category}-content`);
+    const tab = document.getElementById(`${category}-tab`);
+    
+    if (content) content.classList.add('active');
+    if (tab) tab.classList.add('active');
+    
+    // Update similarity text
+    const similarities = {
+        structure: 'Both plants and animals are made of cells, have specialized parts for different functions, and are organized into complex systems.',
+        nutrition: 'Both need energy to survive and grow, though they get it in different ways. Both also need water and various nutrients.',
+        reproduction: 'Both create offspring to continue their species, though they use different strategies and timing.',
+        movement: 'Both respond to their environment and can change their behavior or growth patterns based on conditions.'
+    };
+    
+    const similarityText = document.getElementById('comparison-similarity');
+    if (similarityText && similarities[category]) {
+        similarityText.textContent = similarities[category];
+    }
+}
+
+// Plant identification game functions
+function initializeIdentificationGame() {
+    gameQuestions = [
+        {
+            image: '🌿',
+            question: 'Which plant part is responsible for absorbing water and nutrients from the soil?',
+            options: ['🍃 Leaves', '🌿 Roots', '🌱 Stem', '🌸 Flower'],
+            correct: 1,
+            explanation: 'Correct! Roots are the plant\'s underground network that absorbs water and nutrients from the soil. They also anchor the plant firmly in place.'
+        },
+        {
+            image: '🍃',
+            question: 'What process do leaves use to make food for the plant?',
+            options: ['Respiration', 'Photosynthesis', 'Digestion', 'Circulation'],
+            correct: 1,
+            explanation: 'Excellent! Photosynthesis is the process where leaves use sunlight, water, and carbon dioxide to make glucose (food) and release oxygen.'
+        },
+        {
+            image: '🌱',
+            question: 'What are the two main transport systems in plant stems?',
+            options: ['Arteries and Veins', 'Xylem and Phloem', 'Roots and Shoots', 'Petals and Sepals'],
+            correct: 1,
+            explanation: 'Perfect! Xylem carries water and minerals UP from roots to leaves, while Phloem carries food DOWN from leaves to all parts.'
+        },
+        {
+            image: '🌸',
+            question: 'What is the main function of flowers?',
+            options: ['Make food', 'Absorb water', 'Reproduction', 'Support the plant'],
+            correct: 2,
+            explanation: 'Great job! Flowers are the reproductive organs of plants. They produce pollen and seeds to create new plants.'
+        },
+        {
+            image: '🌳',
+            question: 'What happens if a plant loses all its leaves?',
+            options: ['It grows faster', 'It can\'t make food and may die', 'It produces more flowers', 'Nothing changes'],
+            correct: 1,
+            explanation: 'Correct! Without leaves, the plant can\'t perform photosynthesis to make food. This shows how all plant parts depend on each other!'
+        }
+    ];
+    
+    currentGameQuestion = 0;
+    gameScore = 0;
+    gameAnswered = false;
+    
+    updateGameDisplay();
+}
+
+function updateGameDisplay() {
+    const question = gameQuestions[currentGameQuestion];
+    
+    // Update question display
+    const gameImage = document.getElementById('game-image');
+    const questionText = document.getElementById('question-text');
+    const gameOptions = document.getElementById('game-options');
+    const gameScoreEl = document.getElementById('game-score');
+    const currentQuestionSpan = document.getElementById('current-question');
+    const totalQuestionsSpan = document.getElementById('total-questions');
+    const accuracySpan = document.getElementById('accuracy');
+    const progressBar = document.getElementById('game-progress-bar');
+    
+    if (gameImage) gameImage.textContent = question.image;
+    if (questionText) questionText.textContent = question.question;
+    if (gameScoreEl) gameScoreEl.textContent = `Score: ${gameScore}/${gameQuestions.length}`;
+    if (currentQuestionSpan) currentQuestionSpan.textContent = currentGameQuestion + 1;
+    if (totalQuestionsSpan) totalQuestionsSpan.textContent = gameQuestions.length;
+    if (accuracySpan) {
+        const accuracy = currentGameQuestion > 0 ? Math.round((gameScore / currentGameQuestion) * 100) : 0;
+        accuracySpan.textContent = `${accuracy}%`;
+    }
+    if (progressBar) {
+        progressBar.style.width = `${((currentGameQuestion + 1) / gameQuestions.length) * 100}%`;
+    }
+    
+    // Update options
+    if (gameOptions) {
+        gameOptions.innerHTML = '';
+        question.options.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.className = 'game-option';
+            button.textContent = option;
+            button.onclick = () => selectGameAnswer(button, index === question.correct, currentGameQuestion);
+            gameOptions.appendChild(button);
+        });
+    }
+    
+    // Reset feedback
+    const feedback = document.getElementById('game-feedback');
+    if (feedback) {
+        feedback.classList.remove('show');
+        feedback.innerHTML = question.explanation;
+    }
+    
+    gameAnswered = false;
+    
+    // Update next button
+    const nextBtn = document.getElementById('next-question-btn');
+    if (nextBtn) {
+        nextBtn.disabled = true;
+        nextBtn.textContent = currentGameQuestion === gameQuestions.length - 1 ? 'Finish Game' : 'Next Question ➡️';
+    }
+}
+
+function selectGameAnswer(button, isCorrect, questionIndex) {
+    if (gameAnswered) return;
+    
+    gameAnswered = true;
+    
+    const options = button.parentElement.querySelectorAll('.game-option');
+    const feedback = document.getElementById('game-feedback');
+    
+    // Disable all options
+    options.forEach(option => {
+        option.disabled = true;
+        option.style.pointerEvents = 'none';
+    });
+    
+    // Mark selected answer
+    button.classList.add('selected');
+    
+    if (isCorrect) {
+        button.classList.add('correct');
+        gameScore++;
+    } else {
+        button.classList.add('incorrect');
+        // Show correct answer
+        const correctIndex = gameQuestions[questionIndex].correct;
+        options[correctIndex].classList.add('correct');
+    }
+    
+    // Show feedback
+    if (feedback) {
+        feedback.classList.add('show');
+    }
+    
+    // Enable next button
+    const nextBtn = document.getElementById('next-question-btn');
+    if (nextBtn) {
+        nextBtn.disabled = false;
+    }
+    
+    // Update score display
+    const scoreDisplay = document.getElementById('game-score');
+    if (scoreDisplay) {
+        scoreDisplay.textContent = `Score: ${gameScore}/${gameQuestions.length}`;
+    }
+}
+
+function nextGameQuestion() {
+    if (currentGameQuestion < gameQuestions.length - 1) {
+        currentGameQuestion++;
+        updateGameDisplay();
+    } else {
+        // Game finished
+        const accuracy = Math.round((gameScore / gameQuestions.length) * 100);
+        let message = `Game Complete! You scored ${gameScore}/${gameQuestions.length} (${accuracy}%).\n\n`;
+        
+        if (accuracy >= 80) {
+            message += 'Excellent work! You have a great understanding of plant systems! 🌟';
+        } else if (accuracy >= 60) {
+            message += 'Good job! You\'re learning well. Review the slides to improve even more! 👍';
+        } else {
+            message += 'Keep practicing! Go back through the slides to strengthen your understanding. 📚';
+        }
+        
+        alert(message);
+    }
+}
+
+function restartGame() {
+    initializeIdentificationGame();
+}
+
+// Virtual greenhouse functions
+function initializeVirtualGreenhouse() {
+    updateGreenhouse();
+}
+
+function updateGreenhouse() {
+    // Get control values
+    const light = document.getElementById('light-control')?.value || 50;
+    const water = document.getElementById('water-control')?.value || 50;
+    const temperature = document.getElementById('temp-control')?.value || 22;
+    const nutrients = document.getElementById('nutrient-control')?.value || 50;
+    
+    // Update display values
+    const lightLevel = document.getElementById('light-level');
+    const waterLevel = document.getElementById('water-level');
+    const tempLevel = document.getElementById('temp-level');
+    const nutrientLevel = document.getElementById('nutrient-level');
+    
+    if (lightLevel) lightLevel.textContent = `${light}%`;
+    if (waterLevel) waterLevel.textContent = `${water}%`;
+    if (tempLevel) tempLevel.textContent = `${temperature}°C`;
+    if (nutrientLevel) nutrientLevel.textContent = `${nutrients}%`;
+    
+    // Update environmental display
+    const tempDisplay = document.getElementById('temp-display');
+    const humidityDisplay = document.getElementById('humidity-display');
+    const lightDisplay = document.getElementById('light-display');
+    
+    if (tempDisplay) tempDisplay.textContent = `${temperature}°C`;
+    if (humidityDisplay) humidityDisplay.textContent = `${Math.round(water * 0.8 + 20)}%`;
+    if (lightDisplay) lightDisplay.textContent = `${light}%`;
+    
+    // Calculate plant health
+    const optimalTemp = temperature >= 18 && temperature <= 28;
+    const optimalLight = light >= 40;
+    const optimalWater = water >= 30 && water <= 80;
+    const optimalNutrients = nutrients >= 30;
+    
+    const healthyConditions = [optimalTemp, optimalLight, optimalWater, optimalNutrients].filter(Boolean).length;
+    
+    // Update plant appearance
+    const plant = document.getElementById('greenhouse-plant');
+    const statusIndicator = document.querySelector('.status-indicator');
+    const statusText = document.getElementById('status-text');
+    const growthRate = document.getElementById('growth-rate');
+    const photosynthesisRate = document.getElementById('photosynthesis-rate');
+    
+    if (plant) {
+        if (healthyConditions === 4) {
+            plant.textContent = '🌳';
+            plant.style.fontSize = '4rem';
+            plant.style.filter = 'brightness(1.2)';
+        } else if (healthyConditions >= 2) {
+            plant.textContent = '🌱';
+            plant.style.fontSize = '3rem';
+            plant.style.filter = 'brightness(1)';
+        } else {
+            plant.textContent = '🥀';
+            plant.style.fontSize = '2.5rem';
+            plant.style.filter = 'brightness(0.8)';
+        }
+    }
+    
+    // Update status
+    if (statusIndicator && statusText) {
+        if (healthyConditions === 4) {
+            statusIndicator.className = 'status-indicator status-healthy';
+            statusText.textContent = 'Excellent - Perfect growing conditions!';
+        } else if (healthyConditions >= 2) {
+            statusIndicator.className = 'status-indicator status-warning';
+            statusText.textContent = 'Good - Some conditions could be improved.';
+        } else {
+            statusIndicator.className = 'status-indicator status-danger';
+            statusText.textContent = 'Stressed - Multiple conditions need attention!';
+        }
+    }
+    
+    if (growthRate) {
+        const rates = ['Very Slow', 'Slow', 'Normal', 'Fast', 'Optimal'];
+        growthRate.textContent = rates[healthyConditions] || 'Very Slow';
+    }
+    
+    if (photosynthesisRate) {
+        if (light < 20) {
+            photosynthesisRate.textContent = 'Minimal';
+        } else if (light < 40) {
+            photosynthesisRate.textContent = 'Low';
+        } else if (light < 70) {
+            photosynthesisRate.textContent = 'Active';
+        } else {
+            photosynthesisRate.textContent = 'High';
+        }
+    }
+    
+    // Update tip
+    const tip = document.getElementById('greenhouse-tip');
+    if (tip) {
+        if (temperature < 15) {
+            tip.textContent = 'Too cold! Plants need warmer temperatures to grow well.';
+        } else if (temperature > 35) {
+            tip.textContent = 'Too hot! High temperatures can stress plants and slow growth.';
+        } else if (water < 20) {
+            tip.textContent = 'Not enough water! Plants need adequate moisture to survive.';
+        } else if (water > 90) {
+            tip.textContent = 'Too much water! Overwatering can cause root rot.';
+        } else if (light < 30) {
+            tip.textContent = 'More light needed! Plants need light for photosynthesis.';
+        } else if (healthyConditions === 4) {
+            tip.textContent = 'Perfect conditions! Your plant is thriving in this environment.';
+        } else {
+            tip.textContent = 'Try adjusting the conditions to see how your plant responds!';
+        }
+    }
+}
+
+// Final challenge functions
+function initializeFinalChallenge() {
+    finalQuestions = [
+        {
+            image: '🌱🫃',
+            question: 'Both plant and human systems follow the same basic pattern. What is this pattern called?',
+            options: ['Structure → Function → Purpose', 'Input → Process → Output', 'Beginning → Middle → End', 'Problem → Solution → Result'],
+            correct: 1,
+            explanation: 'Excellent! Both plant and human systems follow the Input → Process → Output pattern. Plants take in sunlight, water, and CO₂ (input), perform photosynthesis (process), and produce glucose and oxygen (output). Similarly, humans take in food (input), digest it (process), and absorb nutrients while eliminating waste (output).'
+        },
+        {
+            image: '🔄',
+            question: 'What happens when one part of a system fails?',
+            options: ['Other parts work harder', 'The whole system is affected', 'Nothing changes', 'The system becomes stronger'],
+            correct: 1,
+            explanation: 'Correct! Systems are interdependent - when one part fails, the whole system is affected. For example, if plant roots are damaged, the entire plant suffers because it can\'t get water and nutrients.'
+        },
+        {
+            image: '🌍',
+            question: 'Why are plant and human systems both important for life on Earth?',
+            options: ['They compete with each other', 'They work together in ecosystems', 'They are completely separate', 'Only one is really important'],
+            correct: 1,
+            explanation: 'Perfect! Plant and human systems work together in ecosystems. Plants produce oxygen that humans need, while humans produce CO₂ that plants use. This shows how different systems can support each other!'
+        }
+    ];
+    
+    currentFinalQuestion = 0;
+    finalScore = 0;
+    finalAnswered = false;
+    
+    updateFinalDisplay();
+}
+
+function updateFinalDisplay() {
+    const question = finalQuestions[currentFinalQuestion];
+    
+    // Update question display
+    const gameImage = document.getElementById('final-game-image');
+    const questionText = document.getElementById('final-question-text');
+    const gameOptions = document.getElementById('final-game-options');
+    const gameScoreEl = document.getElementById('final-game-score');
+    const currentQuestionSpan = document.getElementById('final-current-question');
+    const totalQuestionsSpan = document.getElementById('final-total-questions');
+    const accuracySpan = document.getElementById('final-accuracy');
+    const progressBar = document.getElementById('final-progress-bar');
+    
+    if (gameImage) gameImage.textContent = question.image;
+    if (questionText) questionText.textContent = question.question;
+    if (gameScoreEl) gameScoreEl.textContent = `Score: ${finalScore}/${finalQuestions.length}`;
+    if (currentQuestionSpan) currentQuestionSpan.textContent = currentFinalQuestion + 1;
+    if (totalQuestionsSpan) totalQuestionsSpan.textContent = finalQuestions.length;
+    if (accuracySpan) {
+        const accuracy = currentFinalQuestion > 0 ? Math.round((finalScore / currentFinalQuestion) * 100) : 0;
+        accuracySpan.textContent = `${accuracy}%`;
+    }
+    if (progressBar) {
+        progressBar.style.width = `${((currentFinalQuestion + 1) / finalQuestions.length) * 100}%`;
+    }
+    
+    // Update options
+    if (gameOptions) {
+        gameOptions.innerHTML = '';
+        question.options.forEach((option, index) => {
+            const button = document.createElement('button');
+            button.className = 'game-option';
+            button.textContent = option;
+            button.onclick = () => selectFinalAnswer(button, index === question.correct, currentFinalQuestion);
+            gameOptions.appendChild(button);
+        });
+    }
+    
+    // Reset feedback
+    const feedback = document.getElementById('final-game-feedback');
+    if (feedback) {
+        feedback.classList.remove('show');
+        feedback.innerHTML = question.explanation;
+    }
+    
+    finalAnswered = false;
+    
+    // Update buttons
+    const nextBtn = document.getElementById('next-final-btn');
+    const completeBtn = document.getElementById('complete-course-btn');
+    
+    if (nextBtn) {
+        nextBtn.disabled = true;
+        nextBtn.style.display = currentFinalQuestion === finalQuestions.length - 1 ? 'none' : 'inline-block';
+    }
+    
+    if (completeBtn) {
+        completeBtn.style.display = currentFinalQuestion === finalQuestions.length - 1 ? 'inline-block' : 'none';
+    }
+}
+
+function selectFinalAnswer(button, isCorrect, questionIndex) {
+    if (finalAnswered) return;
+    
+    finalAnswered = true;
+    
+    const options = button.parentElement.querySelectorAll('.game-option');
+    const feedback = document.getElementById('final-game-feedback');
+    
+    // Disable all options
+    options.forEach(option => {
+        option.disabled = true;
+        option.style.pointerEvents = 'none';
+    });
+    
+    // Mark selected answer
+    button.classList.add('selected');
+    
+    if (isCorrect) {
+        button.classList.add('correct');
+        finalScore++;
+    } else {
+        button.classList.add('incorrect');
+        // Show correct answer
+        const correctIndex = finalQuestions[questionIndex].correct;
+        options[correctIndex].classList.add('correct');
+    }
+    
+    // Show feedback
+    if (feedback) {
+        feedback.classList.add('show');
+    }
+    
+    // Enable appropriate button
+    const nextBtn = document.getElementById('next-final-btn');
+    const completeBtn = document.getElementById('complete-course-btn');
+    
+    if (currentFinalQuestion === finalQuestions.length - 1) {
+        if (completeBtn) completeBtn.disabled = false;
+    } else {
+        if (nextBtn) nextBtn.disabled = false;
+    }
+    
+    // Update score display
+    const scoreDisplay = document.getElementById('final-game-score');
+    if (scoreDisplay) {
+        scoreDisplay.textContent = `Score: ${finalScore}/${finalQuestions.length}`;
+    }
+}
+
+function nextFinalQuestion() {
+    if (currentFinalQuestion < finalQuestions.length - 1) {
+        currentFinalQuestion++;
+        updateFinalDisplay();
+    }
+}
+
+function completeCourse() {
+    const accuracy = Math.round((finalScore / finalQuestions.length) * 100);
+    let message = `🎓 Course Complete! 🎓\n\nFinal Challenge Score: ${finalScore}/${finalQuestions.length} (${accuracy}%)\n\n`;
+    
+    if (accuracy === 100) {
+        message += '🌟 PERFECT SCORE! You are a Systems Master! You have excellent understanding of how plant and human systems work. Outstanding achievement! 🏆';
+    } else if (accuracy >= 80) {
+        message += '🎉 Excellent work! You have mastered the concepts of biological systems. You understand how parts work together to create amazing living systems! 🌟';
+    } else if (accuracy >= 60) {
+        message += '👍 Good job! You have a solid understanding of systems. Keep exploring and learning about the amazing world of biology! 📚';
+    } else {
+        message += '🌱 Great effort! Learning about systems takes time. Review the interactive lessons and try the activities again to strengthen your understanding! 💪';
+    }
+    
+    message += '\n\nThank you for exploring the fascinating world of plant and human systems with us! 🔬🌿';
+    
+    alert(message);
+}
+
+// Touch and interaction handlers
+let touchStartY = 0;
+let touchEndY = 0;
+
+document.addEventListener('touchstart', function(event) {
+    touchStartY = event.changedTouches[0].screenY;
+    if (sidebarOpen && event.target.closest('#sidebar')) {
+        sidebarTouchStartX = event.changedTouches[0].screenX;
+    }
+}, false);
+
+document.addEventListener('touchend', function(event) {
+    touchEndY = event.changedTouches[0].screenY;
+    if (sidebarOpen && event.target.closest('#sidebar')) {
+        sidebarTouchEndX = event.changedTouches[0].screenX;
+        handleSidebarSwipe();
+    } else {
+        handleSlideSwipe();
+    }
+}, false);
+
+function handleSlideSwipe() {
+    const swipeThreshold = 50;
+    const swipeDistance = touchEndY - touchStartY;
+    
+    if (Math.abs(swipeDistance) > swipeThreshold) {
+        if (swipeDistance > 0 && currentSlideIndex > 0) {
+            previousSlide();
+        } else if (swipeDistance < 0 && currentSlideIndex < slides.length - 1) {
+            nextSlide();
+        }
+    }
+}
+
+function handleSidebarSwipe() {
+    const swipeThreshold = 50;
+    const swipeDistance = sidebarTouchEndX - sidebarTouchStartX;
+    
+    if (swipeDistance < -swipeThreshold && sidebarOpen) {
+        toggleSidebar();
+    }
+}
+
+document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('menu-toggle');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    if (sidebarOpen && !sidebar.contains(event.target) && !menuToggle.contains(event.target) && event.target === overlay) {
+        if (window.innerWidth <= 768) {
+            toggleSidebar();
+        }
+    }
+});
+
+document.addEventListener('click', function(event) {
+    const aiWidget = document.querySelector('.ai-help-widget');
+    const aiPanel = document.getElementById('ai-help-panel');
+    
+    if (aiHelpOpen && !aiWidget.contains(event.target)) {
+        toggleAIHelp();
+    }
+});
+
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function(event) {
+    const now = (new Date()).getTime();
+    if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+    }
+    lastTouchEnd = now;
+}, false);
+
+window.addEventListener('orientationchange', function() {
+    setTimeout(function() {
+        document.body.style.display = 'none';
+        document.body.offsetHeight;
+        document.body.style.display = '';
+        if (sidebarOpen) {
+            toggleSidebar();
+        }
+    }, 100);
+});
+
+window.onload = function() {
+    loadSlide();
+    
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+    }
+};
+
+// Add touch support for plant diagram
+document.addEventListener('DOMContentLoaded', function() {
+    const plantDiagram = document.getElementById('plant-diagram');
+    if (plantDiagram) {
+        plantDiagram.addEventListener('touchstart', function(e) {
+            e.preventDefault();
+        });
+    }
+});
+</script>
+
+</body>
+</html>
