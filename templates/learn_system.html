@@ -895,65 +895,17 @@
             border-left: 4px solid #0360a5;
             min-height: 150px;
             transition: all 0.3s ease;
+            max-width: 100%;
+            width: 100%;
+            box-sizing: border-box;
         }
-
-        .plant-info-panel.show {
-            border-left-color: #dc2626;
-            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
-        }
-
-        .plant-info-title {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #0360a5;
-            margin-bottom: 10px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .plant-info-panel.show .plant-info-title {
-            color: #dc2626;
-        }
-
-        .plant-info-content {
-            color: #374151;
-            line-height: 1.6;
-        }
-
-        .plant-info-content ul {
-            margin: 10px 0;
-            padding-left: 20px;
-        }
-
-        .plant-info-content li {
-            margin-bottom: 8px;
-        }
-
-        .plant-info-content strong {
-            color: #0360a5;
-        }
-
-        .plant-info-panel.show .plant-info-content strong {
-            color: #dc2626;
-        }
-
-        .reset-plant-btn {
-            background: linear-gradient(135deg, #10b981, #059669);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin-top: 15px;
-            transition: all 0.2s ease;
-        }
-
-        .reset-plant-btn:hover {
-            background: linear-gradient(135deg, #059669, #047857);
-            transform: translateY(-1px);
+        @media (min-width: 600px) {
+            .plant-info-panel {
+                max-width: 600px;
+                width: 100%;
+                margin-left: auto;
+                margin-right: auto;
+            }
         }
 
         /* Plant Growth Animation Styles */
@@ -2918,6 +2870,54 @@ const slides = [
                 <div class="process-step">
                     <div class="step-number">👄</div>
                     <div class="step-content">
+                        <strong>Mouth (0-30 seconds)</strong>
+                        <p>Chewing breaks food down, saliva starts starch digestion</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">🫁</div>
+                    <div class="step-content">
+                        <strong>Esophagus (10 seconds)</strong>
+                        <p>Muscle contractions push food down to stomach</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">🫃</div>
+                    <div class="step-content">
+                        <strong>Stomach (2-4 hours)</strong>
+                        <p>Acid and enzymes break down proteins, food becomes liquid</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">🌀</div>
+                    <div class="step-content">
+                        <strong>Small Intestine (3-5 hours)</strong>
+                        <p>Most digestion and absorption happens here</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">📏</div>
+                    <div class="step-content">
+                        <strong>Large Intestine (12-48 hours)</strong>
+                        <p>Water absorption and waste formation</p>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <h4>🍎 What Gets Absorbed:</h4>
+                    <ul>
+                        <li><strong>Carbohydrates:</strong> Broken down to glucose for energy</li>
+                        <li><strong>Proteins:</strong> Broken down to amino acids for growth</li>
+                        <li><strong>Fats:</strong> Broken down to fatty acids for energy storage</li>
+                        <li><strong>Vitamins & Minerals:</strong> Essential for body functions</li>
+                        <li><strong>Water:</strong> Keeps body hydrated</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>⏱️ Total Journey Time:</h4>
+                    <ul>
+                        <li><strong>Fast foods:</strong> 24-72 hours total</li>
                         <strong>Mouth (0-30 seconds)</strong>
                         <p>Chewing breaks food down, saliva starts starch digestion</p>
                     </div>
