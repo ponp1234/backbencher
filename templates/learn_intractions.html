@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Primary 4 Science • Systems → Interactions • Magnets • Kid Edition</title>
+<style>
+  :root{
+    --bg:#f6fbff; --ink:#0f172a; --brand:#0ea5e9; --muted:#64748b; --card:#ffffff; --accent:#22c55e; --warn:#f59e0b;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;background:var(--bg);color:var(--ink)}
+  .header{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:16px 20px;background:linear-gradient(90deg,#0284c7,#0ea5e9);color:#fff;position:sticky;top:0;z-index:10}
+  .title{font-size:1.1rem;font-weight:700}
+  .badge{font-size:.8rem;opacity:.95}
+  .layout{display:grid;grid-template-columns:280px 1fr;gap:16px;padding:16px}
+  @media (max-width:900px){
+    .layout{grid-template-columns:1fr}
+    #sidebar{position:fixed;top:64px;left:0;bottom:0;width:86%;max-width:340px;transform:translateX(-105%);transition:transform .25s ease;z-index:20}
+    #sidebar.open{transform:none}
+    #sidebar-overlay.show{position:fixed;inset:64px 0 0 0;background:#0008;backdrop-filter:blur(1px)}
+  }
+  #sidebar{background:var(--card);border-radius:14px;box-shadow:0 6px 24px #0001;padding:12px;height:calc(100vh - 96px);overflow:auto}
+  .subtopic-header{font-weight:700;margin:8px 8px 4px;color:#0f172a}
+  .subtopic-btn{display:block;width:100%;text-align:left;background:#f1f5f9;border:0;border-radius:10px;padding:10px 12px;margin:6px 0;cursor:pointer}
+  .subtopic-btn:hover{background:#e2e8f0}
+  .main{background:var(--card);border-radius:18px;min-height:60vh;box-shadow:0 8px 30px #0001;padding:16px;display:flex;flex-direction:column}
+  .slide{max-width:980px;margin:0 auto;padding:8px 6px 24px}
+  h1,h2{margin:.2em 0}
+  h1{font-size:1.6rem} h2{font-size:1.35rem}
+  .navrow{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:auto;border-top:1px solid #e5e7eb;padding-top:12px}
+  .btn{border:0;border-radius:12px;padding:10px 14px;background:#0ea5e9;color:#fff;font-weight:700;cursor:pointer}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  #slide-progress{display:flex;gap:6px;flex-wrap:wrap}
+  .progress-dot{width:10px;height:10px;border-radius:50%;background:#e5e7eb;cursor:pointer}
+  .progress-dot.active{background:#0ea5e9;transform:scale(1.15)}
+  .callout{background:#f0f9ff;border:1px solid #bae6fd;padding:10px 12px;border-radius:12px}
+  .grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}
+  .card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:14px;padding:12px}
+  .list{margin:0;padding-left:18px}
+  .tip{background:#ecfdf5;border:1px solid #bbf7d0;border-radius:12px;padding:10px 12px;margin-top:10px}
+  .game{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:10px 12px;margin-top:10px}
+  .tiny{font-size:.9rem;color:var(--muted)}
+  .menu{background:#fff2;border:2px solid #fff4;color:#fff;border-radius:12px;padding:8px 10px}
+</style>
+</head>
+<body>
+  <div class="header">
+    <div style="display:flex;align-items:center;gap:10px">
+      <button id="menu-toggle" class="menu" onclick="toggleSidebar()">Menu</button>
+      <div>
+        <div class="badge">Primary 4 Science</div>
+        <div class="title"><span>Systems → Interactions</span> • Magnets • Kid Edition</div>
+      </div>
+    </div>
+    <div>
+      <span class="tiny">Slide</span>
+      <span id="slide-counter" class="badge">Loading</span>
+    </div>
+  </div>
+
+  <div id="sidebar-overlay"></div>
+  <div class="layout">
+    <aside id="sidebar"></aside>
+    <main id="slide-modal" class="main">
+      <div id="main-slide-area" class="slide"></div>
+      <div class="navrow">
+        <button id="prev-slide-btn" class="btn" onclick="previousSlide()">Prev</button>
+        <div id="slide-progress"></div>
+        <button id="next-slide-btn" class="btn" onclick="nextSlide()">Next</button>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const subtopicSections = [
+      {
+        title: "Systems → Interactions • Magnets",
+        subtopics: [
+          { title: "1. Welcome and Big Idea", slideIndex: 0 },
+          { title: "2. What makes a magnet", slideIndex: 1 },
+          { title: "3. Magnetic and non magnetic", slideIndex: 2 },
+          { title: "4. Poles N and S", slideIndex: 3 },
+          { title: "5. Push and Pull rules", slideIndex: 4 },
+          { title: "6. Magnetic field simple", slideIndex: 5 },
+          { title: "7. Natural and man made", slideIndex: 6 },
+          { title: "8. Permanent and temporary", slideIndex: 7 },
+          { title: "9. Make magnets by stroking", slideIndex: 8 },
+          { title: "10. Make magnets with electricity", slideIndex: 9 },
+          { title: "11. Make magnets by induction", slideIndex: 10 },
+          { title: "12. Care for magnets", slideIndex: 11 },
+          { title: "13. Uses at home", slideIndex: 12 },
+          { title: "14. Uses in school and lab", slideIndex: 13 },
+          { title: "15. Transport and tools", slideIndex: 14 },
+          { title: "16. Compass and Earth", slideIndex: 15 },
+          { title: "17. Safety rules", slideIndex: 16 },
+          { title: "18. Mini investigation", slideIndex: 17 },
+          { title: "19. Recap top facts", slideIndex: 18 },
+          { title: "20. Quiz time", slideIndex: 19 }
+        ]
+      }
+    ];
+
+    const slides = [
+      {
+        title: "Welcome and Big Idea",
+        content: `
+          <h1>Welcome to Magnets</h1>
+          <p class="callout">A magnet can pull or push some things without touching them. This is called interaction.</p>
+          <div class="grid">
+            <div class="card">
+              <b>In this unit</b>
+              <ul class="list">
+                <li>Learn what magnets do</li>
+                <li>Find which materials are magnetic</li>
+                <li>Make simple magnets and use them</li>
+              </ul>
+            </div>
+            <div class="card tip"><b>Tip</b><br/>If an object sticks to a fridge, it is likely magnetic.</div>
+            <div class="card game"><b>Game</b><br/>Magnet or not. Show three pictures and guess before testing.</div>
+          </div>
+        `
+      },
+      {
+        title: "What makes a magnet",
+        content: `
+          <h2>What is a magnet</h2>
+          <p>A magnet is an object that can attract iron or steel. It has two ends called poles.</p>
+          <div class="grid">
+            <div class="card"><b>Examples</b><br/>Bar magnet, horseshoe magnet, ring magnet, button magnet</div>
+            <div class="card tip"><b>Tip</b><br/>Iron and steel are usually attracted. Plastic, wood, and rubber are not.</div>
+            <div class="card game"><b>Game</b><br/>Find three objects at home. Predict attraction. Test with a small magnet.</div>
+          </div>
+        `
+      },
+      {
+        title: "Magnetic and non magnetic",
+        content: `
+          <h2>Magnetic versus non magnetic</h2>
+          <div class="grid">
+            <div class="card">
+              <b>Magnetic</b>
+              <ul class="list"><li>Iron nail</li><li>Steel clip</li><li>Steel can</li></ul>
+            </div>
+            <div class="card">
+              <b>Non magnetic</b>
+              <ul class="list"><li>Plastic spoon</li><li>Wood stick</li><li>Aluminium foil</li></ul>
+            </div>
+            <div class="card tip"><b>Tip</b><br/>Not all metals are magnetic. Aluminium and copper are not attracted.</div>
+            <div class="card game"><b>Game</b><br/>Sorting challenge. Make two boxes for magnetic and non magnetic. Sort quickly.</div>
+          </div>
+        `
+      },
+      {
+        title: "Poles N and S",
+        content: `
+          <h2>Poles of a magnet</h2>
+          <ul class="list">
+            <li>Each magnet has a North pole and a South pole</li>
+            <li>Poles are the strongest parts</li>
+            <li>If you cut a bar magnet, each piece still has N and S</li>
+          </ul>
+          <div class="tip"><b>Tip</b><br/>Use red for N and blue for S on drawings to remember.</div>
+          <div class="game"><b>Game</b><br/>Label the ends of your magnets with N and S stickers.</div>
+        `
+      },
+      {
+        title: "Push and Pull rules",
+        content: `
+          <h2>How poles interact</h2>
+          <div class="grid">
+            <div class="card"><b>Like poles repel</b><br/>N with N or S with S push apart</div>
+            <div class="card"><b>Unlike poles attract</b><br/>N with S pull together</div>
+          </div>
+          <div class="tip"><b>Tip</b><br/>Say this chant. Like pushes. Unlike pulls.</div>
+          <div class="game"><b>Game</b><br/>Predict and test. Hold two magnets and guess push or pull before you try.</div>
+        `
+      },
+      {
+        title: "Magnetic field simple",
+        content: `
+          <h2>Magnetic field</h2>
+          <p>A magnetic field is an invisible space around a magnet where forces act.</p>
+          <ul class="list">
+            <li>The field is strongest near the poles</li>
+            <li>Iron filings can show the pattern</li>
+          </ul>
+          <div class="tip"><b>Tip</b><br/>Think of the field like a safety bubble around the magnet.</div>
+          <div class="game"><b>Game</b><br/>Place paper on a bar magnet. Sprinkle iron filings. Tap gently and trace the lines.</div>
+        `
+      },
+      {
+        title: "Natural and man made",
+        content: `
+          <h2>Natural and man made magnets</h2>
+          <div class="grid">
+            <div class="card"><b>Natural</b><br/>Lodestone is a rock that is naturally magnetic</div>
+            <div class="card"><b>Man made</b><br/>Bar magnets and ring magnets are made in factories</div>
+          </div>
+          <div class="tip"><b>Tip</b><br/>Natural means found. Man made means built by people.</div>
+          <div class="game"><b>Game</b><br/>Match pictures to category natural or man made.</div>
+        `
+      },
+      {
+        title: "Permanent and temporary",
+        content: `
+          <h2>Permanent and temporary magnets</h2>
+          <div class="grid">
+            <div class="card"><b>Permanent</b><br/>Keeps magnetism for a long time. Example fridge magnet</div>
+            <div class="card"><b>Temporary</b><br/>Magnetic only for a short time. Example soft iron in an electromagnet</div>
+          </div>
+          <div class="tip"><b>Tip</b><br/>Permanent is like your name. Temporary is like a costume for a short time.</div>
+          <div class="game"><b>Game</b><br/>Make a temporary magnet using a nail and a battery with adult help.</div>
+        `
+      },
+      {
+        title: "Make magnets by stroking",
+        content: `
+          <h2>Stroking method</h2>
+          <ul class="list">
+            <li>Stroke steel with one pole of a strong magnet in one direction many times</li>
+            <li>Do not rub back and forth</li>
+            <li>Mark the end that finishes the stroke as the induced pole</li>
+          </ul>
+          <div class="tip"><b>Tip</b><br/>Think of brushing hair in one direction.</div>
+          <div class="game"><b>Game</b><br/>Try stroking paper clips and test if they can pick up another clip.</div>
+        `
+      },
+      {
+        title: "Make magnets with electricity",
+        content: `
+          <h2>Electric method electromagnet</h2>
+          <ul class="list">
+            <li>Wrap insulated wire around a soft iron nail</li>
+            <li>Connect to a battery. The nail becomes an electromagnet</li>
+            <li>More turns or stronger current gives a stronger magnet</li>
+            <li>Switch off the current and most magnetism is gone</li>
+          </ul>
+          <div class="tip"><b>Tip</b><br/>Use fresh batteries and many turns for better results.</div>
+          <div class="game"><b>Game</b><br/>Pick up paper clips. Count how many with 10 turns then 20 turns.</div>
+        `
+      },
+      {
+        title: "Make magnets by induction",
+        content: `
+          <h2>Induction method</h2>
+          <p>Touch a soft iron object with a magnet. The touched end becomes the opposite pole and can attract small items.</p>
+          <div class="tip"><b>Tip</b><br/>The effect is quick but fades when the magnet is removed.</div>
+          <div class="game"><b>Game</b><br/>Make a paper clip chain by touching the first one to a magnet then add more.</div>
+        `
+      },
+      {
+        title: "Care for magnets",
+        content: `
+          <h2>Care and storage</h2>
+          <ul class="list">
+            <li>Keep bar magnets with a soft iron keeper across the poles</li>
+            <li>Do not drop or heat magnets because they can lose magnetism</li>
+            <li>Store horseshoe magnets with a keeper linking N and S</li>
+          </ul>
+          <div class="tip"><b>Tip</b><br/>Wrap magnets in cloth when carrying to avoid chips.</div>
+          <div class="game"><b>Game</b><br/>Find mistakes in a cartoon. Circle dropping, heating, or wrong storage.</div>
+        `
+      },
+      {
+        title: "Uses at home",
+        content: `
+          <h2>Uses at home</h2>
+          <div class="grid">
+            <div class="card">Fridge door sealing</div>
+            <div class="card">Cabinet latches</div>
+            <div class="card">Speakers and headphones</div>
+            <div class="card">Phone case closures</div>
+          </div>
+          <div class="tip"><b>Tip</b><br/>Look for hidden magnets behind rubber strips and clips.</div>
+          <div class="game"><b>Game</b><br/>Home hunt. List five places where magnets are used.</div>
+        `
+      },
+      {
+        title: "Uses in school and lab",
+        content: `
+          <h2>Uses in school and lab</h2>
+          <div class="grid">
+            <div class="card">Holding pins and clips</div>
+            <div class="card">Magnetic whiteboard numbers and letters</div>
+            <div class="card">Separating iron filings in experiments</div>
+          </div>
+          <div class="tip"><b>Tip</b><br/>Use a small tray to keep filings tidy.</div>
+          <div class="game"><b>Game</b><br/>Design a magnetic holder for small metal items.</div>
+        `
+      },
+      {
+        title: "Transport and tools",
+        content: `
+          <h2>Transport and tools</h2>
+          <div class="grid">
+            <div class="card">Electric motors in fans and trains</div>
+            <div class="card">Door magnets and latches</div>
+            <div class="card">Magnet cranes in scrapyards</div>
+          </div>
+          <div class="tip"><b>Tip</b><br/>Magnets can be very strong in machines.</div>
+          <div class="game"><b>Game</b><br/>Watch a crane lift metal. Guess how heavy the load is and then check facts.</div>
+        `
+      },
+      {
+        title: "Compass and Earth",
+        content: `
+          <h2>Compass and Earth</h2>
+          <ul class="list">
+            <li>A compass needle is a small magnet that points near North and South</li>
+            <li>Earth acts like a giant magnet</li>
+          </ul>
+          <div class="tip"><b>Tip</b><br/>Keep the compass away from other magnets during use.</div>
+          <div class="game"><b>Game</b><br/>Use a compass and mark North in your classroom. Make a simple map.</div>
+        `
+      },
+      {
+        title: "Safety rules",
+        content: `
+          <h2>Safety with magnets</h2>
+          <ul class="list">
+            <li>Keep strong magnets away from bank cards and electronics</li>
+            <li>Do not swallow magnets. Keep away from small children</li>
+            <li>Use care with glass covered objects near magnets</li>
+          </ul>
+          <div class="tip"><b>Tip</b><br/>Store strong magnets in a box with a warning label.</div>
+          <div class="game"><b>Game</b><br/>Safety quiz. Decide if each action is safe or not safe.</div>
+        `
+      },
+      {
+        title: "Mini investigation",
+        content: `
+          <h2>Try your own test</h2>
+          <div class="card">
+            <p><b>Question</b> Which items at home or school are magnetic</p>
+            <p><b>Plan</b> Predict first then test with a small magnet with adult help</p>
+            <p><b>Record</b> Make a two column table Magnetic and Non magnetic</p>
+            <p><b>Conclude</b> What pattern do you see</p>
+          </div>
+          <div class="tip"><b>Tip</b><br/>Test at least ten items to see a pattern.</div>
+          <div class="game"><b>Game</b><br/>Team race. Who can test and record ten items first with correct results.</div>
+        `
+      },
+      {
+        title: "Recap top facts",
+        content: `
+          <h2>Top five facts</h2>
+          <ol class="list">
+            <li>Magnets attract iron and steel and have poles N and S</li>
+            <li>Like poles repel and unlike poles attract</li>
+            <li>Fields are strongest at poles</li>
+            <li>Make magnets by stroking electricity or induction</li>
+            <li>Magnets help at home school and in machines</li>
+          </ol>
+          <div class="tip"><b>Tip</b><br/>Say the chant. Like pushes. Unlike pulls.</div>
+          <div class="game"><b>Game</b><br/>Memory relay. Each person says one fact. No repeats.</div>
+        `
+      },
+      {
+        title: "Quiz time",
+        content: `
+          <h2>Quick quiz</h2>
+          <div class="card">
+            <p><b>Q1</b> Which is magnetic</p>
+            <div>
+              <div class="quiz-option" onclick="selectQuizOption(this,false)">Plastic ruler</div>
+              <div class="quiz-option" onclick="selectQuizOption(this,true)">Steel paper clip</div>
+              <div class="quiz-option" onclick="selectQuizOption(this,false)">Rubber band</div>
+              <div class="quiz-option" onclick="selectQuizOption(this,false)">Wood stick</div>
+              <div class="quiz-explanation">Steel is attracted because it is iron based.</div>
+            </div>
+          </div>
+          <div class="card">
+            <p><b>Q2</b> What happens when two North poles face each other</p>
+            <div>
+              <div class="quiz-option" onclick="selectQuizOption(this,true)">They repel</div>
+              <div class="quiz-option" onclick="selectQuizOption(this,false)">They attract</div>
+              <div class="quiz-option" onclick="selectQuizOption(this,false)">Nothing</div>
+              <div class="quiz-option" onclick="selectQuizOption(this,false)">They turn off</div>
+              <div class="quiz-explanation">Like poles push away.</div>
+            </div>
+          </div>
+          <div class="card">
+            <p><b>Q3</b> Which method makes a temporary magnet quickly</p>
+            <div>
+              <div class="quiz-option" onclick="selectQuizOption(this,false)">Heating iron</div>
+              <div class="quiz-option" onclick="selectQuizOption(this,true)">Electromagnet with battery</div>
+              <div class="quiz-option" onclick="selectQuizOption(this,false)">Dropping a magnet</div>
+              <div class="quiz-option" onclick="selectQuizOption(this,false)">Putting it in water</div>
+              <div class="quiz-explanation">An electromagnet is strong and temporary.</div>
+            </div>
+          </div>
+        `
+      }
+    ];
+  </script>
+
+  <script>
+let currentSlide = 0;
+
+const byId = id => document.getElementById(id);
+const slideCounterEl = byId('slide-counter');
+const progressEl = byId('slide-progress');
+const mainAreaEl = byId('main-slide-area');
+const sidebarEl = byId('sidebar');
+const slideModalEl = byId('slide-modal');
+const overlayEl = byId('sidebar-overlay');
+const menuBtn = byId('menu-toggle');
+
+function toggleSidebar(force) {
+  const open = force !== undefined ? force : !sidebarEl.classList.contains('open');
+  sidebarEl.classList.toggle('open', open);
+  slideModalEl.classList.toggle('sidebar-open', open);
+  menuBtn.classList.toggle('sidebar-open', open);
+  overlayEl.classList.toggle('show', open);
+}
+overlayEl.addEventListener('click', () => toggleSidebar(false));
+
+function renderSidebar() {
+  const frag = document.createDocumentFragment();
+  subtopicSections.forEach(section => {
+    const sec = document.createElement('div');
+    const header = document.createElement('div');
+    header.className = 'subtopic-header';
+    header.textContent = section.title;
+    sec.appendChild(header);
+    section.subtopics.forEach(st => {
+      const btn = document.createElement('button');
+      btn.className = 'subtopic-btn';
+      btn.textContent = st.title;
+      btn.addEventListener('click', () => goToSlide(st.slideIndex));
+      sec.appendChild(btn);
+    });
+    frag.appendChild(sec);
+  });
+  sidebarEl.innerHTML = '';
+  sidebarEl.appendChild(frag);
+}
+
+function renderProgress(total) {
+  progressEl.innerHTML = '';
+  const frag = document.createDocumentFragment();
+  for (let i = 0; i < total; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'progress-dot' + (i === currentSlide ? ' active' : '');
+    dot.title = `Slide ${i + 1}`;
+    dot.addEventListener('click', () => goToSlide(i));
+    frag.appendChild(dot);
+  }
+  progressEl.appendChild(frag);
+}
+
+function updateCounter() {
+  slideCounterEl.textContent = `${currentSlide + 1} / ${slides.length}`;
+}
+
+function renderSlide() {
+  const safe = slides[currentSlide] && slides[currentSlide].content ? slides[currentSlide].content : `
+    <div class="slide"><h2>Slide not found</h2><p>This slide does not have content yet.</p></div>`;
+  mainAreaEl.innerHTML = `<div class="slide">${safe}</div>`;
+}
+
+function goToSlide(idx) {
+  currentSlide = Math.max(0, Math.min(idx, slides.length - 1));
+  renderSlide();
+  renderProgress(slides.length);
+  updateCounter();
+  refreshNavButtons();
+  toggleSidebar(false);
+}
+
+function nextSlide() { goToSlide(currentSlide + 1); }
+function previousSlide() { goToSlide(currentSlide - 1); }
+
+function refreshNavButtons() {
+  byId('prev-slide-btn').disabled = currentSlide === 0;
+  byId('next-slide-btn').disabled = currentSlide >= slides.length - 1;
+}
+
+function selectQuizOption(el, isCorrect) {
+  const group = el.parentElement;
+  const options = group.querySelectorAll('.quiz-option');
+  options.forEach(o => o.classList.remove('selected', 'correct', 'incorrect'));
+  el.classList.add('selected', isCorrect ? 'correct' : 'incorrect');
+  const exp = group.querySelector('.quiz-explanation');
+  if (exp) exp.classList.add('show');
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight') nextSlide();
+  if (e.key === 'ArrowLeft') previousSlide();
+  if (e.key && e.key.toLowerCase() === 'm') toggleSidebar();
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  renderSidebar();
+  goToSlide(0);
+});
+  </script>
+</body>
+</html>
