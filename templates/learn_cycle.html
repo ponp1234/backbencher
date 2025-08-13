@@ -1,0 +1,4619 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cycles - P4 Science</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        body {
+             margin: 0;
+             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+             background: #f1f5f9;
+             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            color: #0360a5;
+        }
+        
+        .slide-modal {
+             width: 100vw;
+             height: 100vh;
+             background: #f1f5f9;
+             display: flex;
+             align-items: stretch;
+             justify-content: center;
+             transition: padding-left 0.3s ease;
+            position: relative;
+        }
+        
+        .slide-modal.sidebar-open { padding-left: 280px; }
+        
+        .sidebar {
+            width: 280px;
+            background: #ffffff;
+            border-right: 1px solid #e5e7eb;
+            padding: 20px 0 0 0;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            overflow-y: auto;
+            position: fixed;
+            left: -280px;
+            top: 0;
+            height: 100vh;
+            z-index: 1000;
+            transition: left 0.3s ease;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .sidebar.open { left: 0; }
+        
+        .menu-toggle {
+            position: fixed;
+            top: 16px;
+            left: 16px;
+            z-index: 1001;
+            background: linear-gradient(135deg, #0360a5, #2c4a7e);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 14px;
+            cursor: pointer;
+            font-size: 1.3rem;
+            box-shadow: 0 3px 12px rgba(26,42,68,0.3);
+            transition: all 0.3s ease;
+            min-height: 50px;
+            min-width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .menu-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(26,42,68,0.4);
+        }
+        
+        .menu-toggle.sidebar-open {
+            left: 16px;
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            transform: none;
+        }
+        
+        .subtopic-section {
+            margin-bottom: 16px;
+        }
+        .subtopic-header {
+            background: #e5e7eb;
+            padding: 12px 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #0360a5;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .subtopic-btn {
+            background: none;
+            border: none;
+            text-align: left;
+            padding: 14px 24px;
+            font-size: 0.95rem;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-left: 4px solid transparent;
+            width: 100%;
+            display: block;
+            min-height: 50px;
+            line-height: 1.5;
+        }
+        .subtopic-btn.active, .subtopic-btn:hover {
+            background: #e6f0fa;
+            color: #1a2a44;
+            border-left: 4px solid #2c4a7e;
+            font-weight: 600;
+        }
+        
+        .slide-container {
+             background: #ffffff;
+             border-radius: 12px;
+             width: 100vw;
+             max-width: none;
+             height: 95vh;
+             box-shadow: 0 6px 24px rgba(0,0,0,0.1);
+             display: flex;
+             flex-direction: column;
+             flex: 1;
+             margin: 12px;
+            position: relative;
+        }
+        
+        .slide-header {
+             background: linear-gradient(135deg, #1a2a44, #2c4a7e);
+             color: white;
+             padding: 20px 32px;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             flex-shrink: 0;
+            border-radius: 12px 12px 0 0;
+        }
+        .slide-title {
+             font-size: 1.5rem;
+             font-weight: 700;
+             display: flex;
+             align-items: center;
+             gap: 12px;
+             margin: 0;
+            letter-spacing: -0.02em;
+        }
+        .slide-counter {
+             background: rgba(255,255,255,0.15);
+             padding: 8px 16px;
+             border-radius: 20px;
+             font-weight: 600;
+             font-size: 0.9rem;
+        }
+        
+        .slide-content {
+             flex: 1;
+             overflow-y: auto;
+             display: flex;
+             flex-direction: column;
+            background: #f8fafc;
+             padding: 24px;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .main-slide-area {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            min-height: 600px;
+        }
+        
+        .slide {
+             width: 100%;
+             max-width: 900px;
+             margin: 0 auto;
+             padding: 32px 24px;
+             background: #ffffff;
+             border-radius: 16px;
+             box-shadow: 0 4px 20px rgba(26,42,68,0.08);
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             text-align: center;
+            line-height: 1.6;
+        }
+        
+        .slide h2, .slide h3 {
+            color: #0360a5;
+            margin-bottom: 16px;
+            font-weight: 700;
+        }
+        
+        .slide p {
+            color: #374151;
+            font-size: 1.1rem;
+            max-width: 600px;
+            margin: 0 auto 16px;
+            line-height: 1.7;
+        }
+
+        .slide-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 700px;
+        }
+
+        .grid-4 {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .info-card {
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .info-card h4 {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            color: #0360a5;
+        }
+
+        .info-card p {
+            font-size: 0.95rem;
+            margin: 0;
+        }
+
+        .info-card ul {
+            text-align: left;
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .info-card li {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+
+        .green-card { background: linear-gradient(135deg, #d4f4dd 0%, #a7f3d0 100%); }
+        .blue-card { background: linear-gradient(135deg, #dbeafe 0%, #93c5fd 100%); }
+        .purple-card { background: linear-gradient(135deg, #e9d5ff 0%, #c4b5fd 100%); }
+        .yellow-card { background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%); }
+        .orange-card { background: linear-gradient(135deg, #fed7aa 0%, #fdba74 100%); }
+        .red-card { background: linear-gradient(135deg, #fecaca 0%, #f87171 100%); }
+        .gray-card { background: linear-gradient(135deg, #f3f4f6 0%, #d1d5db 100%); }
+        .pink-card { background: linear-gradient(135deg, #fce7f3 0%, #f9a8d4 100%); }
+
+        .system-diagram {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            max-width: 700px;
+            text-align: left;
+            border: 2px solid #0ea5e9;
+        }
+
+        .system-diagram h4 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #0c4a6e;
+            text-align: center;
+        }
+
+        .system-diagram ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .system-diagram li {
+            padding: 8px 0;
+            font-size: 1rem;
+            color: #0369a1;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .system-diagram strong {
+            color: #0c4a6e;
+            font-size: 1.1rem;
+        }
+
+        .process-flow {
+            background: linear-gradient(135deg, #fef3c7 0%, #fcd34d 100%);
+            padding: 25px;
+            border-radius: 15px;
+            margin: 20px 0;
+            max-width: 700px;
+            text-align: left;
+            border: 2px solid #f59e0b;
+        }
+
+        .process-flow h4 {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+            color: #92400e;
+            text-align: center;
+        }
+
+        .process-step {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 10px;
+            gap: 15px;
+        }
+
+        .step-number {
+            background: #f59e0b;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content strong {
+            color: #92400e;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .step-content p {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #a16207;
+        }
+
+        .video-container {
+            width: 100%;
+            max-width: 700px;
+            margin: 24px 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #0360a5, #2c4a7e);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+            border-radius: 12px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .fun-fact {
+            background: linear-gradient(135deg, #fce7f3 0%, #f9a8d4 100%);
+            padding: 20px;
+            border-radius: 15px;
+            margin: 20px 0;
+            max-width: 600px;
+            border-left: 4px solid #ec4899;
+        }
+
+        .fun-fact h4 {
+            color: #be185d;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .fun-fact p {
+            color: #be185d;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+        
+        .slide-navigation {
+             background: #ffffff;
+             padding: 20px 32px;
+             display: flex;
+             justify-content: space-between;
+             align-items: center;
+             border-top: 1px solid #e5e7eb;
+             flex-shrink: 0;
+            border-radius: 0 0 12px 12px;
+        }
+        
+        .nav-btn {
+             background: linear-gradient(135deg, #1a2a44, #2c4a7e);
+             color: white;
+             border: none;
+             border-radius: 10px;
+             padding: 12px 24px;
+             font-size: 1rem;
+             font-weight: 600;
+             cursor: pointer;
+             min-height: 50px;
+            transition: all 0.2s ease;
+        }
+        .nav-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(26,42,68,0.3);
+        }
+        .nav-btn:disabled {
+             opacity: 0.5;
+             cursor: not-allowed;
+             transform: none;
+            box-shadow: none;
+        }
+        .slide-progress {
+             display: flex;
+             gap: 8px;
+             align-items: center;
+             flex-wrap: wrap;
+            justify-content: center;
+        }
+        .progress-dot {
+             width: 10px;
+             height: 10px;
+             border-radius: 50%;
+             background: #d1d5db;
+             transition: all 0.2s ease;
+        }
+        .progress-dot.active {
+             background: linear-gradient(135deg, #1a2a44, #2c4a7e);
+            transform: scale(1.3);
+        }
+        
+        .notes-section {
+            background: #ffffff;
+            border-radius: 12px;
+            margin-top: 24px;
+            padding: 24px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.06);
+            border-top: 3px solid #2c4a7e;
+        }
+        
+        .notes-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 16px;
+            color: #0360a5;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        .notes-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            align-items: start;
+        }
+        
+        .notes-text {
+            font-size: 0.95rem;
+            line-height: 1.7;
+            color: #374151;
+        }
+        
+        .notes-images {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .bw-image {
+            width: 100%;
+            height: 120px;
+            background: #f7f7f7;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            color: #6b7280;
+            filter: grayscale(100%);
+            position: relative;
+            overflow: hidden;
+            text-align: center;
+            padding: 12px;
+        }
+        
+        .bw-image::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, #f3f4f6 25%, transparent 25%),
+                         linear-gradient(-45deg, #f3f4f6 25%, transparent 25%),
+                         linear-gradient(45deg, transparent 75%, #f3f4f6 75%),
+                         linear-gradient(-45deg, transparent 75%, #f3f4f6 75%);
+            background-size: 15px 15px;
+            background-position: 0 0, 0 7.5px, 7.5px -7.5px, -7.5px 0px;
+            opacity: 0.1;
+        }
+        
+        .ai-help-widget {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 1002;
+            font-family: inherit;
+        }
+        
+        .ai-help-toggle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .ai-help-toggle:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(16, 185, 129, 0.5);
+        }
+        
+        .ai-help-toggle.active {
+            background: linear-gradient(135deg, #dc2626, #b91c1c);
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.4);
+        }
+        
+        .ai-help-panel {
+            position: absolute;
+            top: 70px;
+            right: 0;
+            width: 340px;
+            max-height: 480px;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            border: 1px solid #e5e7eb;
+            transform: translateY(-20px) scale(0.95);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .ai-help-panel.open {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .ai-help-header {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 16px 20px;
+            border-radius: 12px 12px 0 0;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .ai-help-content {
+            padding: 20px;
+            max-height: 320px;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .ai-chat-messages {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 16px;
+            min-height: 80px;
+        }
+        
+        .ai-message {
+            padding: 10px 14px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+        }
+        
+        .ai-message.user {
+            background: #e6f0fa;
+            color: #1a2a44;
+            align-self: flex-end;
+            max-width: 80%;
+        }
+        
+        .ai-message.bot {
+            background: #f0fdf4;
+            color: #166534;
+            align-self: flex-start;
+            max-width: 90%;
+        }
+        
+        .ai-input-area {
+            display: flex;
+            gap: 8px;
+            border-top: 1px solid #e5e7eb;
+            padding-top: 16px;
+        }
+        
+        .ai-input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #e5e7eb;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+            min-height: 40px;
+        }
+        
+        .ai-input:focus {
+            border-color: #10b981;
+        }
+        
+        .ai-send-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+        
+        .ai-send-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .ai-suggestions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+        
+        .ai-suggestion {
+            background: #f3f4f6;
+            color: #374151;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-height: 36px;
+        }
+        
+        .ai-suggestion:hover {
+            background: #e6f0fa;
+            color: #1a2a44;
+        }
+
+        .quiz-option {
+             background: #ffffff;
+             border: 2px solid #e5e7eb;
+             border-radius: 10px;
+             padding: 16px 20px;
+             cursor: pointer;
+             margin: 8px 0;
+             font-size: 1rem;
+             width: 100%;
+            max-width: 600px;
+            transition: all 0.2s ease;
+            min-height: 50px;
+            text-align: left;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .quiz-option:hover {
+            border-color: #2c4a7e;
+            transform: translateY(-1px);
+        }
+        .quiz-option.selected {
+             background: #e6f0fa;
+             border-color: #2c4a7e;
+             color: #1a2a44;
+         }
+        .quiz-option.correct {
+             background: #dcfce7;
+             border-color: #22c55e;
+             color: #15803d;
+         }
+        .quiz-option.incorrect {
+             background: #fee2e2;
+             border-color: #dc2626;
+             color: #b91c1c;
+         }
+        .quiz-explanation {
+             background: #f0fdf4;
+             border-radius: 10px;
+             padding: 20px;
+             border-left: 4px solid #22c55e;
+             margin-top: 20px;
+             display: none;
+             max-width: 600px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .quiz-explanation.show { display: block; }
+        
+        .back-home-btn {
+            background: #ffffff;
+            color: #2c4a7e;
+            font-weight: 600;
+            border-radius: 10px;
+            padding: 8px 16px;
+            text-decoration: none;
+            box-shadow: 0 2px 8px rgba(26,42,68,0.1);
+            font-size: 0.9rem;
+            border: none;
+            margin-left: 12px;
+            transition: all 0.2s ease;
+            min-height: 40px;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .back-home-btn:hover {
+            background: #e6f0fa;
+            color: #1a2a44;
+        }
+        
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+            display: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .sidebar-overlay.show {
+            display: block;
+            opacity: 1;
+        }
+
+        .water-cycle-diagram {
+            background: linear-gradient(to bottom, #87CEEB 0%, #87CEEB 40%, #90EE90 40%, #90EE90 70%, #8B4513 70%, #8B4513 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            max-width: 700px;
+            height: 400px;
+            position: relative;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .cycle-part {
+            position: absolute;
+            background: #0360a5;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid white;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            z-index: 10;
+        }
+
+        .cycle-part:hover {
+            background: #2c4a7e;
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        .cycle-part.active {
+            background: #dc2626;
+            transform: scale(1.2);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4); }
+            50% { box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6); }
+        }
+
+        .cycle-visual {
+            position: absolute;
+            font-size: 3rem;
+            transition: all 0.3s ease;
+        }
+
+        .cycle-visual.highlight {
+            transform: scale(1.2);
+            filter: brightness(1.3);
+        }
+
+        .cycle-info-panel {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-left: 4px solid #0360a5;
+            min-height: 150px;
+            transition: all 0.3s ease;
+        }
+
+        .cycle-info-panel.show {
+            border-left-color: #dc2626;
+            background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+        }
+
+        .cycle-info-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #0360a5;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cycle-info-panel.show .cycle-info-title {
+            color: #dc2626;
+        }
+
+        .cycle-info-content {
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .cycle-info-content ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+
+        .cycle-info-content li {
+            margin-bottom: 8px;
+        }
+
+        .cycle-info-content strong {
+            color: #0360a5;
+        }
+
+        .cycle-info-panel.show .cycle-info-content strong {
+            color: #dc2626;
+        }
+
+        .reset-cycle-btn {
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: all 0.2s ease;
+        }
+
+        .reset-cycle-btn:hover {
+            background: linear-gradient(135deg, #059669, #047857);
+            transform: translateY(-1px);
+        }
+
+        .states-simulator {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            max-width: 700px;
+            border: 2px solid #0ea5e9;
+        }
+
+        .simulator-display {
+            background: white;
+            border-radius: 10px;
+            height: 300px;
+            position: relative;
+            margin-bottom: 20px;
+            overflow: hidden;
+            border: 2px solid #e5e7eb;
+        }
+
+        .molecule {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #3b82f6;
+            border-radius: 50%;
+            transition: all 0.5s ease;
+        }
+
+        .molecule.solid {
+            background: #1e40af;
+        }
+
+        .molecule.liquid {
+            background: #3b82f6;
+        }
+
+        .molecule.gas {
+            background: #60a5fa;
+        }
+
+        .temperature-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .temp-slider {
+            flex: 1;
+            -webkit-appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: linear-gradient(to right, #3b82f6, #ef4444, #f59e0b);
+            outline: none;
+        }
+
+        .temp-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #0360a5;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .temp-display {
+            background: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            color: #0360a5;
+            min-width: 80px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .state-info {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .state-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0360a5;
+            margin-bottom: 10px;
+        }
+
+        .state-description {
+            color: #374151;
+            line-height: 1.6;
+        }
+
+        .memory-game {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            max-width: 700px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .memory-card {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #dbeafe, #93c5fd);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .memory-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .memory-card.flipped {
+            background: linear-gradient(135deg, #fef3c7, #fcd34d);
+            border-color: #f59e0b;
+        }
+
+        .memory-card.matched {
+            background: linear-gradient(135deg, #dcfce7, #a7f3d0);
+            border-color: #22c55e;
+            cursor: default;
+        }
+
+        .memory-card.matched:hover {
+            transform: none;
+        }
+
+        .card-back {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #6366f1, #4f46e5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .memory-card.flipped .card-back {
+            transform: rotateY(180deg);
+        }
+
+        .game-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .stat-item {
+            background: #f8fafc;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #e5e7eb;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #0360a5;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .drag-drop-game {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            max-width: 800px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .drag-items {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 10px;
+            border: 2px dashed #cbd5e1;
+        }
+
+        .drag-item {
+            background: linear-gradient(135deg, #dbeafe, #93c5fd);
+            color: #1e40af;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: grab;
+            font-weight: 600;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+            user-select: none;
+        }
+
+        .drag-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .drag-item.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+
+        .drop-zones {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .drop-zone {
+            background: #f8fafc;
+            border: 3px dashed #cbd5e1;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 150px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .drop-zone.drag-over {
+            border-color: #3b82f6;
+            background: #eff6ff;
+            transform: scale(1.02);
+        }
+
+        .drop-zone.correct {
+            border-color: #22c55e;
+            background: #f0fdf4;
+        }
+
+        .drop-zone.incorrect {
+            border-color: #dc2626;
+            background: #fef2f2;
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .zone-title {
+            font-weight: bold;
+            color: #0360a5;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .zone-items {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .dropped-item {
+            background: linear-gradient(135deg, #dcfce7, #a7f3d0);
+            color: #166534;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-weight: 600;
+            border: 2px solid #22c55e;
+        }
+
+        .experiment-lab {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 20px 0;
+            max-width: 800px;
+            border: 2px solid #0ea5e9;
+        }
+
+        .lab-equipment {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .equipment-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .equipment-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .equipment-item.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .equipment-icon {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .equipment-name {
+            font-weight: bold;
+            color: #0360a5;
+            margin-bottom: 5px;
+        }
+
+        .equipment-desc {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .experiment-area {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            min-height: 200px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #cbd5e1;
+            margin-bottom: 20px;
+        }
+
+        .experiment-result {
+            background: #f0fdf4;
+            border: 2px solid #22c55e;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .experiment-result.show {
+            display: block;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #166534;
+            margin-bottom: 10px;
+        }
+
+        .result-description {
+            color: #166534;
+            line-height: 1.6;
+        }
+
+        @media (max-width: 768px) {
+            .slide-modal {
+                 padding-left: 0 !important;
+             }
+            .slide-modal.sidebar-open {
+                 padding-left: 0;
+             }
+            
+            .menu-toggle {
+                 top: 12px;
+                left: 12px;
+                min-height: 48px;
+                min-width: 48px;
+                font-size: 1.2rem;
+                border-radius: 8px;
+            }
+            
+            .menu-toggle.sidebar-open {
+                 left: 12px;
+                 background: linear-gradient(135deg, #dc2626, #b91c1c);
+                transform: none;
+            }
+            
+            .sidebar {
+                 width: 85vw;
+                max-width: 320px;
+                border-radius: 0 16px 16px 0;
+                padding-top: 70px;
+            }
+            
+            .subtopic-header {
+                 font-size: 0.8rem;
+                padding: 12px 20px;
+                letter-spacing: 0.4px;
+            }
+            
+            .subtopic-btn {
+                 padding: 14px 22px;
+                 font-size: 0.95rem;
+                min-height: 50px;
+                line-height: 1.5;
+            }
+            
+            .slide-container {
+                 width: 100vw;
+                 height: 100vh;
+                 border-radius: 0;
+                 margin: 0;
+            }
+            
+            .slide-header {
+                padding: 16px 20px;
+                flex-wrap: wrap;
+                gap: 10px;
+            }
+            
+            .slide-title {
+                font-size: 1.2rem;
+                gap: 8px;
+            }
+            
+            .slide-counter {
+                font-size: 0.8rem;
+                padding: 6px 12px;
+            }
+            
+            .slide {
+                 padding: 20px 16px;
+                 border-radius: 0;
+                 margin: 0;
+            }
+            
+            .slide h2, .slide h3 {
+                font-size: 1.3rem;
+                margin-bottom: 12px;
+            }
+            
+            .slide p {
+                font-size: 1rem;
+                line-height: 1.6;
+            }
+
+            .grid-2, .grid-3, .grid-4 {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .game-board {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 10px;
+            }
+
+            .drop-zones {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            .lab-equipment {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .slide-navigation {
+                 padding: 16px 20px;
+                flex-wrap: wrap;
+                gap: 12px;
+            }
+            
+            .nav-btn {
+                font-size: 0.9rem;
+                padding: 10px 20px;
+                min-height: 48px;
+            }
+            
+            .slide-progress {
+                order: -1;
+                width: 100%;
+                justify-content: center;
+                margin-bottom: 8px;
+            }
+            
+            .progress-dot {
+                width: 8px;
+                height: 8px;
+            }
+            
+            .back-home-btn {
+                 font-size: 0.8rem;
+                 padding: 6px 12px;
+                 margin-left: 8px;
+                gap: 4px;
+                min-height: 40px;
+            }
+            
+            .video-container {
+                margin: 16px 0;
+            }
+            
+            .video-placeholder {
+                height: 180px;
+                font-size: 0.9rem;
+                padding: 16px;
+            }
+            
+            .notes-content {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+            
+            .notes-text {
+                font-size: 0.9rem;
+            }
+            
+            .bw-image {
+                height: 100px;
+                font-size: 0.8rem;
+            }
+            
+            .ai-help-widget {
+                top: 12px;
+                right: 12px;
+            }
+            
+            .ai-help-toggle {
+                width: 52px;
+                height: 52px;
+                font-size: 1.3rem;
+            }
+            
+            .ai-help-panel {
+                width: calc(100vw - 40px);
+                max-width: 320px;
+                top: 70px;
+                right: 10px;
+                max-height: 400px;
+            }
+            
+            .ai-help-header {
+                padding: 14px 16px;
+                font-size: 0.9rem;
+            }
+            
+            .ai-help-content {
+                padding: 16px;
+                max-height: 280px;
+            }
+            
+            .ai-message {
+                font-size: 0.8rem;
+                padding: 8px 10px;
+            }
+            
+            .ai-input {
+                font-size: 16px;
+                padding: 10px 12px;
+            }
+            
+            .ai-suggestion {
+                font-size: 0.7rem;
+                padding: 6px 10px;
+                min-height: 36px;
+            }
+            
+            .quiz-option {
+                font-size: 0.95rem;
+                padding: 14px 16px;
+                margin: 6px 0;
+                min-height: 50px;
+            }
+            
+            .quiz-explanation {
+                font-size: 0.9rem;
+                padding: 16px;
+                margin-top: 16px;
+            }
+
+            .water-cycle-diagram, .simulator-display {
+                height: 300px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .menu-toggle {
+                top: 10px;
+                left: 10px;
+                min-height: 48px;
+                min-width: 48px;
+            }
+            
+            .sidebar {
+                width: 90vw;
+                max-width: 300px;
+            }
+            
+            .slide-header {
+                padding: 12px 16px;
+            }
+            
+            .slide-title {
+                font-size: 1.1rem;
+            }
+            
+            .slide {
+                padding: 16px 12px;
+            }
+            
+            .slide h2, .slide h3 {
+                font-size: 1.2rem;
+            }
+            
+            .slide p {
+                font-size: 0.95rem;
+            }
+            
+            .slide-navigation {
+                padding: 12px 16px;
+            }
+            
+            .nav-btn {
+                font-size: 0.85rem;
+                padding: 8px 16px;
+                min-height: 44px;
+            }
+            
+            .notes-section {
+                padding: 16px;
+                margin-top: 16px;
+            }
+            
+            .video-placeholder {
+                height: 150px;
+                font-size: 0.85rem;
+            }
+            
+            .ai-help-widget {
+                top: 10px;
+                right: 10px;
+            }
+            
+            .ai-help-toggle {
+                width: 48px;
+                height: 48px;
+                font-size: 1.2rem;
+            }
+            
+            .ai-help-panel {
+                width: calc(100vw - 30px);
+                right: 5px;
+            }
+
+            .water-cycle-diagram, .simulator-display {
+                height: 250px;
+            }
+
+            .game-board {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) and (orientation: landscape) {
+            .slide-container {
+                height: 100vh;
+            }
+            
+            .slide-content {
+                padding: 16px;
+            }
+            
+            .slide {
+                padding: 16px;
+            }
+            
+            .main-slide-area {
+                min-height: 200px;
+            }
+            
+            .video-placeholder {
+                height: 140px;
+            }
+            
+            .sidebar {
+                width: 70vw;
+                max-width: 280px;
+            }
+
+            .water-cycle-diagram, .simulator-display {
+                height: 200px;
+            }
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            .nav-btn:hover,
+            .menu-toggle:hover,
+            .ai-help-toggle:hover,
+            .quiz-option:hover,
+            .subtopic-btn:hover,
+            .back-home-btn:hover,
+            .ai-suggestion:hover {
+                transform: none;
+                box-shadow: inherit;
+            }
+            
+            .nav-btn:active,
+            .menu-toggle:active,
+            .ai-help-toggle:active,
+            .subtopic-btn:active,
+            .back-home-btn:active,
+            .ai-suggestion:active {
+                transform: scale(0.98);
+            }
+            
+            .quiz-option:active {
+                transform: scale(0.99);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+<button class="menu-toggle" id="menu-toggle" onclick="toggleSidebar()">
+    ☰
+</button>
+
+<div class="slide-modal" id="slide-modal">
+    <div class="sidebar" id="sidebar">
+        <!-- Subtopics will be rendered here -->
+    </div>
+    
+    <div class="slide-container">
+        <div class="slide-header">
+            <span style="display:flex;align-items:center;">
+                <h2 class="slide-title" style="margin:0;">
+                    <span id="slide-icon">🔄</span>
+                    <span id="slide-title-text">Cycles</span>
+                </h2>
+            </span>
+            <span style="display:flex;align-items:center;flex-wrap:wrap;gap:8px;">
+                <div class="slide-counter" id="slide-counter" style="display:inline-block;">1 / 75</div>
+                <a href="index.html" class="back-home-btn">🏠 Back to Home</a>
+            </span>
+        </div>
+        
+        <div class="slide-content" id="slide-content">
+            <div class="main-slide-area" id="main-slide-area"></div>
+        </div>
+        
+        <div class="slide-navigation">
+            <div class="slide-progress" id="slide-progress"></div>
+            <button class="nav-btn" id="prev-slide-btn" onclick="previousSlide()" disabled>← Previous</button>
+            <button class="nav-btn" id="next-slide-btn" onclick="nextSlide()">Next →</button>
+        </div>
+    </div>
+</div>
+
+<!-- AI Help Widget -->
+<div class="ai-help-widget">
+    <button class="ai-help-toggle" id="ai-help-toggle" onclick="toggleAIHelp()">🤖</button>
+    <div class="ai-help-panel" id="ai-help-panel">
+        <div class="ai-help-header">
+            <span>🤖</span>
+            <span>BB AI Assistant</span>
+        </div>
+        <div class="ai-help-content">
+            <div class="ai-suggestions">
+                <button class="ai-suggestion" onclick="askAI('Explain water cycle')">Explain water cycle</button>
+                <button class="ai-suggestion" onclick="askAI('States of matter')">States of matter</button>
+                <button class="ai-suggestion" onclick="askAI('Help with quiz')">Help with quiz</button>
+            </div>
+            <div class="ai-chat-messages" id="ai-chat-messages">
+                <div class="ai-message bot">
+                    Hi! I'm BB AI, your learning assistant. Ask me anything about cycles and matter! 🔄
+                </div>
+            </div>
+            <div class="ai-input-area">
+                <input type="text" class="ai-input" id="ai-input" placeholder="Ask me anything..." onkeypress="handleAIKeyPress(event)">
+                <button class="ai-send-btn" onclick="sendAIMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Slide data with all interactive features for Cycles topic
+const subtopicSections = [
+    {
+        title: "Introduction to Cycles",
+        subtopics: [
+            { title: "What are Cycles?", slideIndex: 0 },
+            { title: "Types of Cycles in Nature", slideIndex: 1 },
+            { title: "Why Cycles are Important", slideIndex: 2 },
+            { title: "Cycles Around Us", slideIndex: 3 },
+            { title: "Introduction Quiz", slideIndex: 4 }
+        ]
+    },
+    {
+        title: "Water Cycle",
+        subtopics: [
+            { title: "Water Cycle Overview", slideIndex: 5 },
+            { title: "Interactive Water Cycle", slideIndex: 6 },
+            { title: "Evaporation", slideIndex: 7 },
+            { title: "Condensation", slideIndex: 8 },
+            { title: "Precipitation", slideIndex: 9 },
+            { title: "Collection", slideIndex: 10 },
+            { title: "Water Cycle Animation", slideIndex: 11 },
+            { title: "Water Cycle Experiment", slideIndex: 12 },
+            { title: "Water Cycle Memory Game", slideIndex: 13 },
+            { title: "Water Cycle Quiz 1", slideIndex: 14 },
+            { title: "Water Cycle Quiz 2", slideIndex: 15 }
+        ]
+    },
+    {
+        title: "States of Matter",
+        subtopics: [
+            { title: "Introduction to Matter", slideIndex: 16 },
+            { title: "Solid State", slideIndex: 17 },
+            { title: "Liquid State", slideIndex: 18 },
+            { title: "Gas State", slideIndex: 19 },
+            { title: "Interactive States Simulator", slideIndex: 20 },
+            { title: "Plasma State", slideIndex: 21 },
+            { title: "Comparing States", slideIndex: 22 },
+            { title: "States in Daily Life", slideIndex: 23 },
+            { title: "States Memory Game", slideIndex: 24 },
+            { title: "States Quiz 1", slideIndex: 25 },
+            { title: "States Quiz 2", slideIndex: 26 }
+        ]
+    },
+    {
+        title: "Changes in Matter",
+        subtopics: [
+            { title: "Physical Changes", slideIndex: 27 },
+            { title: "Chemical Changes", slideIndex: 28 },
+            { title: "Melting", slideIndex: 29 },
+            { title: "Freezing", slideIndex: 30 },
+            { title: "Boiling", slideIndex: 31 },
+            { title: "Evaporation vs Boiling", slideIndex: 32 },
+            { title: "Sublimation", slideIndex: 33 },
+            { title: "Deposition", slideIndex: 34 },
+            { title: "Changes Experiment Lab", slideIndex: 35 },
+            { title: "Drag & Drop Changes", slideIndex: 36 },
+            { title: "Changes Quiz 1", slideIndex: 37 },
+            { title: "Changes Quiz 2", slideIndex: 38 }
+        ]
+    },
+    {
+        title: "Properties of Matter",
+        subtopics: [
+            { title: "Physical Properties", slideIndex: 39 },
+            { title: "Chemical Properties", slideIndex: 40 },
+            { title: "Mass and Weight", slideIndex: 41 },
+            { title: "Volume", slideIndex: 42 },
+            { title: "Density", slideIndex: 43 },
+            { title: "Temperature", slideIndex: 44 },
+            { title: "Color and Texture", slideIndex: 45 },
+            { title: "Hardness and Flexibility", slideIndex: 46 },
+            { title: "Solubility", slideIndex: 47 },
+            { title: "Magnetism", slideIndex: 48 },
+            { title: "Properties Experiment", slideIndex: 49 },
+            { title: "Properties Matching Game", slideIndex: 50 },
+            { title: "Properties Quiz 1", slideIndex: 51 },
+            { title: "Properties Quiz 2", slideIndex: 52 }
+        ]
+    },
+    {
+        title: "Matter Cycles in Nature",
+        subtopics: [
+            { title: "Carbon Cycle", slideIndex: 53 },
+            { title: "Nitrogen Cycle", slideIndex: 54 },
+            { title: "Oxygen Cycle", slideIndex: 55 },
+            { title: "Rock Cycle", slideIndex: 56 },
+            { title: "Interactive Rock Cycle", slideIndex: 57 },
+            { title: "Cycles Connection", slideIndex: 58 },
+            { title: "Human Impact on Cycles", slideIndex: 59 },
+            { title: "Cycles Quiz", slideIndex: 60 }
+        ]
+    },
+    {
+        title: "Fun Activities & Games",
+        subtopics: [
+            { title: "Cycle Detective Game", slideIndex: 61 },
+            { title: "Matter Transformation Lab", slideIndex: 62 },
+            { title: "Build Your Own Cycle", slideIndex: 63 },
+            { title: "Cycles Crossword", slideIndex: 64 },
+            { title: "Matter Bingo", slideIndex: 65 },
+            { title: "Cycle Story Creator", slideIndex: 66 }
+        ]
+    },
+    {
+        title: "Review & Assessment",
+        subtopics: [
+            { title: "Cycles Review", slideIndex: 67 },
+            { title: "Matter Review", slideIndex: 68 },
+            { title: "Final Challenge 1", slideIndex: 69 },
+            { title: "Final Challenge 2", slideIndex: 70 },
+            { title: "Final Challenge 3", slideIndex: 71 },
+            { title: "Mastery Test", slideIndex: 72 },
+            { title: "Certificate of Completion", slideIndex: 73 },
+            { title: "What's Next?", slideIndex: 74 }
+        ]
+    }
+];
+
+const slides = [
+    // Introduction to Cycles (Slides 0-4)
+    {
+        content: `
+            <div class="slide-icon">🔄</div>
+            <h2>What are Cycles?</h2>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    🎬 Educational Video: Amazing Cycles in Nature
+                </div>
+            </div>
+            <p>A cycle is a series of events that repeat over and over again in the same order. Nature is full of amazing cycles!</p>
+            <div class="system-diagram">
+                <h4>Key Features of Cycles:</h4>
+                <ul>
+                    <li>🔄 <strong>Repeating:</strong> The same events happen again and again</li>
+                    <li>⏰ <strong>Predictable:</strong> We can predict what comes next</li>
+                    <li>🌍 <strong>Natural:</strong> They happen everywhere in nature</li>
+                    <li>🔗 <strong>Connected:</strong> Each step leads to the next</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🌟 Fun Fact!</h4>
+                <p>The water you drink today might have been inside a dinosaur millions of years ago! That's because water keeps cycling through Earth forever!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🌿</div>
+            <h2>Types of Cycles in Nature</h2>
+            <p>Nature has many different types of cycles. Let's explore the most important ones!</p>
+            <div class="grid-2">
+                <div class="info-card blue-card">
+                    <h4>💧 Water Cycle</h4>
+                    <p>Water moves from oceans to clouds to rain and back again!</p>
+                </div>
+                <div class="info-card green-card">
+                    <h4>🌱 Life Cycles</h4>
+                    <p>Plants and animals grow, reproduce, and start new life!</p>
+                </div>
+                <div class="info-card yellow-card">
+                    <h4>🌍 Rock Cycle</h4>
+                    <p>Rocks change from one type to another over millions of years!</p>
+                </div>
+                <div class="info-card purple-card">
+                    <h4>🌬️ Carbon Cycle</h4>
+                    <p>Carbon moves between air, plants, animals, and the ground!</p>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>What Makes These Cycles Special?</h4>
+                <ul>
+                    <li>🔄 They never stop - they go on forever!</li>
+                    <li>🌍 They help keep Earth healthy and balanced</li>
+                    <li>🔗 They're all connected to each other</li>
+                    <li>⚡ They provide energy and materials for life</li>
+                </ul>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">⭐</div>
+            <h2>Why Cycles are Important</h2>
+            <p>Cycles are super important for life on Earth! Without them, nothing would work properly.</p>
+            <div class="process-flow">
+                <h4>How Cycles Help Us:</h4>
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Clean Our Environment</strong>
+                        <p>Cycles clean and recycle materials so nothing gets wasted!</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <strong>Provide Fresh Resources</strong>
+                        <p>They give us fresh water, clean air, and fertile soil!</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>Support All Life</strong>
+                        <p>Every living thing depends on cycles to survive and grow!</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <strong>Keep Earth Balanced</strong>
+                        <p>They maintain the perfect conditions for life on our planet!</p>
+                    </div>
+                </div>
+            </div>
+            <div class="fun-fact">
+                <h4>🤔 Think About This!</h4>
+                <p>What would happen if the water cycle stopped? There would be no rain, no rivers, and no fresh water for plants, animals, or people!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">👀</div>
+            <h2>Cycles Around Us</h2>
+            <p>Cycles are everywhere! Let's look for them in our daily lives.</p>
+            <div class="grid-3">
+                <div class="info-card green-card">
+                    <h4>🌅 Day & Night</h4>
+                    <p>Earth spins, giving us day and night every 24 hours!</p>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>🌙 Moon Phases</h4>
+                    <p>The moon changes shape in the sky every month!</p>
+                </div>
+                <div class="info-card yellow-card">
+                    <h4>🌸 Seasons</h4>
+                    <p>Spring, summer, fall, winter - they repeat every year!</p>
+                </div>
+                <div class="info-card purple-card">
+                    <h4>💓 Your Heartbeat</h4>
+                    <p>Your heart beats in a cycle to pump blood around your body!</p>
+                </div>
+                <div class="info-card orange-card">
+                    <h4>🌬️ Breathing</h4>
+                    <p>You breathe in and out in a cycle to get oxygen!</p>
+                </div>
+                <div class="info-card pink-card">
+                    <h4>🍎 Food Chain</h4>
+                    <p>Energy moves from plants to animals in cycles!</p>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Cycle Detective Challenge!</h4>
+                <ul>
+                    <li>🔍 Look around your home - can you find 3 cycles?</li>
+                    <li>🌡️ Think about temperature - hot and cold patterns</li>
+                    <li>🚿 Watch water - where does it come from and go?</li>
+                    <li>🌱 Observe plants - how do they grow and change?</li>
+                </ul>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧠</div>
+            <h2>Introduction Quiz</h2>
+            <p>Let's test what you've learned about cycles! Choose the best answer for each question.</p>
+            <div id="quiz-container">
+                <div class="quiz-question">
+                    <h3>Question 1: What is a cycle?</h3>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">A) Something that happens only once</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, true)">B) Events that repeat over and over in the same order</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">C) Something that never changes</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">D) A type of machine</div>
+                    <div class="quiz-explanation">
+                        <strong>Correct! 🎉</strong> A cycle is a series of events that repeat over and over again in the same order. Like the water cycle or day and night!
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    // Water Cycle (Slides 5-15)
+    {
+        content: `
+            <div class="slide-icon">💧</div>
+            <h2>Water Cycle Overview</h2>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    🎬 Amazing Water Cycle Journey Animation
+                </div>
+            </div>
+            <p>The water cycle is nature's way of recycling water! Water moves from oceans to clouds to rain and back again.</p>
+            <div class="process-flow">
+                <h4>The Water Cycle Steps:</h4>
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Evaporation ☀️</strong>
+                        <p>Sun heats water and turns it into invisible water vapor</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Condensation ☁️</strong>
+                        <p>Water vapor cools and forms tiny droplets in clouds</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Precipitation 🌧️</strong>
+                        <p>Water falls from clouds as rain, snow, or hail</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Collection 🌊</strong>
+                        <p>Water flows back to oceans, rivers, and underground</p>
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🎮</div>
+            <h2>Interactive Water Cycle</h2>
+            <p>Click on different parts of the water cycle to learn more! Watch how water moves around our planet.</p>
+            <div class="water-cycle-diagram" id="water-cycle-diagram">
+                <!-- Sun -->
+                <div class="cycle-visual" style="top: 10px; left: 50px; font-size: 4rem;">☀️</div>
+                <div class="cycle-part" style="top: 20px; left: 120px;" onclick="showCycleInfo('sun')">Sun</div>
+                
+                <!-- Clouds -->
+                <div class="cycle-visual" style="top: 40px; right: 100px; font-size: 3rem;">☁️</div>
+                <div class="cycle-part" style="top: 50px; right: 50px;" onclick="showCycleInfo('clouds')">Clouds</div>
+                
+                <!-- Rain -->
+                <div class="cycle-visual" style="top: 120px; right: 150px; font-size: 2rem;">🌧️</div>
+                <div class="cycle-part" style="top: 130px; right: 100px;" onclick="showCycleInfo('rain')">Rain</div>
+                
+                <!-- Ocean -->
+                <div class="cycle-visual" style="bottom: 50px; left: 50px; font-size: 3rem;">🌊</div>
+                <div class="cycle-part" style="bottom: 60px; left: 100px;" onclick="showCycleInfo('ocean')">Ocean</div>
+                
+                <!-- Mountains -->
+                <div class="cycle-visual" style="bottom: 80px; right: 80px; font-size: 3rem;">⛰️</div>
+                <div class="cycle-part" style="bottom: 90px; right: 130px;" onclick="showCycleInfo('mountains')">Mountains</div>
+                
+                <!-- Rivers -->
+                <div class="cycle-visual" style="bottom: 100px; center: 0; left: 50%; font-size: 2rem;">🏞️</div>
+                <div class="cycle-part" style="bottom: 110px; left: 45%;" onclick="showCycleInfo('rivers')">Rivers</div>
+            </div>
+            
+            <div class="cycle-info-panel" id="cycle-info-panel">
+                <div class="cycle-info-title" id="cycle-info-title">
+                    🔄 Click on any part of the water cycle above!
+                </div>
+                <div class="cycle-info-content" id="cycle-info-content">
+                    Explore the amazing journey of water as it moves around our planet. Each part plays an important role in keeping the cycle going!
+                </div>
+                <button class="reset-cycle-btn" onclick="resetCycle()">🔄 Reset Cycle</button>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">☀️</div>
+            <h2>Evaporation</h2>
+            <p>Evaporation is when the sun heats up water and turns it into invisible water vapor that rises into the air!</p>
+            <div class="grid-2">
+                <div class="info-card yellow-card">
+                    <h4>How Evaporation Works</h4>
+                    <ul>
+                        <li>☀️ Sun heats water in oceans, rivers, and lakes</li>
+                        <li>💨 Water molecules move faster and faster</li>
+                        <li>🌫️ They escape into the air as water vapor</li>
+                        <li>⬆️ Water vapor rises up into the sky</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>Where Evaporation Happens</h4>
+                    <ul>
+                        <li>🌊 Oceans (most water evaporation)</li>
+                        <li>🏞️ Rivers and lakes</li>
+                        <li>🌱 Plants (called transpiration)</li>
+                        <li>💧 Puddles after rain</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Cool Evaporation Facts:</h4>
+                <ul>
+                    <li>🌡️ <strong>Temperature:</strong> Warmer water evaporates faster</li>
+                    <li>💨 <strong>Wind:</strong> Wind helps water evaporate quicker</li>
+                    <li>📏 <strong>Surface Area:</strong> More surface = more evaporation</li>
+                    <li>🌊 <strong>Amount:</strong> Oceans provide 86% of all evaporation</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🧪 Try This at Home!</h4>
+                <p>Put a small bowl of water outside on a sunny day. Check it every few hours. Where did the water go? It evaporated!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">☁️</div>
+            <h2>Condensation</h2>
+            <p>Condensation happens when water vapor in the air cools down and turns back into tiny water droplets!</p>
+            <div class="process-flow">
+                <h4>How Condensation Works:</h4>
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Water Vapor Rises</strong>
+                        <p>Invisible water vapor floats up high in the sky</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Air Gets Colder</strong>
+                        <p>Higher up in the sky, the air is much colder</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Vapor Condenses</strong>
+                        <p>Cold water vapor turns back into tiny water droplets</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Clouds Form</strong>
+                        <p>Millions of tiny droplets stick together to make clouds</p>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="info-card purple-card">
+                    <h4>Types of Clouds</h4>
+                    <ul>
+                        <li>☁️ Cumulus - fluffy cotton balls</li>
+                        <li>🌫️ Stratus - flat gray layers</li>
+                        <li>⛈️ Cumulonimbus - tall storm clouds</li>
+                        <li>🌤️ Cirrus - thin wispy clouds</li>
+                    </ul>
+                </div>
+                <div class="info-card green-card">
+                    <h4>Condensation Examples</h4>
+                    <ul>
+                        <li>☁️ Clouds in the sky</li>
+                        <li>🌫️ Fog near the ground</li>
+                        <li>💧 Dew on grass in the morning</li>
+                        <li>🥤 Water drops on a cold drink</li>
+                    </ul>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🌧️</div>
+            <h2>Precipitation</h2>
+            <p>Precipitation is when water falls from clouds back to Earth as rain, snow, sleet, or hail!</p>
+            <div class="grid-4">
+                <div class="info-card blue-card">
+                    <h4>🌧️ Rain</h4>
+                    <p>Water droplets that fall when it's warm</p>
+                </div>
+                <div class="info-card gray-card">
+                    <h4>❄️ Snow</h4>
+                    <p>Frozen water crystals when it's very cold</p>
+                </div>
+                <div class="info-card purple-card">
+                    <h4>🧊 Sleet</h4>
+                    <p>Small ice pellets that bounce when they hit the ground</p>
+                </div>
+                <div class="info-card red-card">
+                    <h4>⚡ Hail</h4>
+                    <p>Large ice balls formed in thunderstorms</p>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>How Precipitation Forms:</h4>
+                <ul>
+                    <li>☁️ <strong>Cloud Droplets:</strong> Tiny water droplets in clouds</li>
+                    <li>💧 <strong>Growing Bigger:</strong> Droplets bump into each other and stick</li>
+                    <li>⚖️ <strong>Getting Heavy:</strong> Droplets become too heavy to float</li>
+                    <li>⬇️ <strong>Falling Down:</strong> Gravity pulls them down to Earth</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🌈 Amazing Precipitation Facts!</h4>
+                <p>The largest hailstone ever recorded was 8 inches wide - bigger than a softball! And no two snowflakes are exactly the same!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🌊</div>
+            <h2>Collection</h2>
+            <p>Collection is when water that falls as precipitation gathers together and flows back to oceans, rivers, and underground!</p>
+            <div class="process-flow">
+                <h4>Where Water Goes After It Falls:</h4>
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Surface Runoff 🏞️</strong>
+                        <p>Water flows over land into streams and rivers</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Infiltration 🌱</strong>
+                        <p>Water soaks into the ground to feed plants</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>Groundwater 💧</strong>
+                        <p>Water moves deep underground in aquifers</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Back to Oceans 🌊</strong>
+                        <p>All water eventually flows back to the sea</p>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <h4>Surface Water</h4>
+                    <ul>
+                        <li>🏞️ Rivers and streams</li>
+                        <li>🏔️ Lakes and ponds</li>
+                        <li>🌊 Oceans and seas</li>
+                        <li>❄️ Ice caps and glaciers</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>Underground Water</h4>
+                    <ul>
+                        <li>💧 Groundwater aquifers</li>
+                        <li>🌱 Soil moisture for plants</li>
+                        <li>⛲ Springs and wells</li>
+                        <li>🏔️ Underground rivers</li>
+                    </ul>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🎬</div>
+            <h2>Water Cycle Animation</h2>
+            <p>Watch the amazing journey of a water droplet as it travels through the complete water cycle!</p>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    🎬 Interactive Water Cycle Animation
+                    <br><br>
+                    Follow Droppy the Water Droplet on his amazing adventure!
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Droppy's Journey:</h4>
+                <ul>
+                    <li>🌊 <strong>Start:</strong> Droppy lives happily in the ocean</li>
+                    <li>☀️ <strong>Evaporation:</strong> Sun heats him up and he becomes vapor</li>
+                    <li>⬆️ <strong>Rising:</strong> He floats up high into the sky</li>
+                    <li>☁️ <strong>Condensation:</strong> He joins friends to make a fluffy cloud</li>
+                    <li>🌧️ <strong>Precipitation:</strong> He falls as rain onto a mountain</li>
+                    <li>🏞️ <strong>Collection:</strong> He flows down a river back to the ocean</li>
+                    <li>🔄 <strong>Repeat:</strong> Ready to start the journey again!</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🎭 Create Your Own Story!</h4>
+                <p>Imagine you're a water droplet! Where would you go on your water cycle adventure? What would you see along the way?</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧪</div>
+            <h2>Water Cycle Experiment</h2>
+            <p>Let's do a fun experiment to see the water cycle in action! We'll create our own mini water cycle.</p>
+            <div class="experiment-lab">
+                <h3>🔬 Mini Water Cycle Lab</h3>
+                <div class="lab-equipment">
+                    <div class="equipment-item" onclick="selectEquipment(this, 'bowl')">
+                        <div class="equipment-icon">🥣</div>
+                        <div class="equipment-name">Clear Bowl</div>
+                        <div class="equipment-desc">For our mini ocean</div>
+                    </div>
+                    <div class="equipment-item" onclick="selectEquipment(this, 'plastic')">
+                        <div class="equipment-icon">🛡️</div>
+                        <div class="equipment-name">Plastic Wrap</div>
+                        <div class="equipment-desc">To trap water vapor</div>
+                    </div>
+                    <div class="equipment-item" onclick="selectEquipment(this, 'cup')">
+                        <div class="equipment-icon">🥤</div>
+                        <div class="equipment-name">Small Cup</div>
+                        <div class="equipment-desc">To collect "rain"</div>
+                    </div>
+                </div>
+                <div class="experiment-area" id="experiment-area">
+                    <h4>🧪 Click on equipment above to start your experiment!</h4>
+                    <p>Select all three items to see what happens</p>
+                </div>
+                <div class="experiment-result" id="experiment-result">
+                    <div class="result-title">🎉 Amazing! You created a water cycle!</div>
+                    <div class="result-description">
+                        <strong>What happened:</strong>
+                        <ul>
+                            <li>☀️ Heat made water evaporate from the bowl</li>
+                            <li>☁️ Water vapor condensed on the plastic wrap</li>
+                            <li>🌧️ Droplets fell like rain into the cup</li>
+                            <li>🔄 The cycle continued over and over!</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🎮</div>
+            <h2>Water Cycle Memory Game</h2>
+            <p>Test your memory! Match the water cycle terms with their meanings. Click on cards to flip them over!</p>
+            <div class="memory-game">
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="moves-count">0</div>
+                        <div class="stat-label">Moves</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="matches-count">0</div>
+                        <div class="stat-label">Matches</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="time-count">0</div>
+                        <div class="stat-label">Time</div>
+                    </div>
+                </div>
+                <div class="game-board" id="memory-board">
+                    <!-- Memory cards will be generated here -->
+                </div>
+                <button class="reset-cycle-btn" onclick="resetMemoryGame()">🔄 New Game</button>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧠</div>
+            <h2>Water Cycle Quiz 1</h2>
+            <p>Let's test your knowledge about the water cycle! Choose the best answer for each question.</p>
+            <div id="quiz-container">
+                <div class="quiz-question">
+                    <h3>Question 1: What causes evaporation in the water cycle?</h3>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">A) The moon</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, true)">B) The sun's heat</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">C) Wind only</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">D) Cold temperatures</div>
+                    <div class="quiz-explanation">
+                        <strong>Correct! ☀️</strong> The sun's heat provides the energy needed to turn liquid water into water vapor through evaporation!
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧠</div>
+            <h2>Water Cycle Quiz 2</h2>
+            <p>More water cycle questions! You're becoming a water cycle expert!</p>
+            <div id="quiz-container">
+                <div class="quiz-question">
+                    <h3>Question 1: What are clouds made of?</h3>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">A) Cotton</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, true)">B) Tiny water droplets</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">C) Smoke</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">D) Air only</div>
+                    <div class="quiz-explanation">
+                        <strong>Perfect! ☁️</strong> Clouds are made of millions of tiny water droplets that formed through condensation!
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    // States of Matter (Slides 16-26)
+    {
+        content: `
+            <div class="slide-icon">⚛️</div>
+            <h2>Introduction to Matter</h2>
+            <div class="video-container">
+                <div class="video-placeholder">
+                    🎬 What is Matter? - Fun Science Video
+                </div>
+            </div>
+            <p>Matter is everything around us! It's anything that takes up space and has weight. Let's explore the amazing world of matter!</p>
+            <div class="system-diagram">
+                <h4>What is Matter?</h4>
+                <ul>
+                    <li>🏠 <strong>Takes up space:</strong> Matter has volume</li>
+                    <li>⚖️ <strong>Has mass:</strong> Matter has weight</li>
+                    <li>⚛️ <strong>Made of particles:</strong> Tiny atoms and molecules</li>
+                    <li>🔄 <strong>Can change:</strong> Matter can change its form</li>
+                </ul>
+            </div>
+            <div class="grid-3">
+                <div class="info-card blue-card">
+                    <h4>🧊 Solid</h4>
+                    <p>Particles are close together and don't move much</p>
+                </div>
+                <div class="info-card green-card">
+                    <h4>💧 Liquid</h4>
+                    <p>Particles are close but can slide around</p>
+                </div>
+                <div class="info-card yellow-card">
+                    <h4>💨 Gas</h4>
+                    <p>Particles are far apart and move very fast</p>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧊</div>
+            <h2>Solid State</h2>
+            <p>Solids are matter where particles are packed tightly together and can't move around much!</p>
+            <div class="grid-2">
+                <div class="info-card blue-card">
+                    <h4>Properties of Solids</h4>
+                    <ul>
+                        <li>📏 Have a definite shape</li>
+                        <li>📐 Have a definite volume</li>
+                        <li>💪 Particles vibrate in place</li>
+                        <li>🔒 Keep their form</li>
+                    </ul>
+                </div>
+                <div class="info-card purple-card">
+                    <h4>Examples of Solids</h4>
+                    <ul>
+                        <li>🧊 Ice cubes</li>
+                        <li>🪨 Rocks and stones</li>
+                        <li>📚 Books and paper</li>
+                        <li>🍎 Apples and food</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>How Solid Particles Behave:</h4>
+                <ul>
+                    <li>🤝 <strong>Close Together:</strong> Particles touch each other</li>
+                    <li>📍 <strong>Fixed Position:</strong> Each particle stays in its place</li>
+                    <li>🎵 <strong>Vibrating:</strong> They wiggle but don't move around</li>
+                    <li>💪 <strong>Strong Forces:</strong> Particles hold each other tightly</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🔍 Cool Solid Facts!</h4>
+                <p>Diamond is one of the hardest solids on Earth! It's so hard that it can cut through almost anything else!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">💧</div>
+            <h2>Liquid State</h2>
+            <p>Liquids are matter where particles are close together but can slide around and flow!</p>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <h4>Properties of Liquids</h4>
+                    <ul>
+                        <li>🌊 Take the shape of their container</li>
+                        <li>📏 Have a definite volume</li>
+                        <li>🏃 Particles can slide past each other</li>
+                        <li>💧 Can flow and pour</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>Examples of Liquids</h4>
+                    <ul>
+                        <li>💧 Water</li>
+                        <li>🥛 Milk and juice</li>
+                        <li>🛢️ Oil</li>
+                        <li>🩸 Blood</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>How Liquid Particles Behave:</h4>
+                <ul>
+                    <li>🤏 <strong>Close But Free:</strong> Particles touch but can move</li>
+                    <li>🏃 <strong>Sliding Around:</strong> They slip and slide past each other</li>
+                    <li>🌊 <strong>Flowing:</strong> This movement lets liquids flow</li>
+                    <li>🔗 <strong>Weaker Forces:</strong> Not as tightly held as solids</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🌊 Amazing Liquid Facts!</h4>
+                <p>Honey is a liquid that flows very slowly! It would take honey about 2 minutes to flow down a spoon!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">💨</div>
+            <h2>Gas State</h2>
+            <p>Gases are matter where particles are far apart and move around very quickly in all directions!</p>
+            <div class="grid-2">
+                <div class="info-card yellow-card">
+                    <h4>Properties of Gases</h4>
+                    <ul>
+                        <li>🎈 Fill any container completely</li>
+                        <li>📏 No definite shape or volume</li>
+                        <li>⚡ Particles move very fast</li>
+                        <li>💨 Can be compressed (squeezed)</li>
+                    </ul>
+                </div>
+                <div class="info-card orange-card">
+                    <h4>Examples of Gases</h4>
+                    <ul>
+                        <li>💨 Air we breathe</li>
+                        <li>🎈 Helium in balloons</li>
+                        <li>🔥 Steam from hot water</li>
+                        <li>🚗 Exhaust from cars</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>How Gas Particles Behave:</h4>
+                <ul>
+                    <li>🏃‍♂️ <strong>Far Apart:</strong> Lots of space between particles</li>
+                    <li>⚡ <strong>Moving Fast:</strong> Zooming around in all directions</li>
+                    <li>💥 <strong>Bouncing:</strong> Bumping into walls and each other</li>
+                    <li>🔓 <strong>Very Weak Forces:</strong> Particles barely hold together</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🎈 Fantastic Gas Facts!</h4>
+                <p>The air around you is mostly nitrogen (78%) and oxygen (21%)! Gas particles move so fast they could cross a room in seconds!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🎮</div>
+            <h2>Interactive States Simulator</h2>
+            <p>Control the temperature and watch how particles behave in different states of matter!</p>
+            <div class="states-simulator">
+                <h3>🌡️ Matter State Simulator</h3>
+                <div class="simulator-display" id="simulator-display">
+                    <!-- Molecules will be generated here -->
+                </div>
+                <div class="temperature-control">
+                    <span>🧊 Cold</span>
+                    <input type="range" class="temp-slider" id="temp-slider" min="0" max="100" value="50" oninput="updateTemperature(this.value)">
+                    <span>🔥 Hot</span>
+                </div>
+                <div class="temp-display" id="temp-display">20°C</div>
+                <div class="state-info" id="state-info">
+                    <div class="state-title" id="state-title">Liquid State</div>
+                    <div class="state-description" id="state-description">
+                        Particles are close together but can move around each other. This allows liquids to flow and take the shape of their container.
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">⚡</div>
+            <h2>Plasma State</h2>
+            <p>Plasma is the fourth state of matter! It's super hot gas where particles have electric charges.</p>
+            <div class="grid-2">
+                <div class="info-card red-card">
+                    <h4>What is Plasma?</h4>
+                    <ul>
+                        <li>🔥 Extremely hot gas</li>
+                        <li>⚡ Particles have electric charge</li>
+                        <li>🌟 Glows with light</li>
+                        <li>🌌 Most common state in universe</li>
+                    </ul>
+                </div>
+                <div class="info-card purple-card">
+                    <h4>Examples of Plasma</h4>
+                    <ul>
+                        <li>☀️ The Sun and other stars</li>
+                        <li>⚡ Lightning bolts</li>
+                        <li>💡 Neon signs</li>
+                        <li>🔥 Very hot flames</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>How Plasma Forms:</h4>
+                <ul>
+                    <li>🔥 <strong>Extreme Heat:</strong> Temperature over 10,000°C</li>
+                    <li>⚡ <strong>Electrons Escape:</strong> Particles break apart</li>
+                    <li>🌟 <strong>Glowing:</strong> Charged particles create light</li>
+                    <li>🌌 <strong>Everywhere:</strong> 99% of universe is plasma</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🌟 Plasma is Everywhere!</h4>
+                <p>Even though plasma seems rare on Earth, it makes up 99% of all matter in the universe! Every star you see is made of plasma!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">⚖️</div>
+            <h2>Comparing States</h2>
+            <p>Let's compare all the states of matter and see how they're different!</p>
+            <div class="grid-4">
+                <div class="info-card blue-card">
+                    <h4>🧊 Solid</h4>
+                    <ul>
+                        <li>Shape: Fixed</li>
+                        <li>Volume: Fixed</li>
+                        <li>Particles: Very close</li>
+                        <li>Movement: Vibrate only</li>
+                    </ul>
+                </div>
+                <div class="info-card green-card">
+                    <h4>💧 Liquid</h4>
+                    <ul>
+                        <li>Shape: Takes container shape</li>
+                        <li>Volume: Fixed</li>
+                        <li>Particles: Close</li>
+                        <li>Movement: Slide around</li>
+                    </ul>
+                </div>
+                <div class="info-card yellow-card">
+                    <h4>💨 Gas</h4>
+                    <ul>
+                        <li>Shape: Fills container</li>
+                        <li>Volume: Fills container</li>
+                        <li>Particles: Far apart</li>
+                        <li>Movement: Move freely</li>
+                    </ul>
+                </div>
+                <div class="info-card red-card">
+                    <h4>⚡ Plasma</h4>
+                    <ul>
+                        <li>Shape: Fills container</li>
+                        <li>Volume: Fills container</li>
+                        <li>Particles: Very far apart</li>
+                        <li>Movement: Super fast</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Temperature and States:</h4>
+                <ul>
+                    <li>🧊 <strong>Solid:</strong> Coldest temperatures</li>
+                    <li>💧 <strong>Liquid:</strong> Medium temperatures</li>
+                    <li>💨 <strong>Gas:</strong> Hot temperatures</li>
+                    <li>⚡ <strong>Plasma:</strong> Extremely hot temperatures</li>
+                </ul>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🏠</div>
+            <h2>States in Daily Life</h2>
+            <p>Let's find examples of different states of matter in our everyday lives!</p>
+            <div class="grid-3">
+                <div class="info-card blue-card">
+                    <h4>🧊 Solids at Home</h4>
+                    <ul>
+                        <li>🪑 Furniture</li>
+                        <li>📱 Electronics</li>
+                        <li>🍎 Food</li>
+                        <li>👕 Clothes</li>
+                        <li>📚 Books</li>
+                    </ul>
+                </div>
+                <div class="info-card green-card">
+                    <h4>💧 Liquids at Home</h4>
+                    <ul>
+                        <li>💧 Water</li>
+                        <li>🥛 Drinks</li>
+                        <li>🧴 Shampoo</li>
+                        <li>🍯 Honey</li>
+                        <li>🛢️ Cooking oil</li>
+                    </ul>
+                </div>
+                <div class="info-card yellow-card">
+                    <h4>💨 Gases at Home</h4>
+                    <ul>
+                        <li>💨 Air we breathe</li>
+                        <li>🎈 Balloon gas</li>
+                        <li>🔥 Natural gas</li>
+                        <li>☁️ Steam</li>
+                        <li>🚗 Car exhaust</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>State Detective Game:</h4>
+                <ul>
+                    <li>🔍 Look around your room - count 5 solids</li>
+                    <li>💧 Find 3 liquids in your kitchen</li>
+                    <li>💨 Name 3 gases you can't see but know are there</li>
+                    <li>🌟 Think of where you might see plasma</li>
+                </ul>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🎮</div>
+            <h2>States Memory Game</h2>
+            <p>Match the states of matter with their examples! Test your memory skills!</p>
+            <div class="memory-game">
+                <div class="game-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="states-moves">0</div>
+                        <div class="stat-label">Moves</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="states-matches">0</div>
+                        <div class="stat-label">Matches</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="states-time">0</div>
+                        <div class="stat-label">Time</div>
+                    </div>
+                </div>
+                <div class="game-board" id="states-memory-board">
+                    <!-- Memory cards will be generated here -->
+                </div>
+                <button class="reset-cycle-btn" onclick="resetStatesMemoryGame()">🔄 New Game</button>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧠</div>
+            <h2>States Quiz 1</h2>
+            <p>Test your knowledge about states of matter!</p>
+            <div id="quiz-container">
+                <div class="quiz-question">
+                    <h3>Question 1: Which state of matter has a definite shape and volume?</h3>
+                    <div class="quiz-option" onclick="selectQuizOption(this, true)">A) Solid</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">B) Liquid</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">C) Gas</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">D) Plasma</div>
+                    <div class="quiz-explanation">
+                        <strong>Excellent! 🧊</strong> Solids have both a definite shape and volume because their particles are tightly packed and can't move around!
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧠</div>
+            <h2>States Quiz 2</h2>
+            <p>More questions about states of matter!</p>
+            <div id="quiz-container">
+                <div class="quiz-question">
+                    <h3>Question 1: In which state do particles move the fastest?</h3>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">A) Solid</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">B) Liquid</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, true)">C) Gas</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">D) All move the same speed</div>
+                    <div class="quiz-explanation">
+                        <strong>Perfect! 💨</strong> Gas particles move the fastest because they have the most energy and lots of space to move around!
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    // Changes in Matter (Slides 27-38)
+    {
+        content: `
+            <div class="slide-icon">🔄</div>
+            <h2>Physical Changes</h2>
+            <p>Physical changes happen when matter changes its form but stays the same type of matter!</p>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <h4>What are Physical Changes?</h4>
+                    <ul>
+                        <li>🔄 Matter changes form</li>
+                        <li>⚛️ Same particles inside</li>
+                        <li>↩️ Can be reversed</li>
+                        <li>🆔 Same identity</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>Examples of Physical Changes</h4>
+                    <ul>
+                        <li>🧊 Ice melting to water</li>
+                        <li>📄 Tearing paper</li>
+                        <li>🍫 Chocolate melting</li>
+                        <li>💨 Water becoming steam</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Types of Physical Changes:</h4>
+                <ul>
+                    <li>🌡️ <strong>State Changes:</strong> Solid ↔ Liquid ↔ Gas</li>
+                    <li>✂️ <strong>Shape Changes:</strong> Cutting, bending, breaking</li>
+                    <li>📏 <strong>Size Changes:</strong> Stretching, compressing</li>
+                    <li>🎨 <strong>Mixing:</strong> Combining without chemical reaction</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🔄 Reversible Magic!</h4>
+                <p>Most physical changes can be undone! You can freeze water back into ice, or melt chocolate and let it harden again!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">⚗️</div>
+            <h2>Chemical Changes</h2>
+            <p>Chemical changes happen when matter changes into completely different matter with new properties!</p>
+            <div class="grid-2">
+                <div class="info-card red-card">
+                    <h4>What are Chemical Changes?</h4>
+                    <ul>
+                        <li>⚛️ New substances form</li>
+                        <li>🔬 Different properties</li>
+                        <li>🚫 Usually can't be reversed</li>
+                        <li>🆔 New identity</li>
+                    </ul>
+                </div>
+                <div class="info-card orange-card">
+                    <h4>Examples of Chemical Changes</h4>
+                    <ul>
+                        <li>🔥 Burning wood</li>
+                        <li>🍞 Baking bread</li>
+                        <li>🦷 Digesting food</li>
+                        <li>🟤 Iron rusting</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Signs of Chemical Changes:</h4>
+                <ul>
+                    <li>🎨 <strong>Color Change:</strong> New colors appear</li>
+                    <li>💨 <strong>Gas Production:</strong> Bubbles or smoke</li>
+                    <li>🌡️ <strong>Temperature Change:</strong> Gets hot or cold</li>
+                    <li>✨ <strong>Light Production:</strong> Glowing or sparks</li>
+                    <li>👃 <strong>Odor Change:</strong> New smells</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🍞 Delicious Chemistry!</h4>
+                <p>When you bake cookies, the heat causes chemical changes that create new flavors and smells. That's why raw cookie dough tastes different from baked cookies!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🫠</div>
+            <h2>Melting</h2>
+            <p>Melting is when a solid changes into a liquid by adding heat energy!</p>
+            <div class="process-flow">
+                <h4>How Melting Works:</h4>
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Add Heat Energy</strong>
+                        <p>Heat makes particles move faster</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Particles Vibrate More</strong>
+                        <p>They shake and wiggle with more energy</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>Bonds Break</strong>
+                        <p>Particles break free from fixed positions</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Becomes Liquid</strong>
+                        <p>Particles can now slide around each other</p>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="info-card yellow-card">
+                    <h4>Melting Points</h4>
+                    <ul>
+                        <li>🧊 Ice: 0°C (32°F)</li>
+                        <li>🍫 Chocolate: 30°C (86°F)</li>
+                        <li>🧈 Butter: 32°C (90°F)</li>
+                        <li>🕯️ Wax: 60°C (140°F)</li>
+                    </ul>
+                </div>
+                <div class="info-card purple-card">
+                    <h4>Fun Melting Examples</h4>
+                    <ul>
+                        <li>🍦 Ice cream on a hot day</li>
+                        <li>❄️ Snowman in spring</li>
+                        <li>🕯️ Candle wax when lit</li>
+                        <li>🧈 Butter in a hot pan</li>
+                    </ul>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧊</div>
+            <h2>Freezing</h2>
+            <p>Freezing is when a liquid changes into a solid by removing heat energy!</p>
+            <div class="process-flow">
+                <h4>How Freezing Works:</h4>
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Remove Heat Energy</strong>
+                        <p>Cold makes particles move slower</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Particles Slow Down</strong>
+                        <p>They move less and less</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>Particles Get Closer</strong>
+                        <p>They come together and form bonds</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Becomes Solid</strong>
+                        <p>Particles lock into fixed positions</p>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="info-card blue-card">
+                    <h4>Freezing Points</h4>
+                    <ul>
+                        <li>💧 Water: 0°C (32°F)</li>
+                        <li>🥛 Milk: -1°C (30°F)</li>
+                        <li>🍯 Honey: -20°C (-4°F)</li>
+                        <li>🌊 Seawater: -2°C (28°F)</li>
+                    </ul>
+                </div>
+                <div class="info-card green-card">
+                    <h4>Freezing Examples</h4>
+                    <ul>
+                        <li>🧊 Making ice cubes</li>
+                        <li>🍦 Making popsicles</li>
+                        <li>❄️ Winter ponds freezing</li>
+                        <li>🥶 Frozen pipes in winter</li>
+                    </ul>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">💨</div>
+            <h2>Boiling</h2>
+            <p>Boiling is when a liquid changes into a gas by adding lots of heat energy!</p>
+            <div class="system-diagram">
+                <h4>What Happens During Boiling:</h4>
+                <ul>
+                    <li>🔥 <strong>High Heat:</strong> Temperature reaches boiling point</li>
+                    <li>💥 <strong>Bubbles Form:</strong> Gas bubbles appear in the liquid</li>
+                    <li>⬆️ <strong>Rapid Change:</strong> Liquid quickly becomes gas</li>
+                    <li>🌡️ <strong>Constant Temperature:</strong> Stays at boiling point</li>
+                </ul>
+            </div>
+            <div class="grid-2">
+                <div class="info-card red-card">
+                    <h4>Boiling Points</h4>
+                    <ul>
+                        <li>💧 Water: 100°C (212°F)</li>
+                        <li>🥛 Milk: 100.5°C (213°F)</li>
+                        <li>🛢️ Oil: 300°C (572°F)</li>
+                        <li>🍯 Honey: 150°C (302°F)</li>
+                    </ul>
+                </div>
+                <div class="info-card orange-card">
+                    <h4>Boiling Examples</h4>
+                    <ul>
+                        <li>🫖 Kettle boiling water</li>
+                        <li>🍝 Cooking pasta</li>
+                        <li>☕ Making hot drinks</li>
+                        <li>🥚 Boiling eggs</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="fun-fact">
+                <h4>🏔️ Altitude Affects Boiling!</h4>
+                <p>Water boils at lower temperatures on tall mountains because there's less air pressure. On Mount Everest, water boils at only 72°C!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🆚</div>
+            <h2>Evaporation vs Boiling</h2>
+            <p>Both evaporation and boiling change liquid to gas, but they're different! Let's compare them.</p>
+            <div class="grid-2">
+                <div class="info-card blue-card">
+                    <h4>💨 Evaporation</h4>
+                    <ul>
+                        <li>🌡️ Happens at any temperature</li>
+                        <li>🔝 Only at the surface</li>
+                        <li>🐌 Slow process</li>
+                        <li>🤫 Quiet and gentle</li>
+                        <li>☀️ Needs some heat energy</li>
+                    </ul>
+                </div>
+                <div class="info-card red-card">
+                    <h4>🔥 Boiling</h4>
+                    <ul>
+                        <li>🌡️ Only at boiling point</li>
+                        <li>🫧 Throughout the liquid</li>
+                        <li>⚡ Fast process</li>
+                        <li>💥 Bubbling and noisy</li>
+                        <li>🔥 Needs lots of heat energy</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Real-Life Examples:</h4>
+                <ul>
+                    <li>💧 <strong>Evaporation:</strong> Puddles drying up, wet clothes drying</li>
+                    <li>🔥 <strong>Boiling:</strong> Kettle whistling, pasta water bubbling</li>
+                    <li>🌊 <strong>Both:</strong> Ocean water becomes clouds (evaporation) and steam from geysers (boiling)</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🌬️ Wind Speeds Up Evaporation!</h4>
+                <p>That's why wet clothes dry faster on a windy day. The moving air carries away the water vapor more quickly!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">❄️</div>
+            <h2>Sublimation</h2>
+            <p>Sublimation is when a solid changes directly into a gas without becoming a liquid first!</p>
+            <div class="process-flow">
+                <h4>How Sublimation Works:</h4>
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Special Conditions</strong>
+                        <p>Solid needs very specific temperature and pressure</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Particles Gain Energy</strong>
+                        <p>Heat gives particles enough energy to escape</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>Skip Liquid Stage</strong>
+                        <p>Particles jump straight from solid to gas</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Becomes Gas</strong>
+                        <p>Solid disappears and becomes invisible gas</p>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="info-card purple-card">
+                    <h4>Examples of Sublimation</h4>
+                    <ul>
+                        <li>🧊 Dry ice (frozen CO₂)</li>
+                        <li>❄️ Snow disappearing without melting</li>
+                        <li>🧴 Mothballs shrinking</li>
+                        <li>🍦 Freezer burn on ice cream</li>
+                    </ul>
+                </div>
+                <div class="info-card gray-card">
+                    <h4>Where We See It</h4>
+                    <ul>
+                        <li>🎭 Dry ice in theater shows</li>
+                        <li>❄️ Snow on cold, dry days</li>
+                        <li>🧊 Ice cubes shrinking in freezer</li>
+                        <li>🌨️ Frost disappearing in morning</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="fun-fact">
+                <h4>🎭 Dry Ice Magic!</h4>
+                <p>Dry ice sublimates at -78°C, creating spooky fog effects! It never becomes liquid - it goes straight from solid to gas!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">❄️</div>
+            <h2>Deposition</h2>
+            <p>Deposition is the opposite of sublimation - when a gas changes directly into a solid without becoming a liquid!</p>
+            <div class="system-diagram">
+                <h4>How Deposition Works:</h4>
+                <ul>
+                    <li>💨 <strong>Gas Particles:</strong> Moving freely in the air</li>
+                    <li>🥶 <strong>Rapid Cooling:</strong> Temperature drops very quickly</li>
+                    <li>⚡ <strong>Skip Liquid:</strong> No time to become liquid first</li>
+                    <li>🧊 <strong>Form Solid:</strong> Particles lock directly into solid form</li>
+                </ul>
+            </div>
+            <div class="grid-2">
+                <div class="info-card blue-card">
+                    <h4>Examples of Deposition</h4>
+                    <ul>
+                        <li>❄️ Frost forming on windows</li>
+                        <li>🌨️ Snow forming in clouds</li>
+                        <li>💎 Crystals growing from vapor</li>
+                        <li>🧊 Ice crystals on cold surfaces</li>
+                    </ul>
+                </div>
+                <div class="info-card green-card">
+                    <h4>When It Happens</h4>
+                    <ul>
+                        <li>🌅 Cold morning frost</li>
+                        <li>❄️ Winter car windshields</li>
+                        <li>🏔️ High altitude snow formation</li>
+                        <li>🥶 Inside freezers</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="fun-fact">
+                <h4>❄️ Snowflake Formation!</h4>
+                <p>Snowflakes form through deposition! Water vapor in clouds turns directly into ice crystals, creating beautiful unique patterns!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧪</div>
+            <h2>Changes Experiment Lab</h2>
+            <p>Welcome to the Matter Changes Laboratory! Conduct experiments to see different types of changes in action!</p>
+            <div class="experiment-lab">
+                <h3>🔬 Matter Changes Lab</h3>
+                <div class="lab-equipment">
+                    <div class="equipment-item" onclick="selectChangeExperiment(this, 'melting')">
+                        <div class="equipment-icon">🔥</div>
+                        <div class="equipment-name">Melting Station</div>
+                        <div class="equipment-desc">Watch ice turn to water</div>
+                    </div>
+                    <div class="equipment-item" onclick="selectChangeExperiment(this, 'freezing')">
+                        <div class="equipment-icon">🧊</div>
+                        <div class="equipment-name">Freezing Station</div>
+                        <div class="equipment-desc">Turn water into ice</div>
+                    </div>
+                    <div class="equipment-item" onclick="selectChangeExperiment(this, 'evaporation')">
+                        <div class="equipment-icon">💨</div>
+                        <div class="equipment-name">Evaporation Station</div>
+                        <div class="equipment-desc">Watch water disappear</div>
+                    </div>
+                </div>
+                <div class="experiment-area" id="changes-experiment-area">
+                    <h4>🧪 Choose an experiment above to get started!</h4>
+                    <p>Click on any station to see matter changes in action</p>
+                </div>
+                <div class="experiment-result" id="changes-experiment-result">
+                    <div class="result-title" id="changes-result-title">Experiment Results</div>
+                    <div class="result-description" id="changes-result-description">
+                        Results will appear here after you run an experiment!
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🎯</div>
+            <h2>Drag & Drop Changes</h2>
+            <p>Drag the examples to the correct type of change! Test your knowledge of physical and chemical changes.</p>
+            <div class="drag-drop-game">
+                <h3>🎮 Sort the Changes Game</h3>
+                <div class="drag-items" id="changes-drag-items">
+                    <div class="drag-item" draggable="true" data-type="physical">Ice melting</div>
+                    <div class="drag-item" draggable="true" data-type="chemical">Burning wood</div>
+                    <div class="drag-item" draggable="true" data-type="physical">Cutting paper</div>
+                    <div class="drag-item" draggable="true" data-type="chemical">Baking bread</div>
+                    <div class="drag-item" draggable="true" data-type="physical">Water boiling</div>
+                    <div class="drag-item" draggable="true" data-type="chemical">Iron rusting</div>
+                    <div class="drag-item" draggable="true" data-type="physical">Breaking glass</div>
+                    <div class="drag-item" draggable="true" data-type="chemical">Digesting food</div>
+                </div>
+                <div class="drop-zones">
+                    <div class="drop-zone" data-accepts="physical" ondrop="dropChange(event)" ondragover="allowDrop(event)">
+                        <div class="zone-title">🔄 Physical Changes</div>
+                        <p>Matter changes form but stays the same</p>
+                        <div class="zone-items" id="physical-items"></div>
+                    </div>
+                    <div class="drop-zone" data-accepts="chemical" ondrop="dropChange(event)" ondragover="allowDrop(event)">
+                        <div class="zone-title">⚗️ Chemical Changes</div>
+                        <p>Matter becomes something completely new</p>
+                        <div class="zone-items" id="chemical-items"></div>
+                    </div>
+                    <div class="drop-zone" data-accepts="both" ondrop="dropChange(event)" ondragover="allowDrop(event)">
+                        <div class="zone-title">❓ Not Sure?</div>
+                        <p>Put items here if you need to think more</p>
+                        <div class="zone-items" id="unsure-items"></div>
+                    </div>
+                </div>
+                <button class="reset-cycle-btn" onclick="resetChangesGame()">🔄 Reset Game</button>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧠</div>
+            <h2>Changes Quiz 1</h2>
+            <p>Test your knowledge about changes in matter!</p>
+            <div id="quiz-container">
+                <div class="quiz-question">
+                    <h3>Question 1: What type of change is melting ice?</h3>
+                    <div class="quiz-option" onclick="selectQuizOption(this, true)">A) Physical change</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">B) Chemical change</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">C) No change at all</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">D) Both physical and chemical</div>
+                    <div class="quiz-explanation">
+                        <strong>Correct! 🧊</strong> Melting ice is a physical change because the water molecules stay the same - only the state changes from solid to liquid!
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧠</div>
+            <h2>Changes Quiz 2</h2>
+            <p>More questions about matter changes!</p>
+            <div id="quiz-container">
+                <div class="quiz-question">
+                    <h3>Question 1: Which is a sign of a chemical change?</h3>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">A) Change in shape</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">B) Change in size</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, true)">C) Change in color</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">D) Change in location</div>
+                    <div class="quiz-explanation">
+                        <strong>Excellent! 🎨</strong> A change in color often indicates a chemical change because new substances with different properties are being formed!
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    // Properties of Matter (Slides 39-52)
+    {
+        content: `
+            <div class="slide-icon">🔍</div>
+            <h2>Physical Properties</h2>
+            <p>Physical properties are characteristics we can observe or measure without changing what the matter is!</p>
+            <div class="grid-3">
+                <div class="info-card blue-card">
+                    <h4>👁️ Observable Properties</h4>
+                    <ul>
+                        <li>🎨 Color</li>
+                        <li>✨ Shine (luster)</li>
+                        <li>👋 Texture</li>
+                        <li>👃 Smell</li>
+                    </ul>
+                </div>
+                <div class="info-card green-card">
+                    <h4>📏 Measurable Properties</h4>
+                    <ul>
+                        <li>⚖️ Mass</li>
+                        <li>📐 Volume</li>
+                        <li>🌡️ Temperature</li>
+                        <li>📏 Length</li>
+                    </ul>
+                </div>
+                <div class="info-card yellow-card">
+                    <h4>🧪 Testable Properties</h4>
+                    <ul>
+                        <li>💪 Hardness</li>
+                        <li>🌊 Solubility</li>
+                        <li>🧲 Magnetism</li>
+                        <li>⚡ Conductivity</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Why Physical Properties Matter:</h4>
+                <ul>
+                    <li>🆔 <strong>Identify Materials:</strong> Help us recognize different substances</li>
+                    <li>🔧 <strong>Choose Right Material:</strong> Pick the best material for each job</li>
+                    <li>🔬 <strong>Scientific Study:</strong> Help scientists understand matter</li>
+                    <li>🏭 <strong>Manufacturing:</strong> Important for making products</li>
+                </ul>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">⚗️</div>
+            <h2>Chemical Properties</h2>
+            <p>Chemical properties describe how matter behaves when it changes into different matter!</p>
+            <div class="grid-2">
+                <div class="info-card red-card">
+                    <h4>What are Chemical Properties?</h4>
+                    <ul>
+                        <li>🔥 How it burns (flammability)</li>
+                        <li>🦠 How it reacts with other substances</li>
+                        <li>🟤 How it rusts or corrodes</li>
+                        <li>💥 How it explodes (reactivity)</li>
+                    </ul>
+                </div>
+                <div class="info-card orange-card">
+                    <h4>Examples in Daily Life</h4>
+                    <ul>
+                        <li>🔥 Wood burns to make ash</li>
+                        <li>🟤 Iron rusts in wet air</li>
+                        <li>🥛 Milk turns sour</li>
+                        <li>🍎 Apples turn brown</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Important Chemical Properties:</h4>
+                <ul>
+                    <li>🔥 <strong>Flammability:</strong> Can it catch fire and burn?</li>
+                    <li>🦠 <strong>Reactivity:</strong> Does it react with air, water, or acids?</li>
+                    <li>🟤 <strong>Corrosion:</strong> Does it rust or decay over time?</li>
+                    <li>💥 <strong>Stability:</strong> Does it stay the same or change easily?</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🍌 Banana Chemistry!</h4>
+                <p>When bananas turn brown, that's a chemical property in action! The banana is reacting with oxygen in the air to create new brown compounds!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">⚖️</div>
+            <h2>Mass and Weight</h2>
+            <p>Mass and weight are related but different! Let's learn what makes them special.</p>
+            <div class="grid-2">
+                <div class="info-card blue-card">
+                    <h4>⚖️ Mass</h4>
+                    <ul>
+                        <li>🔢 Amount of matter in an object</li>
+                        <li>🌍 Same everywhere in universe</li>
+                        <li>📏 Measured in grams or kilograms</li>
+                        <li>🚀 Never changes</li>
+                    </ul>
+                </div>
+                <div class="info-card green-card">
+                    <h4>🌍 Weight</h4>
+                    <ul>
+                        <li>💪 Force of gravity on an object</li>
+                        <li>🌙 Changes in different places</li>
+                        <li>📏 Measured in newtons</li>
+                        <li>🚀 Depends on gravity</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Mass vs Weight Examples:</h4>
+                <ul>
+                    <li>🌍 <strong>On Earth:</strong> You weigh 100 pounds</li>
+                    <li>🌙 <strong>On Moon:</strong> You weigh 17 pounds (less gravity!)</li>
+                    <li>🚀 <strong>In Space:</strong> You weigh 0 pounds (no gravity!)</li>
+                    <li>⚖️ <strong>Your Mass:</strong> Always the same everywhere!</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🚀 Space Weight!</h4>
+                <p>Astronauts float in space because there's no gravity to give them weight, but they still have the same mass as on Earth!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">📐</div>
+            <h2>Volume</h2>
+            <p>Volume is how much space something takes up! Everything that has matter has volume.</p>
+            <div class="grid-3">
+                <div class="info-card purple-card">
+                    <h4>🧊 Solid Volume</h4>
+                    <ul>
+                        <li>📏 Fixed shape and size</li>
+                        <li>📐 Measure length × width × height</li>
+                        <li>📦 Cubic units (cm³, m³)</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>💧 Liquid Volume</h4>
+                    <ul>
+                        <li>🥤 Takes shape of container</li>
+                        <li>📏 Same amount of space</li>
+                        <li>🥛 Liters or milliliters</li>
+                    </ul>
+                </div>
+                <div class="info-card yellow-card">
+                    <h4>💨 Gas Volume</h4>
+                    <ul>
+                        <li>🎈 Fills entire container</li>
+                        <li>🔄 Can be compressed</li>
+                        <li>📏 Changes with pressure</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>How to Measure Volume:</h4>
+                <ul>
+                    <li>📦 <strong>Regular Shapes:</strong> Use length × width × height</li>
+                    <li>🪨 <strong>Irregular Shapes:</strong> Use water displacement</li>
+                    <li>💧 <strong>Liquids:</strong> Use measuring cups or graduated cylinders</li>
+                    <li>💨 <strong>Gases:</strong> Measure the container they fill</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🛁 Eureka Moment!</h4>
+                <p>The ancient Greek scientist Archimedes discovered how to measure volume when he noticed water overflowing from his bathtub!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🏋️</div>
+            <h2>Density</h2>
+            <p>Density tells us how much matter is packed into a space! It's mass divided by volume.</p>
+            <div class="system-diagram">
+                <h4>Understanding Density:</h4>
+                <ul>
+                    <li>📊 <strong>Formula:</strong> Density = Mass ÷ Volume</li>
+                    <li>📦 <strong>Packed Tight:</strong> High density = lots of matter in small space</li>
+                    <li>🎈 <strong>Spread Out:</strong> Low density = little matter in big space</li>
+                    <li>🌊 <strong>Floating:</strong> Less dense things float on more dense things</li>
+                </ul>
+            </div>
+            <div class="grid-2">
+                <div class="info-card blue-card">
+                    <h4>🏋️ High Density</h4>
+                    <ul>
+                        <li>🪨 Rocks and metals</li>
+                        <li>🥇 Gold and lead</li>
+                        <li>🧊 Ice (denser than air)</li>
+                        <li>💧 Water</li>
+                    </ul>
+                </div>
+                <div class="info-card yellow-card">
+                    <h4>🎈 Low Density</h4>
+                    <ul>
+                        <li>💨 Air and gases</li>
+                        <li>🪶 Feathers</li>
+                        <li>🧽 Sponges</li>
+                        <li>🛢️ Oil</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="fun-fact">
+                <h4>🛢️ Oil and Water!</h4>
+                <p>Oil floats on water because oil is less dense than water. That's why oil spills spread on top of the ocean!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🌡️</div>
+            <h2>Temperature</h2>
+            <p>Temperature measures how hot or cold something is! It tells us about the energy of moving particles.</p>
+            <div class="grid-3">
+                <div class="info-card blue-card">
+                    <h4>🧊 Cold Temperatures</h4>
+                    <ul>
+                        <li>❄️ Particles move slowly</li>
+                        <li>🧊 Ice forms</li>
+                        <li>🥶 Below 0°C (32°F)</li>
+                        <li>🐧 Freezing point</li>
+                    </ul>
+                </div>
+                <div class="info-card green-card">
+                    <h4>🌡️ Room Temperature</h4>
+                    <ul>
+                        <li>🏠 Comfortable for humans</li>
+                        <li>💧 Water is liquid</li>
+                        <li>🌡️ Around 20°C (68°F)</li>
+                        <li>😊 Just right!</li>
+                    </ul>
+                </div>
+                <div class="info-card red-card">
+                    <h4>🔥 Hot Temperatures</h4>
+                    <ul>
+                        <li>⚡ Particles move very fast</li>
+                        <li>💨 Water becomes steam</li>
+                        <li>🔥 Above 100°C (212°F)</li>
+                        <li>♨️ Boiling point</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Temperature Scales:</h4>
+                <ul>
+                    <li>🌡️ <strong>Celsius (°C):</strong> Water freezes at 0°, boils at 100°</li>
+                    <li>🌡️ <strong>Fahrenheit (°F):</strong> Water freezes at 32°, boils at 212°</li>
+                    <li>🌡️ <strong>Kelvin (K):</strong> Scientific scale, starts at absolute zero</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🥶 Absolute Zero!</h4>
+                <p>The coldest possible temperature is -273°C (-459°F)! At this temperature, particles would stop moving completely!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🎨</div>
+            <h2>Color and Texture</h2>
+            <p>Color and texture are physical properties we can see and feel! They help us identify different materials.</p>
+            <div class="grid-2">
+                <div class="info-card purple-card">
+                    <h4>🎨 Color Properties</h4>
+                    <ul>
+                        <li>👁️ What we see with our eyes</li>
+                        <li>🌈 Depends on light reflection</li>
+                        <li>🔍 Helps identify materials</li>
+                        <li>🎭 Can change with temperature</li>
+                    </ul>
+                </div>
+                <div class="info-card orange-card">
+                    <h4>👋 Texture Properties</h4>
+                    <ul>
+                        <li>✋ How something feels to touch</li>
+                        <li>🪨 Rough, smooth, bumpy, soft</li>
+                        <li>🔍 Helps identify materials</li>
+                        <li>🏗️ Important for choosing materials</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Examples of Color and Texture:</h4>
+                <ul>
+                    <li>🍎 <strong>Apple:</strong> Red color, smooth texture</li>
+                    <li>🪨 <strong>Rock:</strong> Gray color, rough texture</li>
+                    <li>🧸 <strong>Teddy Bear:</strong> Brown color, soft texture</li>
+                    <li>🪙 <strong>Coin:</strong> Silver color, smooth texture</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🦎 Color-Changing Materials!</h4>
+                <p>Some materials change color with temperature! Mood rings and thermochromic materials are examples of this amazing property!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">💪</div>
+            <h2>Hardness and Flexibility</h2>
+            <p>Hardness and flexibility tell us how materials respond to force! Some are hard, some are soft, some bend easily!</p>
+            <div class="grid-2">
+                <div class="info-card gray-card">
+                    <h4>💪 Hardness</h4>
+                    <ul>
+                        <li>🪨 How difficult to scratch or dent</li>
+                        <li>💎 Diamond is the hardest natural material</li>
+                        <li>🔨 Measured by what can scratch it</li>
+                        <li>🏗️ Important for construction</li>
+                    </ul>
+                </div>
+                <div class="info-card green-card">
+                    <h4>🤸 Flexibility</h4>
+                    <ul>
+                        <li>🌿 How easily something bends</li>
+                        <li>🧘 Can bend without breaking</li>
+                        <li>🏃 Returns to original shape</li>
+                        <li>🎾 Important for sports equipment</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Hardness Scale Examples:</h4>
+                <ul>
+                    <li>💎 <strong>Very Hard:</strong> Diamond, steel, glass</li>
+                    <li>🪙 <strong>Medium Hard:</strong> Copper, fingernail</li>
+                    <li>✏️ <strong>Soft:</strong> Chalk, graphite</li>
+                    <li>🧈 <strong>Very Soft:</strong> Butter, clay</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🕷️ Spider Silk Strength!</h4>
+                <p>Spider silk is incredibly flexible and strong! It's stronger than steel but can stretch to twice its length without breaking!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">💧</div>
+            <h2>Solubility</h2>
+            <p>Solubility is how well one substance dissolves in another! Some things dissolve easily, others don't dissolve at all.</p>
+            <div class="grid-2">
+                <div class="info-card blue-card">
+                    <h4>💧 Soluble (Dissolves)</h4>
+                    <ul>
+                        <li>🧂 Salt in water</li>
+                        <li>🍯 Sugar in tea</li>
+                        <li>🎨 Food coloring in water</li>
+                        <li>☕ Coffee powder in hot water</li>
+                    </ul>
+                </div>
+                <div class="info-card red-card">
+                    <h4>🚫 Insoluble (Doesn't Dissolve)</h4>
+                    <ul>
+                        <li>🛢️ Oil in water</li>
+                        <li>🪨 Sand in water</li>
+                        <li>🪙 Metal in water</li>
+                        <li>🧽 Plastic in water</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Factors Affecting Solubility:</h4>
+                <ul>
+                    <li>🌡️ <strong>Temperature:</strong> Hot liquids dissolve more</li>
+                    <li>🥄 <strong>Stirring:</strong> Mixing helps dissolving</li>
+                    <li>🔬 <strong>Particle Size:</strong> Smaller pieces dissolve faster</li>
+                    <li>💧 <strong>Amount of Solvent:</strong> More liquid dissolves more</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🧂 Salt Water Oceans!</h4>
+                <p>Ocean water is salty because salt is very soluble in water! All the rivers carry tiny amounts of salt to the sea over millions of years!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧲</div>
+            <h2>Magnetism</h2>
+            <p>Magnetism is a special property where some materials are attracted to magnets! Let's explore magnetic materials.</p>
+            <div class="grid-2">
+                <div class="info-card red-card">
+                    <h4>🧲 Magnetic Materials</h4>
+                    <ul>
+                        <li>⚙️ Iron and steel</li>
+                        <li>🪙 Nickel</li>
+                        <li>🔩 Cobalt</li>
+                        <li>📎 Paper clips</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>🚫 Non-Magnetic Materials</h4>
+                    <ul>
+                        <li>🪙 Copper and aluminum</li>
+                        <li>🪵 Wood</li>
+                        <li>🧱 Plastic</li>
+                        <li>🪨 Most rocks</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>How Magnets Work:</h4>
+                <ul>
+                    <li>🧲 <strong>Magnetic Field:</strong> Invisible force around magnets</li>
+                    <li>⬆️⬇️ <strong>Poles:</strong> North and South ends</li>
+                    <li>🤝 <strong>Attract:</strong> Opposite poles pull together</li>
+                    <li>👐 <strong>Repel:</strong> Same poles push apart</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🌍 Earth is a Giant Magnet!</h4>
+                <p>Our whole planet is like a huge magnet! That's why compass needles point north - they're attracted to Earth's magnetic north pole!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧪</div>
+            <h2>Properties Experiment</h2>
+            <p>Test different properties of matter in our virtual laboratory! Discover what makes each material special.</p>
+            <div class="experiment-lab">
+                <h3>🔬 Properties Testing Lab</h3>
+                <div class="lab-equipment">
+                    <div class="equipment-item" onclick="selectPropertyTest(this, 'density')">
+                        <div class="equipment-icon">⚖️</div>
+                        <div class="equipment-name">Density Test</div>
+                        <div class="equipment-desc">See what floats or sinks</div>
+                    </div>
+                    <div class="equipment-item" onclick="selectPropertyTest(this, 'magnetism')">
+                        <div class="equipment-icon">🧲</div>
+                        <div class="equipment-name">Magnet Test</div>
+                        <div class="equipment-desc">Test magnetic attraction</div>
+                    </div>
+                    <div class="equipment-item" onclick="selectPropertyTest(this, 'solubility')">
+                        <div class="equipment-icon">💧</div>
+                        <div class="equipment-name">Dissolving Test</div>
+                        <div class="equipment-desc">See what dissolves</div>
+                    </div>
+                </div>
+                <div class="experiment-area" id="properties-experiment-area">
+                    <h4>🧪 Choose a test above to explore properties!</h4>
+                    <p>Click on any testing station to investigate matter properties</p>
+                </div>
+                <div class="experiment-result" id="properties-experiment-result">
+                    <div class="result-title" id="properties-result-title">Test Results</div>
+                    <div class="result-description" id="properties-result-description">
+                        Your experimental results will appear here!
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🎯</div>
+            <h2>Properties Matching Game</h2>
+            <p>Match the materials with their properties! Test your knowledge of how different materials behave.</p>
+            <div class="drag-drop-game">
+                <h3>🎮 Material Properties Match</h3>
+                <div class="drag-items" id="properties-drag-items">
+                    <div class="drag-item" draggable="true" data-property="magnetic">Iron nail</div>
+                    <div class="drag-item" draggable="true" data-property="float">Cork</div>
+                    <div class="drag-item" draggable="true" data-property="dissolve">Sugar cube</div>
+                    <div class="drag-item" draggable="true" data-property="magnetic">Steel spoon</div>
+                    <div class="drag-item" draggable="true" data-property="float">Oil</div>
+                    <div class="drag-item" draggable="true" data-property="dissolve">Salt</div>
+                    <div class="drag-item" draggable="true" data-property="sink">Rock</div>
+                    <div class="drag-item" draggable="true" data-property="sink">Gold coin</div>
+                </div>
+                <div class="drop-zones">
+                    <div class="drop-zone" data-accepts="magnetic" ondrop="dropProperty(event)" ondragover="allowDrop(event)">
+                        <div class="zone-title">🧲 Magnetic</div>
+                        <p>Attracted to magnets</p>
+                        <div class="zone-items" id="magnetic-items"></div>
+                    </div>
+                    <div class="drop-zone" data-accepts="float" ondrop="dropProperty(event)" ondragover="allowDrop(event)">
+                        <div class="zone-title">🎈 Floats</div>
+                        <p>Less dense than water</p>
+                        <div class="zone-items" id="float-items"></div>
+                    </div>
+                    <div class="drop-zone" data-accepts="dissolve" ondrop="dropProperty(event)" ondragover="allowDrop(event)">
+                        <div class="zone-title">💧 Dissolves</div>
+                        <p>Soluble in water</p>
+                        <div class="zone-items" id="dissolve-items"></div>
+                    </div>
+                    <div class="drop-zone" data-accepts="sink" ondrop="dropProperty(event)" ondragover="allowDrop(event)">
+                        <div class="zone-title">⬇️ Sinks</div>
+                        <p>More dense than water</p>
+                        <div class="zone-items" id="sink-items"></div>
+                    </div>
+                </div>
+                <button class="reset-cycle-btn" onclick="resetPropertiesGame()">🔄 Reset Game</button>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧠</div>
+            <h2>Properties Quiz 1</h2>
+            <p>Test your knowledge about properties of matter!</p>
+            <div id="quiz-container">
+                <div class="quiz-question">
+                    <h3>Question 1: Which property tells us how much matter is in an object?</h3>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">A) Volume</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, true)">B) Mass</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">C) Density</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">D) Temperature</div>
+                    <div class="quiz-explanation">
+                        <strong>Correct! ⚖️</strong> Mass tells us how much matter (stuff) is in an object. It stays the same no matter where you go in the universe!
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧠</div>
+            <h2>Properties Quiz 2</h2>
+            <p>More questions about matter properties!</p>
+            <div id="quiz-container">
+                <div class="quiz-question">
+                    <h3>Question 1: Why does oil float on water?</h3>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">A) Oil is lighter</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, true)">B) Oil is less dense than water</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">C) Oil is magnetic</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">D) Oil is hot</div>
+                    <div class="quiz-explanation">
+                        <strong>Perfect! 🛢️</strong> Oil floats on water because it has a lower density than water. Less dense materials always float on more dense materials!
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    // Matter Cycles in Nature (Slides 53-60)
+    {
+        content: `
+            <div class="slide-icon">🌱</div>
+            <h2>Carbon Cycle</h2>
+            <p>Carbon moves through air, plants, animals, and the ground in an amazing cycle that supports all life!</p>
+            <div class="process-flow">
+                <h4>How Carbon Cycles:</h4>
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Plants Take In CO₂</strong>
+                        <p>Plants absorb carbon dioxide from the air for photosynthesis</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Animals Eat Plants</strong>
+                        <p>Carbon moves from plants to animals through food</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>Breathing Releases CO₂</strong>
+                        <p>Animals breathe out carbon dioxide back to the air</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Decomposition</strong>
+                        <p>Dead plants and animals release carbon back to soil and air</p>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <h4>🌱 Carbon Sources</h4>
+                    <ul>
+                        <li>🌬️ Atmosphere (CO₂ gas)</li>
+                        <li>🌊 Oceans (dissolved CO₂)</li>
+                        <li>🪨 Rocks and fossil fuels</li>
+                        <li>🌱 Living organisms</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>🔄 Carbon Movement</h4>
+                    <ul>
+                        <li>🌱 Photosynthesis (air to plants)</li>
+                        <li>🍽️ Food chains (plants to animals)</li>
+                        <li>💨 Respiration (back to air)</li>
+                        <li>🦠 Decomposition (soil to air)</li>
+                    </ul>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🌾</div>
+            <h2>Nitrogen Cycle</h2>
+            <p>Nitrogen is essential for all living things! It cycles through air, soil, plants, and animals.</p>
+            <div class="system-diagram">
+                <h4>The Nitrogen Journey:</h4>
+                <ul>
+                    <li>🌬️ <strong>Air:</strong> 78% of air is nitrogen gas (N₂)</li>
+                    <li>🦠 <strong>Bacteria:</strong> Special bacteria "fix" nitrogen for plants</li>
+                    <li>🌱 <strong>Plants:</strong> Use nitrogen to make proteins</li>
+                    <li>🐄 <strong>Animals:</strong> Get nitrogen by eating plants</li>
+                    <li>🍂 <strong>Decomposition:</strong> Returns nitrogen to soil</li>
+                </ul>
+            </div>
+            <div class="grid-2">
+                <div class="info-card purple-card">
+                    <h4>🦠 Nitrogen Fixation</h4>
+                    <ul>
+                        <li>🌱 Bacteria in plant roots</li>
+                        <li>⚡ Lightning in storms</li>
+                        <li>🏭 Industrial processes</li>
+                        <li>🌾 Fertilizer production</li>
+                    </ul>
+                </div>
+                <div class="info-card green-card">
+                    <h4>🌱 Why Nitrogen Matters</h4>
+                    <ul>
+                        <li>🧬 Makes DNA and proteins</li>
+                        <li>🌿 Essential for plant growth</li>
+                        <li>💪 Needed for muscles</li>
+                        <li>🧠 Important for brain function</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="fun-fact">
+                <h4>⚡ Lightning Helps Plants!</h4>
+                <p>Lightning bolts help fix nitrogen from the air, making it available for plants to use. Nature's own fertilizer factory!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🫁</div>
+            <h2>Oxygen Cycle</h2>
+            <p>Oxygen is the gas we breathe! It cycles between the air, water, and living things.</p>
+            <div class="process-flow">
+                <h4>Oxygen Cycle Steps:</h4>
+                <div class="process-step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <strong>Plants Make Oxygen</strong>
+                        <p>Photosynthesis produces oxygen as a waste product</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Animals Breathe Oxygen</strong>
+                        <p>Animals use oxygen for cellular respiration</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <strong>Water Contains Oxygen</strong>
+                        <p>Oxygen dissolves in water for fish and sea life</p>
+                    </div>
+                </div>
+                <div class="process-step">
+                    <div class="step-content">
+                        <strong>Cycle Continues</strong>
+                        <p>Oxygen moves between air, water, and living things</p>
+                    </div>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <h4>🌱 Oxygen Producers</h4>
+                    <ul>
+                        <li>🌳 Trees and forests</li>
+                        <li>🌿 Grass and plants</li>
+                        <li>🌊 Ocean phytoplankton</li>
+                        <li>🌾 Crops and gardens</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>🫁 Oxygen Users</h4>
+                    <ul>
+                        <li>🐕 Animals (including humans)</li>
+                        <li>🐠 Fish and sea creatures</li>
+                        <li>🦠 Bacteria and microorganisms</li>
+                        <li>🔥 Fire and combustion</li>
+                    </ul>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🪨</div>
+            <h2>Rock Cycle</h2>
+            <p>Rocks change from one type to another over millions of years! It's the slowest cycle on Earth.</p>
+            <div class="grid-3">
+                <div class="info-card brown-card">
+                    <h4>🌋 Igneous Rocks</h4>
+                    <ul>
+                        <li>🔥 Form from melted rock (magma)</li>
+                        <li>🌋 Volcanic rocks</li>
+                        <li>💎 Granite, obsidian</li>
+                        <li>❄️ Cool and harden</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>🏔️ Sedimentary Rocks</h4>
+                    <ul>
+                        <li>🪨 Form from layers of sediment</li>
+                        <li>🌊 Compressed over time</li>
+                        <li>🏖️ Sandstone, limestone</li>
+                        <li>🦴 Often contain fossils</li>
+                    </ul>
+                </div>
+                <div class="info-card purple-card">
+                    <h4>💎 Metamorphic Rocks</h4>
+                    <ul>
+                        <li>🔥 Changed by heat and pressure</li>
+                        <li>💪 Very hard and dense</li>
+                        <li>✨ Marble, slate</li>
+                        <li>🏔️ Found in mountains</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>Rock Cycle Transformations:</h4>
+                <ul>
+                    <li>🌋 <strong>Melting:</strong> Any rock → Magma → Igneous rock</li>
+                    <li>🌊 <strong>Weathering:</strong> Any rock → Sediment → Sedimentary rock</li>
+                    <li>🔥 <strong>Heat & Pressure:</strong> Any rock → Metamorphic rock</li>
+                    <li>🔄 <strong>Continuous:</strong> The cycle never stops!</li>
+                </ul>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🎮</div>
+            <h2>Interactive Rock Cycle</h2>
+            <p>Control the forces of nature! See how rocks transform through heat, pressure, and weathering.</p>
+            <div class="experiment-lab">
+                <h3>🌍 Rock Transformation Lab</h3>
+                <div class="lab-equipment">
+                    <div class="equipment-item" onclick="selectRockProcess(this, 'melting')">
+                        <div class="equipment-icon">🌋</div>
+                        <div class="equipment-name">Melting</div>
+                        <div class="equipment-desc">Turn rock into magma</div>
+                    </div>
+                    <div class="equipment-item" onclick="selectRockProcess(this, 'weathering')">
+                        <div class="equipment-icon">🌊</div>
+                        <div class="equipment-name">Weathering</div>
+                        <div class="equipment-desc">Break rock into sediment</div>
+                    </div>
+                    <div class="equipment-item" onclick="selectRockProcess(this, 'pressure')">
+                        <div class="equipment-icon">💎</div>
+                        <div class="equipment-name">Heat & Pressure</div>
+                        <div class="equipment-desc">Transform rock structure</div>
+                    </div>
+                </div>
+                <div class="experiment-area" id="rock-experiment-area">
+                    <h4>🪨 Choose a geological process above!</h4>
+                    <p>Click on any process to see rock transformation in action</p>
+                    <div style="font-size: 4rem; margin: 20px;">🪨</div>
+                    <p>Starting Rock</p>
+                </div>
+                <div class="experiment-result" id="rock-experiment-result">
+                    <div class="result-title" id="rock-result-title">Geological Process Results</div>
+                    <div class="result-description" id="rock-result-description">
+                        Watch as rocks transform through Earth's powerful forces!
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🔗</div>
+            <h2>Cycles Connection</h2>
+            <p>All natural cycles are connected! Changes in one cycle affect all the others.</p>
+            <div class="system-diagram">
+                <h4>How Cycles Connect:</h4>
+                <ul>
+                    <li>🌱 <strong>Plants:</strong> Use water, carbon, nitrogen, and oxygen</li>
+                    <li>🐄 <strong>Animals:</strong> Need oxygen, water, and eat plants</li>
+                    <li>🌊 <strong>Water:</strong> Carries nutrients and dissolved gases</li>
+                    <li>🪨 <strong>Rocks:</strong> Store carbon and release minerals</li>
+                </ul>
+            </div>
+            <div class="grid-2">
+                <div class="info-card green-card">
+                    <h4>🌍 Ecosystem Balance</h4>
+                    <ul>
+                        <li>🔄 All cycles work together</li>
+                        <li>⚖️ Nature stays in balance</li>
+                        <li>🌱 Life depends on all cycles</li>
+                        <li>🔗 Everything is connected</li>
+                    </ul>
+                </div>
+                <div class="info-card blue-card">
+                    <h4>🌊 Water Connects All</h4>
+                    <ul>
+                        <li>💧 Carries dissolved nutrients</li>
+                        <li>🌱 Essential for photosynthesis</li>
+                        <li>🐠 Home for aquatic life</li>
+                        <li>🪨 Shapes rocks through erosion</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="fun-fact">
+                <h4>🌍 One Big System!</h4>
+                <p>Earth is like one giant living system where everything is connected. The water you drink, the air you breathe, and the food you eat all come from these amazing cycles!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🏭</div>
+            <h2>Human Impact on Cycles</h2>
+            <p>Humans can affect natural cycles! Let's learn how we can help protect these important systems.</p>
+            <div class="grid-2">
+                <div class="info-card red-card">
+                    <h4>😟 Negative Impacts</h4>
+                    <ul>
+                        <li>🏭 Pollution from factories</li>
+                        <li>🚗 Car exhaust gases</li>
+                        <li>🌳 Cutting down forests</li>
+                        <li>🗑️ Throwing away plastic</li>
+                    </ul>
+                </div>
+                <div class="info-card green-card">
+                    <h4>😊 Positive Actions</h4>
+                    <ul>
+                        <li>🌱 Planting trees</li>
+                        <li>♻️ Recycling materials</li>
+                        <li>🚲 Using bikes instead of cars</li>
+                        <li>💧 Conserving water</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="system-diagram">
+                <h4>How You Can Help:</h4>
+                <ul>
+                    <li>🌱 <strong>Plant Gardens:</strong> Help the carbon and oxygen cycles</li>
+                    <li>💧 <strong>Save Water:</strong> Protect the water cycle</li>
+                    <li>♻️ <strong>Recycle:</strong> Reduce waste and pollution</li>
+                    <li>🚶 <strong>Walk More:</strong> Reduce air pollution</li>
+                </ul>
+            </div>
+            <div class="fun-fact">
+                <h4>🌟 Every Action Counts!</h4>
+                <p>Even small actions by kids can make a big difference! When millions of people make good choices, it helps protect all of Earth's cycles!</p>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧠</div>
+            <h2>Cycles Quiz</h2>
+            <p>Test your knowledge about natural cycles!</p>
+            <div id="quiz-container">
+                <div class="quiz-question">
+                    <h3>Question 1: Which cycle involves plants taking in CO₂ and releasing oxygen?</h3>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">A) Water cycle</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, true)">B) Carbon and oxygen cycles</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">C) Rock cycle</div>
+                    <div class="quiz-option" onclick="selectQuizOption(this, false)">D) Nitrogen cycle</div>
+                    <div class="quiz-explanation">
+                        <strong>Excellent! 🌱</strong> Plants take in carbon dioxide and release oxygen through photosynthesis, connecting the carbon and oxygen cycles!
+                    </div>
+                </div>
+            </div>
+        `
+    },
+    // Fun Activities & Games (Slides 61-66)
+    {
+        content: `
+            <div class="slide-icon">🕵️</div>
+            <h2>Cycle Detective Game</h2>
+            <p>Become a cycle detective! Find and identify different cycles in various scenarios.</p>
+            <div class="drag-drop-game">
+                <h3>🔍 Cycle Detective Challenge</h3>
+                <p>Read each scenario and identify which cycle is happening!</p>
+                <div class="drag-items" id="detective-scenarios">
+                    <div class="drag-item" draggable="true" data-cycle="water">A puddle disappears on a sunny day</div>
+                    <div class="drag-item" draggable="true" data-cycle="carbon">A plant grows bigger in the garden</div>
+                    <div class="drag-item" draggable="true" data-cycle="rock">A mountain slowly wears away</div>
+                    <div class="drag-item" draggable="true" data-cycle="oxygen">You breathe in and out</div>
+                    <div class="drag-item" draggable="true" data-cycle="water">Clouds form in the sky</div>
+                    <div class="drag-item" draggable="true" data-cycle="nitrogen">Bacteria help plants grow</div>
+                </div>
+                <div class="drop-zones">
+                    <div class="drop-zone" data-accepts="water" ondrop="dropDetective(event)" ondragover="allowDrop(event)">
+                        <div class="zone-title">💧 Water Cycle</div>
+                        <div class="zone-items" id="water-detective"></div>
+                    </div>
+                    <div class="drop-zone" data-accepts="carbon" ondrop="dropDetective(event)" ondragover="allowDrop(event)">
+                        <div class="zone-title">🌱 Carbon Cycle</div>
+                        <div class="zone-items" id="carbon-detective"></div>
+                    </div>
+                    <div class="drop-zone" data-accepts="rock" ondrop="dropDetective(event)" ondragover="allowDrop(event)">
+                        <div class="zone-title">🪨 Rock Cycle</div>
+                        <div class="zone-items" id="rock-detective"></div>
+                    </div>
+                    <div class="drop-zone" data-accepts="oxygen" ondrop="dropDetective(event)" ondragover="allowDrop(event)">
+                        <div class="zone-title">🫁 Oxygen Cycle</div>
+                        <div class="zone-items" id="oxygen-detective"></div>
+                    </div>
+                    <div class="drop-zone" data-accepts="nitrogen" ondrop="dropDetective(event)" ondragover="allowDrop(event)">
+                        <div class="zone-title">🌾 Nitrogen Cycle</div>
+                        <div class="zone-items" id="nitrogen-detective"></div>
+                    </div>
+                </div>
+                <button class="reset-cycle-btn" onclick="resetDetectiveGame()">🔄 New Case</button>
+            </div>
+        `
+    },
+    {
+        content: `
+            <div class="slide-icon">🧪</div>
+            <h2>Matter Transformation Lab</h2>
+            <p>Create amazing matter transformations! Mix different conditions to see what happens.</p>
+            <div class="experiment-lab">
+                <h3>⚗️ Ultimate Matter Lab</h3>
+                <div class="lab-equipment">
+                    <div class="equipment-item" onclick="selectTransformation(this, 'heat')">
+                        <div class="equipment-icon">🔥</div>
+                        <div class="equipment-name">Heat Source</div>
+                        <div class="equipment-desc">Add thermal energy</div>
+                    </div>
+                    <div class="equipment-item" onclick="selectTransformation(this, 'cold')">
+                        <div class="equipment-icon">🧊</div>
+                        <div class="equipment-name">Cooling System</div>
+                        <div class="equipment-desc">Remove thermal energy</div>
+                    </div>
+                    <div class="equipment-item" onclick="selectTransformation(this, 'pressure')">
+                        <div class="equipment-icon">💪</div>
+                        <div class="equipment-name">Pressure Chamber</div>
+                        <div class="equipment-desc">Apply force</div>
+                    </div>
+                    <div class="equipment-item" onclick="selectTransformation(this, 'chemical')">
+                        <div class="equipment-icon">⚗️</div>
+                        <div class="equipment-name">Chemical Reactor</div>
+                        <div class="equipment-desc">Mix substances</div>
+                    </div>
+                </div>
+                <div class="experiment-area" id="transformation-area">
+                    <h4>🧪 Select your transformation tools!</h4>
+                    <p>Choose different equipment to transform matter</p>
+                    <div style="font-size: 3rem; margin: 20px;">💧</div>
+                    <p>Starting Material: Water</p>
+                </div>
+                <div class="experiment-result" id="transformation-result">
+                    <div class="result-title" id="transformation-title">Transformation Results</div>
+                    <div class="result-description" id="transformation-description">
+                        Your matter transformation results will appear here!
+                    </div>
+                </div>
+            </div>
+        `
+    }
+    ];
+
+let currentSlideIndex = 0;
+let sidebarOpen = false;
+let aiHelpOpen = false;
+let sidebarTouchStartX = 0;
+let sidebarTouchEndX = 0;
+
+function toggleSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const slideModal = document.getElementById('slide-modal');
+    const menuToggle = document.getElementById('menu-toggle');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    sidebarOpen = !sidebarOpen;
+    
+    if (sidebarOpen) {
+        sidebar.classList.add('open');
+        slideModal.classList.add('sidebar-open');
+        menuToggle.classList.add('sidebar-open');
+        menuToggle.innerHTML = '✕';
+        overlay.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    } else {
+        sidebar.classList.remove('open');
+        slideModal.classList.remove('sidebar-open');
+        menuToggle.classList.remove('sidebar-open');
+        menuToggle.innerHTML = '☰';
+        overlay.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+}
+
+function toggleAIHelp() {
+    const panel = document.getElementById('ai-help-panel');
+    const toggle = document.getElementById('ai-help-toggle');
+    
+    aiHelpOpen = !aiHelpOpen;
+    
+    if (aiHelpOpen) {
+        panel.classList.add('open');
+        toggle.classList.add('active');
+        toggle.innerHTML = '✕';
+    } else {
+        panel.classList.remove('open');
+        toggle.classList.remove('active');
+        toggle.innerHTML = '🤖';
+    }
+}
+
+function askAI(question) {
+    const input = document.getElementById('ai-input');
+    input.value = question;
+    sendAIMessage();
+}
+
+function sendAIMessage() {
+    const input = document.getElementById('ai-input');
+    const messages = document.getElementById('ai-chat-messages');
+    const question = input.value.trim();
+    
+    if (!question) return;
+    
+    const userMessage = document.createElement('div');
+    userMessage.className = 'ai-message user';
+    userMessage.textContent = question;
+    messages.appendChild(userMessage);
+    
+    input.value = '';
+    
+    setTimeout(() => {
+        const botMessage = document.createElement('div');
+        botMessage.className = 'ai-message bot';
+        botMessage.textContent = generateAIResponse(question);
+        messages.appendChild(botMessage);
+        messages.scrollTop = messages.scrollHeight;
+    }, 1000);
+    
+    messages.scrollTop = messages.scrollHeight;
+}
+
+function generateAIResponse(question) {
+    const responses = {
+        'explain living things': 'Living things have 7 key characteristics: Movement, Respiration, Sensitivity, Growth, Reproduction, Excretion, and Nutrition (MRS GREN). They can respond to their environment and need food, water, and air to survive! 🌱',
+        'what is diversity': 'Diversity means variety! It\'s all the different types of living things, materials, and objects in our world. Think of all the different animals, plants, and materials you see around you - that\'s diversity! 🌍',
+        'help with quiz': 'Remember the key points: Living things grow and reproduce, non-living things don\'t. Natural materials come from nature (wood, wool), man-made materials are created by humans (plastic, glass). You\'ve got this! 💪',
+        'natural materials': 'Natural materials come directly from nature - like wood from trees, cotton from plants, wool from sheep, and stone from the earth. They\'re not made by humans! 🌿',
+        'man-made materials': 'Man-made materials are created by humans, like plastic (from oil), glass (from sand), and steel (from iron). We use technology to make these! 🏭'
+    };
+    
+    const key = question.toLowerCase();
+    for (const [keyword, response] of Object.entries(responses)) {
+        if (key.includes(keyword.replace(/\s+/g, '')) || key.includes(keyword)) {
+            return response;
+        }
+    }
+    
+    return `That's a great question about diversity! Based on slide ${currentSlideIndex + 1}, I'd suggest focusing on the key concepts we've covered. Feel free to ask more specific questions! 😊`;
+}
+
+function handleAIKeyPress(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        sendAIMessage();
+    }
+}
+
+function renderSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    sidebar.innerHTML = '';
+    
+    subtopicSections.forEach(section => {
+        const headerDiv = document.createElement('div');
+        headerDiv.className = 'subtopic-section';
+        
+        const header = document.createElement('div');
+        header.className = 'subtopic-header';
+        header.textContent = section.title;
+        headerDiv.appendChild(header);
+        
+        section.subtopics.forEach(subtopic => {
+            const btn = document.createElement('button');
+            btn.className = 'subtopic-btn' + (currentSlideIndex === subtopic.slideIndex ? ' active' : '');
+            btn.textContent = subtopic.title;
+            btn.onclick = () => {
+                currentSlideIndex = subtopic.slideIndex;
+                loadSlide();
+                if (window.innerWidth <= 768) {
+                    toggleSidebar();
+                }
+            };
+            headerDiv.appendChild(btn);
+        });
+        
+        sidebar.appendChild(headerDiv);
+    });
+}
+
+function loadSlide() {
+    const slideContentEl = document.getElementById('slide-content');
+    
+    slideContentEl.innerHTML = '';
+    
+    const mainArea = document.createElement('div');
+    mainArea.className = 'main-slide-area';
+    mainArea.id = 'main-slide-area';
+    
+    const slideEl = document.createElement('div');
+    slideEl.className = 'slide active';
+    slideEl.innerHTML = slides[currentSlideIndex].content;
+    mainArea.appendChild(slideEl);
+    
+    slideContentEl.appendChild(mainArea);
+    
+    if (slides[currentSlideIndex].notes) {
+        const notesSection = document.createElement('div');
+        notesSection.className = 'notes-section';
+        
+        notesSection.innerHTML = `
+            <div class="notes-header">
+                <span>📝</span>
+                <span>Study Notes</span>
+            </div>
+            <div class="notes-content">
+                <div class="notes-text">
+                    ${slides[currentSlideIndex].notes.text}
+                </div>
+                <div class="notes-images">
+                    ${slides[currentSlideIndex].notes.images.map(img => 
+                        `<div class="bw-image">${img}</div>`
+                    ).join('')}
+                </div>
+            </div>
+        `;
+        
+        slideContentEl.appendChild(notesSection);
+    }
+    
+    updateSlideCounter();
+    updateNavigationButtons();
+    updateSlideProgress();
+    renderSidebar();
+}
+
+function updateSlideCounter() {
+    document.getElementById('slide-counter').textContent = `${currentSlideIndex + 1} / ${slides.length}`;
+}
+
+function updateNavigationButtons() {
+    document.getElementById('prev-slide-btn').disabled = currentSlideIndex === 0;
+    document.getElementById('next-slide-btn').disabled = false;
+    document.getElementById('next-slide-btn').textContent = (currentSlideIndex === slides.length - 1) ? 'Finish' : 'Next →';
+}
+
+function updateSlideProgress() {
+    const progressEl = document.getElementById('slide-progress');
+    progressEl.innerHTML = '';
+    for (let i = 0; i < slides.length; i++) {
+        const dot = document.createElement('div');
+        dot.className = 'progress-dot' + (i === currentSlideIndex ? ' active' : '');
+        progressEl.appendChild(dot);
+    }
+}
+
+function nextSlide() {
+    if (currentSlideIndex < slides.length - 1) {
+        currentSlideIndex++;
+        loadSlide();
+    } else {
+        alert('Congratulations! You have completed the Living & Non-Living Things lesson!');
+    }
+}
+
+function previousSlide() {
+    if (currentSlideIndex > 0) {
+        currentSlideIndex--;
+        loadSlide();
+    }
+}
+
+function selectQuizAnswer(button, isCorrect, slideNum) {
+    const options = button.parentElement.querySelectorAll('.quiz-option');
+    const explanation = document.getElementById(`explanation${slideNum}`);
+    
+    options.forEach(option => {
+        option.disabled = true;
+        option.style.pointerEvents = 'none';
+    });
+    
+    button.classList.add('selected');
+    
+    if (isCorrect) {
+        button.classList.add('correct');
+    } else {
+        button.classList.add('incorrect');
+        options.forEach(option => {
+            if (option.onclick.toString().includes('true')) {
+                option.classList.add('correct');
+            }
+        });
+    }
+    
+    explanation.classList.add('show');
+}
+
+let touchStartY = 0;
+let touchEndY = 0;
+
+document.addEventListener('touchstart', function(event) {
+    touchStartY = event.changedTouches[0].screenY;
+    if (sidebarOpen && event.target.closest('#sidebar')) {
+        sidebarTouchStartX = event.changedTouches[0].screenX;
+    }
+}, false);
+
+document.addEventListener('touchend', function(event) {
+    touchEndY = event.changedTouches[0].screenY;
+    if (sidebarOpen && event.target.closest('#sidebar')) {
+        sidebarTouchEndX = event.changedTouches[0].screenX;
+        handleSidebarSwipe();
+    } else {
+        handleSlideSwipe();
+    }
+}, false);
+
+function handleSlideSwipe() {
+    const swipeThreshold = 50;
+    const swipeDistance = touchEndY - touchStartY;
+    
+    if (Math.abs(swipeDistance) > swipeThreshold) {
+        if (swipeDistance > 0 && currentSlideIndex > 0) {
+            previousSlide();
+        } else if (swipeDistance < 0 && currentSlideIndex < slides.length - 1) {
+            nextSlide();
+        }
+    }
+}
+
+function handleSidebarSwipe() {
+    const swipeThreshold = 50;
+    const swipeDistance = sidebarTouchEndX - sidebarTouchStartX;
+    
+    if (swipeDistance < -swipeThreshold && sidebarOpen) {
+        toggleSidebar();
+    }
+}
+
+document.addEventListener('click', function(event) {
+    const sidebar = document.getElementById('sidebar');
+    const menuToggle = document.getElementById('menu-toggle');
+    const overlay = document.getElementById('sidebar-overlay');
+    
+    if (sidebarOpen && !sidebar.contains(event.target) && !menuToggle.contains(event.target) && event.target === overlay) {
+        if (window.innerWidth <= 768) {
+            toggleSidebar();
+        }
+    }
+});
+
+document.addEventListener('click', function(event) {
+    const aiWidget = document.querySelector('.ai-help-widget');
+    const aiPanel = document.getElementById('ai-help-panel');
+    
+    if (aiHelpOpen && !aiWidget.contains(event.target)) {
+        toggleAIHelp();
+    }
+});
+
+let lastTouchEnd = 0;
+document.addEventListener('touchend', function(event) {
+    const now = (new Date()).getTime();
+    if (now - lastTouchEnd <= 300) {
+        event.preventDefault();
+    }
+    lastTouchEnd = now;
+}, false);
+
+window.addEventListener('orientationchange', function() {
+    setTimeout(function() {
+        document.body.style.display = 'none';
+        document.body.offsetHeight;
+        document.body.style.display = '';
+        if (sidebarOpen) {
+            toggleSidebar();
+        }
+    }, 100);
+});
+
+window.onload = function() {
+    loadSlide();
+    
+    const viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport) {
+        viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover');
+    }
+};
+</script>
+
+</body>
+</html>
