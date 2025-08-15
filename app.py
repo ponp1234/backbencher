@@ -627,9 +627,12 @@ def ask_openrouter():
         }
 
         headers = {
-            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-            "Content-Type": "application/json"
+             "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+             "Content-Type": "application/json",
+             "HTTP-Referer": "https://BB.com",   # Optional, replace with your domain if applicable
+             "User-Agent": "BB/1.0"
         }
+
 
         # Make request to OpenRouter API
         response = requests.post(OPENROUTER_API_URL, json=payload, headers=headers)
