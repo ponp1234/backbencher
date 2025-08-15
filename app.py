@@ -597,7 +597,7 @@ from flask import Flask, request, jsonify
 
 
 
-OPENROUTER_API_KEY = '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'
+OPENROUTER_API_KEY = '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'
 OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions'
 MODEL = 'mistralai/mistral-7b-instruct'  # You can change this model
 
