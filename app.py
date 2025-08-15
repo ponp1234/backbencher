@@ -17,6 +17,8 @@ bcrypt = Bcrypt(app)
 login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
+
+
 # Separate database for this API
 EXECUTE_QUERY_DB_URI = 'sqlite:///dummy.db'  # Replace with API-specific DB URL
 execute_query_engine = create_engine(EXECUTE_QUERY_DB_URI, pool_pre_ping=True)
@@ -596,6 +598,8 @@ genai.configure(api_key='AIzaSyB265GIXXq5REPMHi_y_X1luKzaDFtgR6E')
 # Initialize Gemini model
 model = genai.GenerativeModel('gemini-pro')
 
+
+
 @app.route('/ask-ai', methods=['POST'])
 def ask_gemini():
     try:
@@ -637,7 +641,7 @@ def ask_gemini():
             'error': f"Server error: {str(e)}"
         }), 500
 
-@app.route('/check-with-ai', methods=['POST'])
+@app.route('/check-with-ai-gem', methods=['POST'])
 def check_gemini():
     try:
         data = request.json
@@ -687,6 +691,59 @@ def check_gemini():
             'error': f"Server error: {str(e)}"
         }), 500
 
+
+OPENROUTER_API_KEY = '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'
+OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions'
+MODEL = 'mistralai/mistral-7b-instruct'  # You can change this model
+
+@app.route('/ask-ai', methods=['POST'])
+def ask_openrouter():
+    try:
+        data = request.json
+        question = data['messages'][0]['content']
+
+        print(f"Received question: {question}")  # Debug log
+
+        prompt = f"""Please help explain this exam question and provide guidance with respect to IGCSE syllabus.
+        Question: {question}
+        Please provide:
+        1. A clear explanation of the question
+        2. Key concepts to consider
+        3. Approach to solving it
+        """
+
+        # Prepare request payload
+        payload = {
+            "model": MODEL,
+            "messages": [
+                {"role": "system", "content": "You are a helpful tutor that explains questions based on the IGCSE syllabus."},
+                {"role": "user", "content": prompt}
+            ]
+        }
+
+        headers = {
+            "Authorization": f"Bearer {OPENROUTER_API_KEY}",
+            "Content-Type": "application/json"
+        }
+
+        # Make request to OpenRouter API
+        response = requests.post(OPENROUTER_API_URL, json=payload, headers=headers)
+
+        if response.status_code == 200:
+            result = response.json()
+            ai_response = result['choices'][0]['message']['content']
+            print("API Response received")
+
+            return jsonify({'response': ai_response})
+        else:
+            print(f"OpenRouter API error: {response.text}")
+            return jsonify({
+                'error': f"OpenRouter API error: {response.text}"
+            }), response.status_code
+
+    except Exception as e:
+        print(f"Server error: {str(e)}")
+        return jsonify({'error': f"Server error: {str(e)}"}), 500
 
 @app.route('/add_todo', methods=['POST'])
 @login_required
