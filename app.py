@@ -592,66 +592,57 @@ from flask_cors import CORS
 CORS(app)
 
 
-import requests
-from flask import Flask, request, jsonify
+# Configure the Gemini API
+genai.configure(api_key='AIzaSyB265GIXXq5REPMHi_y_X1luKzaDFtgR6E')
+
+# Initialize Gemini model
+model = genai.GenerativeModel('gemini-2.5-flash')
 
 
-
-OPENROUTER_API_KEY = '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'
-OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions'
-MODEL = 'mistralai/mistral-medium-3.1'  # You can change this model
 
 @app.route('/ask-ai', methods=['POST'])
-def ask_openrouter():
+def ask_gemini():
     try:
         data = request.json
         question = data['messages'][0]['content']
-
+        
+        # Add better error handling and logging
         print(f"Received question: {question}")  # Debug log
-
-        prompt = f"""Please help explain this exam question and provide guidance with respect to IGCSE syllabus.
+        
+        # Structure the prompt
+        prompt = f"""Please help explain this exam question and provide guidance with respect to IGCSC sylabus. 
         Question: {question}
         Please provide:
         1. A clear explanation of the question
         2. Key concepts to consider
-        3. Approach to solving it
+        3. Approach to solving it 
         """
-
-        # Prepare request payload
-        payload = {
-            "model": MODEL,
-            "messages": [
-                {"role": "system", "content": "You are a helpful tutor that explains questions based on the IGCSE syllabus."},
-                {"role": "user", "content": prompt}
-            ]
-        }
-
-        headers = {
-             "Authorization": f"Bearer {OPENROUTER_API_KEY}",
-             "Content-Type": "application/json",
-             "HTTP-Referer": "https://BB.com",   # Optional, replace with your domain if applicable
-             "User-Agent": "BB/1.0"
-        }
-
-
-        # Make request to OpenRouter API
-        response = requests.post(OPENROUTER_API_URL, json=payload, headers=headers)
-
-        if response.status_code == 200:
-            result = response.json()
-            ai_response = result['choices'][0]['message']['content']
+        
+        try:
+            # Generate response using Gemini
+            response = model.generate_content(prompt)
+            
+            # Debug logging
             print("API Response received")
-
-            return jsonify({'response': ai_response})
-        else:
-            print(f"OpenRouter API error: {response.text}")
+            
             return jsonify({
-                'error': f"OpenRouter API error: {response.text}"
-            }), response.status_code
-
+                'response': response.text if hasattr(response, 'text') else str(response)
+            })
+            
+        except Exception as api_error:
+            print(f"Gemini API error: {str(api_error)}")  # Debug log
+            return jsonify({
+                'error': f"Gemini API error: {str(api_error)}"
+            }), 500
+    
     except Exception as e:
-        print(f"Server error: {str(e)}")
-        return jsonify({'error': f"Server error: {str(e)}"}), 500
+        print(f"Server error: {str(e)}")  # Debug log
+        return jsonify({
+            'error': f"Server error: {str(e)}"
+        }), 500
+
+
+
 
 @app.route('/add_todo', methods=['POST'])
 @login_required
