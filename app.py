@@ -1,4 +1,4 @@
-from flask import Flask, render_template, redirect, url_for, flash, request, session, jsonify
+from flask import Flask, render_template, redirect, url_for, flash, request, session, jsonify, abort
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
@@ -18,6 +18,31 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 
+import logging
+
+
+
+# SIMPLE logging fix - just reduce log level
+logging.getLogger('werkzeug').setLevel(logging.WARNING)
+
+# SIMPLE bot blocking - only block obvious attacks
+@app.before_request
+def simple_bot_filter():
+    """Very lightweight bot filtering"""
+    path = request.path.lower()
+    
+    # Only block the most obvious bot patterns
+    if any(pattern in path for pattern in ['/owa/', '/.env', '/wp-admin']):
+        abort(404)
+
+# Add these simple routes to handle common bot requests silently
+@app.route('/robots.txt')
+def robots():
+    return "User-agent: *\nDisallow: /"
+
+@app.route('/favicon.ico')
+def favicon():
+    return '', 204
 
 # Separate database for this API
 EXECUTE_QUERY_DB_URI = 'sqlite:///dummy.db'  # Replace with API-specific DB URL
