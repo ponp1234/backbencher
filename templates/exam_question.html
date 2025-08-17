@@ -190,11 +190,16 @@
             position: relative;
         }
 
-        .answer-options label:hover {
+        .answer-options label:hover:not(.disabled) {
             background: #e3f2fd;
             border-color: #2196f3;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(33, 150, 243, 0.2);
+        }
+
+        .answer-options label.disabled {
+            cursor: not-allowed;
+            opacity: 0.7;
         }
 
         .answer-options input[type="text"],
@@ -209,18 +214,29 @@
             background: #f8f9fa;
         }
 
-        .answer-options input[type="text"]:focus,
-        .answer-options textarea:focus {
+        .answer-options input[type="text"]:focus:not(:disabled),
+        .answer-options textarea:focus:not(:disabled) {
             border-color: #2196f3;
             outline: none;
             background: white;
             box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
         }
 
+        .answer-options input[type="text"]:disabled,
+        .answer-options textarea:disabled {
+            background: #e9ecef;
+            cursor: not-allowed;
+        }
+
         .answer-options input[type="checkbox"],
         .answer-options input[type="radio"] {
             margin-right: 12px;
             transform: scale(1.2);
+        }
+
+        .answer-options input[type="checkbox"]:disabled,
+        .answer-options input[type="radio"]:disabled {
+            cursor: not-allowed;
         }
 
         /* Button Styling */
@@ -266,12 +282,17 @@
             color: white;
         }
 
-        .submit-button:hover, .ai-button:hover, .next-button:hover, .back-button:hover {
+        .submit-button:hover:not(:disabled), 
+        .ai-button:hover:not(:disabled), 
+        .next-button:hover:not(:disabled), 
+        .back-button:hover:not(:disabled) {
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
 
-        .submit-button:disabled, .ai-button:disabled, .next-button:disabled {
+        .submit-button:disabled, 
+        .ai-button:disabled, 
+        .next-button:disabled {
             background: #cccccc;
             color: #666666;
             cursor: not-allowed;
@@ -397,7 +418,7 @@
             font-size: 0.9em;
         }
 
-        .question-btn:hover {
+        .question-btn:hover:not(:disabled) {
             background: rgba(255, 255, 255, 0.4);
         }
 
@@ -407,6 +428,23 @@
 
         .question-btn.answered {
             background: #2196f3;
+        }
+
+        .question-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Attempted Question Banner */
+        .attempted-banner {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        /* Correct Answer Highlight */
+        .correct-answer-highlight {
+            background: #e8f5e9 !important;
+            border: 2px solid #4caf50 !important;
+            box-shadow: 0 0 10px rgba(76, 175, 80, 0.3);
         }
 
         /* Responsive Design */
@@ -475,23 +513,21 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* Additional styles for answer highlighting */
-        .answer-options label {
-            transition: all 0.3s ease;
-        }
-        
-        .answer-options input:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        #answer-feedback {
-            transition: all 0.3s ease;
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
     </style>
 </head>
 
-<body>
+<body data-exam-id="{{ exam.id | default(1) }}" 
+      data-question-number="{{ question_number | default(1) }}" 
+      data-total-questions="{{ total_questions | default(0) }}"
+      data-question-type="{{ question.question_type | default('single') }}"
+      data-question-attempted="{{ 'true' if question_attempted else 'false' }}"
+      data-user-answer="{{ user_answer | tojson | e if user_answer else '' }}"
+      data-is-correct="{{ 'true' if is_correct == true else ('false' if is_correct == false else '') }}"
+      data-attempted-questions="{{ attempted_question_ids | tojson | e if attempted_question_ids else '[]' }}">
 
     <!-- Sidebar Navigation Menu -->
     <div class="sidebar">
@@ -588,13 +624,15 @@
                     {% endif %}
                 {% endif %}
                 
-                <button type="button" class="submit-button" id="sb-button" onclick="checkAnswer()">Submit</button>
-                <button type="button" class="next-button" id="next" onclick="submitAnswer()">Next</button>
-                <button type="button" class="back-button" onclick="goBack()">Back</button>
+                <div class="button-container">
+                    <button type="button" class="submit-button" id="sb-button" onclick="checkAnswer()">Submit Answer</button>
+                    <button type="button" class="next-button" id="next" onclick="submitAnswer()">Next Question</button>
+                    <button type="button" class="back-button" onclick="goBack()">Previous</button>
+                    <button type="button" class="ai-button" onclick="getAIResponse()" id="ai-button">Ask AI for Help</button>
+                </div>
             </form>
 
-            <!-- AI Assistance Button and Response Box -->
-            <button class="ai-button" onclick="getAIResponse()" id="ai-button" disabled>Ask AI for Help</button>
+            <!-- AI Assistance Response Box -->
             <div class="ai-response" id="ai-response"></div>
         </div>
     </div>
@@ -603,71 +641,203 @@
     <script>
         // Global variables for navigation - safely handle template variables
         const EXAM_DATA = {
-            totalQuestions: parseInt('{{ total_questions | default(0) }}') || 0,
-            currentQuestion: (parseInt('{{ question_number | default(1) }}') || 1) - 1, // Convert to 0-based index
-            examId: parseInt('{{ exam.id | default(1) }}') || 1
+            totalQuestions: 0,
+            currentQuestion: 0,
+            examId: 1
         };
+
+        // Initialize EXAM_DATA safely
+        try {
+            EXAM_DATA.totalQuestions = parseInt(document.querySelector('[data-total-questions]')?.dataset.totalQuestions || '0') || 0;
+            EXAM_DATA.currentQuestion = (parseInt(document.querySelector('[data-question-number]')?.dataset.questionNumber || '1') || 1) - 1;
+            EXAM_DATA.examId = parseInt(document.querySelector('[data-exam-id]')?.dataset.examId || '1') || 1;
+        } catch (e) {
+            console.error('Error initializing EXAM_DATA:', e);
+        }
 
         // Check if question is already attempted and disable form if so
         function checkQuestionStatus() {
-            const questionAttempted = {{ question_attempted | default(false) | tojson }};
-            const userAnswer = {{ user_answer | default(null) | tojson }};
-            const isCorrect = {{ is_correct | default(null) | tojson }};
+            let questionAttempted = false;
+            let userAnswer = null;
+            let isCorrect = null;
+            
+            try {
+                // Safely get template variables from data attributes
+                questionAttempted = document.body.dataset.questionAttempted === 'true';
+                
+                const userAnswerData = document.body.dataset.userAnswer;
+                if (userAnswerData && userAnswerData !== '' && userAnswerData !== 'null') {
+                    userAnswer = JSON.parse(userAnswerData);
+                }
+                
+                const isCorrectData = document.body.dataset.isCorrect;
+                if (isCorrectData && isCorrectData !== '') {
+                    isCorrect = isCorrectData === 'true';
+                }
+            } catch (e) {
+                console.error('Error parsing question status:', e);
+                console.log('Raw data:', {
+                    attempted: document.body.dataset.questionAttempted,
+                    userAnswer: document.body.dataset.userAnswer,
+                    isCorrect: document.body.dataset.isCorrect
+                });
+            }
             
             if (questionAttempted) {
-                // Disable all form inputs
-                const inputs = document.querySelectorAll('.answer-options input, .answer-options textarea');
-                inputs.forEach(input => {
-                    input.disabled = true;
-                });
+                // Show "Already Attempted" banner
+                showAttemptedBanner();
                 
-                // Restore user's previous answer
+                // Disable all form inputs but keep them visible for review
+                disableFormInputs();
+                
+                // Restore user's previous answer for review
                 if (userAnswer) {
                     restoreUserAnswer(userAnswer);
                 }
                 
-                // Show result
-                showQuestionResult(isCorrect);
+                // Show previous result if available
+                if (isCorrect !== null) {
+                    showQuestionResult(isCorrect);
+                }
                 
-                // Update button states
-                document.getElementById("sb-button").disabled = true;
-                document.getElementById("sb-button").textContent = "Already Attempted";
-                document.getElementById("ai-button").disabled = false;
-                
-                // Show "Already Attempted" message
-                const questionBox = document.querySelector('.question-box');
-                const attemptedBanner = document.createElement('div');
-                attemptedBanner.className = 'attempted-banner';
-                attemptedBanner.innerHTML = `
-                    <div style="background: #e3f2fd; padding: 10px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2196f3;">
-                        <strong>📝 Already Attempted</strong>
-                        <p>You have already attempted this question. Your answer has been saved.</p>
-                    </div>
-                `;
-                questionBox.insertBefore(attemptedBanner, questionBox.firstChild.nextSibling);
+                // Update button states for attempted questions
+                updateButtonsForAttemptedQuestion();
+            } else {
+                // For new questions, disable AI button initially and Next button
+                document.getElementById("ai-button").disabled = true;
+                document.getElementById("next").disabled = true;
             }
         }
         
-        function restoreUserAnswer(userAnswer) {
-            const questionType = '{{ question.question_type | default("single") }}';
+        function showAttemptedBanner() {
+            const questionBox = document.querySelector('.question-box');
+            const attemptedBanner = document.createElement('div');
+            attemptedBanner.className = 'attempted-banner';
+            attemptedBanner.innerHTML = `
+                <div style="background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%); 
+                           padding: 15px; border-radius: 12px; margin-bottom: 25px; 
+                           border-left: 5px solid #2196f3; box-shadow: 0 3px 10px rgba(33, 150, 243, 0.2);">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 20px;">📝</span>
+                        <div>
+                            <strong style="color: #1976d2; font-size: 1.1em;">Already Attempted</strong>
+                            <p style="margin: 5px 0 0 0; color: #424242;">
+                                You have already submitted your answer for this question. You can review your response and continue to the next question.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `;
             
-            if (questionType === 'single' && userAnswer.answer) {
-                const radio = document.querySelector(`input[value="${userAnswer.answer}"]`);
-                if (radio) radio.checked = true;
-            } else if (questionType === 'multiple' && userAnswer.answers) {
-                userAnswer.answers.forEach(answer => {
-                    const checkbox = document.querySelector(`input[value="${answer}"]`);
-                    if (checkbox) checkbox.checked = true;
-                });
-            } else if (questionType === 'fill_in_the_blank' && userAnswer.answers) {
-                userAnswer.answers.forEach((answer, index) => {
-                    const input = document.querySelector(`input[name="blank${index + 1}"]`);
-                    if (input) input.value = answer;
-                });
-            } else if (questionType === 'textbox' && userAnswer.textbox_answer) {
-                const textarea = document.getElementById('textbox_answer');
-                if (textarea) textarea.value = userAnswer.textbox_answer;
+            // Insert after question header
+            const questionHeader = document.querySelector('.question-header');
+            questionHeader.parentNode.insertBefore(attemptedBanner, questionHeader.nextSibling);
+        }
+        
+        function disableFormInputs() {
+            const inputs = document.querySelectorAll('.answer-options input, .answer-options textarea');
+            inputs.forEach(input => {
+                input.disabled = true;
+                // Add visual indicator for disabled state
+                const label = input.closest('label');
+                if (label) {
+                    label.classList.add('disabled');
+                }
+            });
+        }
+        
+        function updateButtonsForAttemptedQuestion() {
+            const submitButton = document.getElementById("sb-button");
+            const nextButton = document.getElementById("next");
+            const aiButton = document.getElementById("ai-button");
+            
+            // Disable submit button and change text
+            submitButton.disabled = true;
+            submitButton.textContent = "Already Submitted";
+            submitButton.style.background = "#95a5a6";
+            
+            // Enable next button for navigation
+            nextButton.disabled = false;
+            nextButton.textContent = "Continue to Next";
+            
+            // Enable AI button for help/review
+            aiButton.disabled = false;
+            aiButton.textContent = "Get AI Help";
+        }
+        
+        function restoreUserAnswer(userAnswer) {
+            let questionType = 'single';
+            try {
+                questionType = document.querySelector('[data-question-type]')?.dataset.questionType || 'single';
+            } catch (e) {
+                console.error('Error getting question type:', e);
             }
+            
+            try {
+                if (questionType === 'single' && userAnswer.answer) {
+                    const radio = document.querySelector(`input[value="${userAnswer.answer}"]`);
+                    if (radio) {
+                        radio.checked = true;
+                        // Highlight the selected answer
+                        radio.closest('label').style.background = '#e8f4fd';
+                        radio.closest('label').style.borderColor = '#2196f3';
+                    }
+                } else if (questionType === 'multiple' && userAnswer.answers) {
+                    userAnswer.answers.forEach(answer => {
+                        const checkbox = document.querySelector(`input[value="${answer}"]`);
+                        if (checkbox) {
+                            checkbox.checked = true;
+                            // Highlight selected answers
+                            checkbox.closest('label').style.background = '#e8f4fd';
+                            checkbox.closest('label').style.borderColor = '#2196f3';
+                        }
+                    });
+                } else if (questionType === 'fill_in_the_blank' && userAnswer.answers) {
+                    userAnswer.answers.forEach((answer, index) => {
+                        const input = document.querySelector(`input[name="blank${index + 1}"]`);
+                        if (input) {
+                            input.value = answer;
+                        }
+                    });
+                } else if (questionType === 'textbox' && userAnswer.textbox_answer) {
+                    const textarea = document.getElementById('textbox_answer');
+                    if (textarea) {
+                        textarea.value = userAnswer.textbox_answer;
+                    }
+                }
+            } catch (error) {
+                console.error('Error restoring user answer:', error);
+            }
+        }
+        
+        function showQuestionResult(isCorrect) {
+            // Create or update feedback element
+            let feedbackDiv = document.getElementById('answer-feedback');
+            if (!feedbackDiv) {
+                feedbackDiv = document.createElement('div');
+                feedbackDiv.id = 'answer-feedback';
+                document.querySelector('.question-box').appendChild(feedbackDiv);
+            }
+
+            const resultIcon = isCorrect ? '✅' : '❌';
+            const resultText = isCorrect ? 'Correct!' : 'Incorrect';
+            const resultColor = isCorrect ? '#4caf50' : '#f44336';
+            const bgColor = isCorrect ? '#e8f5e9' : '#ffebee';
+
+            feedbackDiv.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px; 
+                           padding: 15px; margin-top: 20px; border-radius: 12px;
+                           background: ${bgColor}; border: 2px solid ${resultColor};
+                           animation: fadeIn 0.5s ease-out;">
+                    <span style="font-size: 24px;">${resultIcon}</span>
+                    <div>
+                        <strong style="color: ${resultColor}; font-size: 1.2em;">${resultText}</strong>
+                        <p style="margin: 5px 0 0 0; color: #555;">
+                            ${isCorrect ? 'Great job! Your answer was correct.' : 'Your answer was not correct, but you can review it here.'}
+                        </p>
+                    </div>
+                </div>
+            `;
         }
         
         // Initialize on page load
@@ -680,10 +850,21 @@
         // Generate question navigation buttons
         function generateQuestionNavigation() {
             const grid = document.getElementById('questionGrid');
+            if (!grid) return;
+            
             grid.innerHTML = '';
             
-            // Get attempted question IDs from template variable
-            const attemptedQuestions = {{ attempted_question_ids | default([]) | tojson }};
+            // Get attempted question IDs from data attribute
+            let attemptedQuestions = [];
+            try {
+                const attemptedData = document.querySelector('[data-attempted-questions]')?.dataset.attemptedQuestions;
+                if (attemptedData) {
+                    attemptedQuestions = JSON.parse(attemptedData);
+                }
+            } catch (e) {
+                console.error('Error parsing attempted questions:', e);
+                attemptedQuestions = [];
+            }
             
             for (let i = 0; i < EXAM_DATA.totalQuestions; i++) {
                 const btn = document.createElement('button');
@@ -695,19 +876,15 @@
                 // Check if this question has been attempted
                 if (attemptedQuestions.includes(questionId)) {
                     btn.classList.add('answered');
-                    btn.onclick = () => goToQuestion(i + 1); // Allow navigation to answered questions
+                    btn.title = 'Question attempted - Click to review';
                 } else {
-                    // Only allow navigation to current or previous questions
-                    if (i + 1 <= EXAM_DATA.currentQuestion) {
-                        btn.onclick = () => goToQuestion(i + 1);
-                    } else {
-                        btn.disabled = true;
-                        btn.style.opacity = '0.5';
-                        btn.style.cursor = 'not-allowed';
-                    }
+                    btn.title = `Question ${questionId}`;
                 }
                 
-                if (i === EXAM_DATA.currentQuestion - 1) {
+                // Always allow navigation to any question for review purposes
+                btn.onclick = () => goToQuestion(i + 1);
+                
+                if (i === EXAM_DATA.currentQuestion) {
                     btn.classList.add('current');
                 }
                 
@@ -728,15 +905,24 @@
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const seconds = String(now.getSeconds()).padStart(2, '0');
-            document.getElementById("current-time").textContent = `Time: ${hours}:${minutes}:${seconds}`;
+            const timeElement = document.getElementById("current-time");
+            if (timeElement) {
+                timeElement.textContent = `Time: ${hours}:${minutes}:${seconds}`;
+            }
         }
         setInterval(updateTime, 1000);
 
         // Submit answer functionality
         async function submitAnswer() {
-            const question = document.getElementById('question-text').textContent;
+            const question = document.getElementById('question-text')?.textContent || '';
             const form = document.querySelector('.answer-options');
-            const questionType = '{{ question.question_type | default("single") }}';
+            let questionType = 'single';
+            
+            try {
+                questionType = document.querySelector('[data-question-type]')?.dataset.questionType || 'single';
+            } catch (e) {
+                console.error('Error getting question type:', e);
+            }
 
             let payload = { question };
 
@@ -754,10 +940,20 @@
                 } else if (questionType === "single") {
                     const selectedOption = form.querySelector('input[type="radio"]:checked');
                     payload.answer = selectedOption ? selectedOption.value : null;
+                } else if (questionType === "textbox") {
+                    const textAnswer = document.getElementById('textbox_answer');
+                    payload.textbox_answer = textAnswer ? textAnswer.value.trim() : '';
                 }
 
-                const examId = '{{ exam.id | default(1) }}';
-                const questionNumber = '{{ question_number | default(1) }}';
+                let examId = '1';
+                let questionNumber = '1';
+                
+                try {
+                    examId = document.querySelector('[data-exam-id]')?.dataset.examId || '1';
+                    questionNumber = document.querySelector('[data-question-number]')?.dataset.questionNumber || '1';
+                } catch (e) {
+                    console.error('Error getting exam data:', e);
+                }
                 
                 const response = await fetch(`/exam/${examId}/${questionNumber}`, {
                     method: "POST",
@@ -790,7 +986,7 @@
             const form = document.querySelector('.answer-options');
             
             responseBox.style.display = 'block';
-            responseBox.textContent = 'Loading AI response...';
+            responseBox.innerHTML = '<div style="text-align: center; padding: 20px;"><div class="loading"></div> Loading AI response...</div>';
 
             let answerOptions = {};
             
@@ -813,6 +1009,10 @@
                     text: label.textContent.trim()
                 }));
             }
+            else if (form.querySelector('textarea')) {
+                answerOptions.type = 'textbox';
+                answerOptions.description = 'Open-ended text answer';
+            }
 
             try {
                 const prompt = {
@@ -820,11 +1020,14 @@
                     questionType: answerOptions.type,
                     options: answerOptions.type === 'fill_in_the_blank' ? 
                             `Fill in the blank question with ${answerOptions.blanks} blank(s)` :
+                            answerOptions.type === 'textbox' ? 
+                            'Open-ended text answer question' :
                             answerOptions.options.map(opt => opt.text).join('\n'),
                     request: "Please analyze this question and provide:\n" +
-                            "1. The correct answer\n" +
+                            "1. The correct answer or approach\n" +
                             "2. A detailed explanation of why it's correct\n" +
-                            "3. Key concepts related to this question"
+                            "3. Key concepts related to this question\n" +
+                            "4. Study tips for this topic"
                 };
 
                 const response = await fetch('/ask-ai', {
@@ -853,27 +1056,33 @@
                 
                 responseBox.innerHTML = `
                     <div class="ai-response-content">
-                        ${data.response
-                            .replace(/\n\n/g, '</p><p>')
-                            .replace(/\n/g, '<br>')
-                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                            .replace(/^1\./m, '<strong>Correct Answer:</strong>')
-                            .replace(/^2\./m, '<strong>Explanation:</strong>')
-                            .replace(/^3\./m, '<strong>Key Concepts:</strong>')}
+                        <h4 style="color: #2196f3; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                            🤖 AI Assistant Response
+                        </h4>
+                        <div style="line-height: 1.6;">
+                            ${data.response
+                                .replace(/\n\n/g, '</p><p>')
+                                .replace(/\n/g, '<br>')
+                                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                .replace(/^1\./m, '<strong style="color: #4caf50;">✓ Correct Answer:</strong>')
+                                .replace(/^2\./m, '<strong style="color: #2196f3;">📚 Explanation:</strong>')
+                                .replace(/^3\./m, '<strong style="color: #ff9800;">🎯 Key Concepts:</strong>')
+                                .replace(/^4\./m, '<strong style="color: #9c27b0;">💡 Study Tips:</strong>')}
+                        </div>
                     </div>
                     <div class="ai-hints" style="margin-top: 15px; font-size: 0.9em; color: #666;">
-                        <p>Use this information to understand the concept better. Try to answer yourself before looking at the correct answer.</p>
+                        <p>💡 <strong>Tip:</strong> Use this information to understand the concept better. The goal is learning, not just getting the right answer!</p>
                     </div>
                 `;
                 
             } catch (error) {
                 console.error('AI Response Error:', error);
                 responseBox.innerHTML = `
-                    <div class="error-message" style="color: #d32f2f; padding: 10px; background: #fde7e7; border-radius: 4px;">
-                        <strong>Error:</strong> ${error.message}
+                    <div class="error-message" style="color: #d32f2f; padding: 15px; background: #fde7e7; border-radius: 8px; border-left: 4px solid #f44336;">
+                        <strong>❌ Error:</strong> ${error.message}
                         <button onclick="getAIResponse()" 
-                                style="margin-left: 10px; padding: 5px 10px; background: #d32f2f; color: white; border: none; border-radius: 3px; cursor: pointer;">
-                            Try Again
+                                style="margin-left: 10px; padding: 8px 15px; background: #d32f2f; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                            🔄 Try Again
                         </button>
                     </div>
                 `;
@@ -884,15 +1093,32 @@
         async function getAICheck() {
             const question = document.getElementById('question-text').textContent;
             const responseBox = document.getElementById('ai-response');
+            const userAnswer = document.getElementById('textbox_answer').value.trim();
+            
+            if (!userAnswer) {
+                responseBox.style.display = 'block';
+                responseBox.innerHTML = `
+                    <div class="error-message" style="color: #ff9800; padding: 15px; background: #fff3e0; border-radius: 8px; border-left: 4px solid #ff9800;">
+                        <strong>⚠️ No Answer Provided</strong>
+                        <p>Please enter your answer in the text box before asking for AI feedback.</p>
+                    </div>
+                `;
+                return;
+            }
             
             responseBox.style.display = 'block';
-            responseBox.textContent = 'Loading AI response...';
+            responseBox.innerHTML = '<div style="text-align: center; padding: 20px;"><div class="loading"></div> Analyzing your answer...</div>';
 
             try {
                 const prompt = {
                     question: question,
                     questionType: "textbox",
-                    useranswer: document.getElementById('textbox_answer').value,      
+                    userAnswer: userAnswer,
+                    request: "Please analyze the user's answer and provide:\n" +
+                            "1. Assessment of the answer's accuracy and completeness\n" +
+                            "2. What the user got right\n" +
+                            "3. Areas for improvement or missing points\n" +
+                            "4. Suggestions for a better answer"
                 };
 
                 const response = await fetch('/check-with-ai', {
@@ -923,24 +1149,33 @@
                 
                 responseBox.innerHTML = `
                     <div class="ai-response-content">
-                        ${data.response
-                            .replace(/\n\n/g, '</p><p>')
-                            .replace(/\n/g, '<br>')
-                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}
+                        <h4 style="color: #2196f3; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                            🤖 AI Answer Analysis
+                        </h4>
+                        <div style="line-height: 1.6;">
+                            ${data.response
+                                .replace(/\n\n/g, '</p><p>')
+                                .replace(/\n/g, '<br>')
+                                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                                .replace(/^1\./m, '<strong style="color: #4caf50;">📊 Assessment:</strong>')
+                                .replace(/^2\./m, '<strong style="color: #2196f3;">✅ Correct Points:</strong>')
+                                .replace(/^3\./m, '<strong style="color: #ff9800;">🎯 Areas for Improvement:</strong>')
+                                .replace(/^4\./m, '<strong style="color: #9c27b0;">💡 Suggestions:</strong>')}
+                        </div>
                     </div>
                     <div class="ai-hints" style="margin-top: 15px; font-size: 0.9em; color: #666;">
-                        <p>Use this information to understand the concept better.</p>
+                        <p>💡 <strong>Remember:</strong> This feedback is to help you learn and improve your understanding of the topic.</p>
                     </div>
                 `;
                 
             } catch (error) {
                 console.error('AI Response Error:', error);
                 responseBox.innerHTML = `
-                    <div class="error-message" style="color: #d32f2f; padding: 10px; background: #fde7e7; border-radius: 4px;">
-                        <strong>Error:</strong> ${error.message}
+                    <div class="error-message" style="color: #d32f2f; padding: 15px; background: #fde7e7; border-radius: 8px; border-left: 4px solid #f44336;">
+                        <strong>❌ Error:</strong> ${error.message}
                         <button onclick="getAICheck()" 
-                                style="margin-left: 10px; padding: 5px 10px; background: #d32f2f; color: white; border: none; border-radius: 3px; cursor: pointer;">
-                            Try Again
+                                style="margin-left: 10px; padding: 8px 15px; background: #d32f2f; color: white; border: none; border-radius: 6px; cursor: pointer;">
+                            🔄 Try Again
                         </button>
                     </div>
                 `;
@@ -949,12 +1184,31 @@
 
         // Check answer functionality
         async function checkAnswer() {
-            document.getElementById("ai-button").disabled = false;
-            document.getElementById("sb-button").disabled = true;
-            document.getElementById("next").disabled = false;
+            // Check if question is already attempted
+            let questionAttempted = false;
+            try {
+                questionAttempted = document.querySelector('[data-question-attempted]')?.dataset.questionAttempted === 'true';
+            } catch (e) {
+                console.error('Error checking question status:', e);
+            }
+            
+            if (questionAttempted) {
+                alert("You have already attempted this question. You can review your answer and continue to the next question.");
+                return;
+            }
 
             const form = document.querySelector('.answer-options');
             const textboxAnswer = document.getElementById('textbox_answer');
+            
+            // Validate that an answer is provided
+            if (!validateAnswer()) {
+                alert("Please provide an answer before submitting.");
+                return;
+            }
+
+            // Enable navigation buttons after checking
+            document.getElementById("ai-button").disabled = false;
+            document.getElementById("next").disabled = false;
             
             if (!textboxAnswer) {
                 const question = document.querySelector('.question-box');
@@ -970,11 +1224,15 @@
                 if (!feedbackDiv) {
                     feedbackDiv = document.createElement('div');
                     feedbackDiv.id = 'answer-feedback';
-                    feedbackDiv.style.padding = '15px';
-                    feedbackDiv.style.marginTop = '15px';
-                    feedbackDiv.style.borderRadius = '5px';
                     question.appendChild(feedbackDiv);
                 }
+
+                // Show loading state
+                feedbackDiv.innerHTML = `
+                    <div style="text-align: center; padding: 15px; background: #f5f5f5; border-radius: 8px; margin-top: 15px;">
+                        <div class="loading"></div> Checking your answer...
+                    </div>
+                `;
 
                 try {
                     // Collect user answers based on question type
@@ -1017,42 +1275,91 @@
                     const result = await response.json();
                     isCorrect = result.isCorrect;
 
-                    // Display feedback
+                    // Display feedback with enhanced styling
+                    const resultIcon = isCorrect ? '🎉' : '📝';
+                    const resultText = isCorrect ? 'Excellent!' : 'Not Quite Right';
+                    const resultColor = isCorrect ? '#4caf50' : '#ff9800';
+                    const bgColor = isCorrect ? '#e8f5e9' : '#fff3e0';
+
                     feedbackDiv.innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <span style="font-size: 24px;">${isCorrect ? '✓' : '✗'}</span>
-                            <span style="font-weight: bold; color: ${isCorrect ? '#4caf50' : '#f44336'}">
-                                ${isCorrect ? 'Correct!' : 'Incorrect!'}</span>
+                        <div style="background: ${bgColor}; border: 2px solid ${resultColor}; 
+                                   border-radius: 12px; padding: 20px; margin-top: 20px;
+                                   animation: fadeIn 0.5s ease-out;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                                <span style="font-size: 28px;">${resultIcon}</span>
+                                <div>
+                                    <h3 style="color: ${resultColor}; margin: 0; font-size: 1.3em;">${resultText}</h3>
+                                    <p style="margin: 5px 0 0 0; color: #666; font-size: 1em;">
+                                        ${isCorrect ? 
+                                            'Your answer is correct! Great job understanding this concept.' : 
+                                            'Your answer needs some work, but that\'s okay - learning is a process!'}
+                                    </p>
+                                </div>
+                            </div>
+                            ${result.explanation ? `<p style="margin-top: 15px; color: #555; font-size: 1em; line-height: 1.5; padding: 10px; background: rgba(255,255,255,0.5); border-radius: 8px;">${result.explanation}</p>` : ''}
                         </div>
-                        <p style="margin-top: 10px;">${result.explanation || ''}</p>
                     `;
-                    feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
-                    feedbackDiv.style.border = `1px solid ${isCorrect ? '#4caf50' : '#f44336'}`;
 
                     // Disable form inputs after checking
-                    const inputs = form.querySelectorAll('input');
-                    inputs.forEach(input => input.disabled = true);
+                    disableFormInputs();
 
-                    // Style the correct answer(s)
+                    // Disable submit button after use
+                    const submitButton = document.getElementById("sb-button");
+                    submitButton.disabled = true;
+                    submitButton.textContent = "Answer Submitted";
+
+                    // Style the correct answer(s) if user was wrong
                     if (!isCorrect && result.correctAnswer) {
-                        highlightCorrectAnswer(result.correctAnswer);
+                        setTimeout(() => highlightCorrectAnswer(result.correctAnswer), 1000);
                     }
 
                 } catch (error) {
                     console.error('Error checking answer:', error);
                     feedbackDiv.innerHTML = `
-                        <div style="color: #f44336;">
-                            <strong>Error checking answer. Please try again.</strong>
+                        <div style="color: #f44336; background: #ffebee; border: 2px solid #f44336;
+                                   border-radius: 8px; padding: 15px; margin-top: 15px;">
+                            <strong>❌ Error checking answer.</strong>
+                            <p style="margin: 5px 0 0 0;">Please try again or continue to the next question.</p>
                         </div>
                     `;
-                    feedbackDiv.style.backgroundColor = '#ffebee';
-                    feedbackDiv.style.border = '1px solid #f44336';
                 }
                 
             } else {
                 // For textbox questions, use AI check
                 getAICheck();
+                // Also disable submit button for textbox questions
+                const submitButton = document.getElementById("sb-button");
+                submitButton.disabled = true;
+                submitButton.textContent = "Answer Submitted";
+                
+                // Disable the textbox
+                textboxAnswer.disabled = true;
             }
+        }
+
+        // Validate that user has provided an answer
+        function validateAnswer() {
+            const form = document.querySelector('.answer-options');
+            let questionType = 'single';
+            
+            try {
+                questionType = document.querySelector('[data-question-type]')?.dataset.questionType || 'single';
+            } catch (e) {
+                console.error('Error getting question type:', e);
+            }
+
+            if (questionType === 'textbox') {
+                const textarea = document.getElementById('textbox_answer');
+                return textarea && textarea.value.trim() !== '';
+            } else if (questionType === 'fill_in_the_blank') {
+                const inputs = form.querySelectorAll('input[type="text"]');
+                return Array.from(inputs).every(input => input.value.trim() !== '');
+            } else if (questionType === 'multiple') {
+                return form.querySelector('input[type="checkbox"]:checked') !== null;
+            } else if (questionType === 'single') {
+                return form.querySelector('input[type="radio"]:checked') !== null;
+            }
+            return true;
         }
 
         // Helper function to highlight correct answer
@@ -1065,10 +1372,8 @@
                     const input = form.querySelector(`input[value="${answer}"]`);
                     if (input) {
                         const label = input.closest('label');
-                        label.style.backgroundColor = '#e8f5e9';
-                        label.style.padding = '5px';
-                        label.style.borderRadius = '3px';
-                        label.style.border = '1px solid #4caf50';
+                        label.classList.add('correct-answer-highlight');
+                        label.innerHTML = `<span style="color: #4caf50;">✓</span> ${label.textContent}`;
                     }
                 });
             } else {
@@ -1076,10 +1381,8 @@
                 const input = form.querySelector(`input[value="${correctAnswer}"]`);
                 if (input) {
                     const label = input.closest('label');
-                    label.style.backgroundColor = '#e8f5e9';
-                    label.style.padding = '5px';
-                    label.style.borderRadius = '3px';
-                    label.style.border = '1px solid #4caf50';
+                    label.classList.add('correct-answer-highlight');
+                    label.innerHTML = `<span style="color: #4caf50;">✓</span> ${label.textContent}`;
                 }
             }
         }
