@@ -259,7 +259,7 @@ def privacy():
 
 
 @app.route('/t4')
-def privacy():
+def practise():
     return render_template('p4st31.html')
 
 @app.route("/login", methods=['GET', 'POST'])
