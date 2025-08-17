@@ -104,7 +104,7 @@
         .progress-bar-fill {
             height: 100%;
             background: linear-gradient(90deg, #4caf50 0%, #2196f3 100%);
-            width: {{ (question_number / total_questions) * 100 }}%;
+            width: 0%;
             transition: width 0.5s ease;
             border-radius: 6px;
         }
@@ -525,7 +525,7 @@
       data-total-questions="{{ total_questions | default(0) }}"
       data-question-type="{{ question.question_type | default('single') }}"
       data-question-attempted="{{ 'true' if question_attempted else 'false' }}"
-     data-user-answer='{{ user_answer | tojson | safe if user_answer else "" }}'
+      data-user-answer="{{ user_answer | tojson | e if user_answer else '' }}"
       data-is-correct="{{ 'true' if is_correct == true else ('false' if is_correct == false else '') }}"
       data-attempted-questions="{{ attempted_question_ids | tojson | e if attempted_question_ids else '[]' }}">
 
@@ -651,8 +651,23 @@
             EXAM_DATA.totalQuestions = parseInt(document.body.dataset.totalQuestions || '0') || 0;
             EXAM_DATA.currentQuestion = (parseInt(document.body.dataset.questionNumber || '1') || 1) - 1;
             EXAM_DATA.examId = parseInt(document.body.dataset.examId || '1') || 1;
+            
+            // Update progress bar
+            updateProgressBar();
         } catch (e) {
             console.error('Error initializing EXAM_DATA:', e);
+        }
+        
+        // Function to update progress bar
+        function updateProgressBar() {
+            const currentQuestion = parseInt(document.body.dataset.questionNumber || '1');
+            const totalQuestions = parseInt(document.body.dataset.totalQuestions || '1');
+            const progressPercent = (currentQuestion / totalQuestions) * 100;
+            
+            const progressFill = document.querySelector('.progress-bar-fill');
+            if (progressFill) {
+                progressFill.style.width = `${progressPercent}%`;
+            }
         }
 
         // Check if question is already attempted and disable form if so
@@ -663,17 +678,37 @@
             
             try {
                 // Safely get template variables from data attributes
-                questionAttempted = document.body.dataset.questionAttempted === 'true';
+                const attemptedData = document.body.dataset.questionAttempted;
+                questionAttempted = attemptedData === 'true';
                 
                 const userAnswerData = document.body.dataset.userAnswer;
-                if (userAnswerData && userAnswerData !== '' && userAnswerData !== 'null') {
-                    userAnswer = JSON.parse(userAnswerData);
+                console.log('Raw userAnswer data:', userAnswerData);
+                
+                // Check if userAnswer looks like template syntax (not processed)
+                if (userAnswerData && 
+                    userAnswerData !== '' && 
+                    userAnswerData !== 'null' && 
+                    !userAnswerData.includes('{{') && 
+                    !userAnswerData.includes('}}')) {
+                    try {
+                        userAnswer = JSON.parse(userAnswerData);
+                    } catch (parseError) {
+                        console.log('Could not parse user answer, treating as string:', userAnswerData);
+                        userAnswer = userAnswerData;
+                    }
                 }
                 
                 const isCorrectData = document.body.dataset.isCorrect;
-                if (isCorrectData && isCorrectData !== '') {
+                if (isCorrectData && isCorrectData !== '' && !isCorrectData.includes('{{')) {
                     isCorrect = isCorrectData === 'true';
                 }
+                
+                console.log('Parsed question status:', {
+                    attempted: questionAttempted,
+                    userAnswer: userAnswer,
+                    isCorrect: isCorrect
+                });
+                
             } catch (e) {
                 console.error('Error parsing question status:', e);
                 console.log('Raw data:', {
@@ -681,6 +716,10 @@
                     userAnswer: document.body.dataset.userAnswer,
                     isCorrect: document.body.dataset.isCorrect
                 });
+                // Set defaults on error
+                questionAttempted = false;
+                userAnswer = null;
+                isCorrect = null;
             }
             
             if (questionAttempted) {
@@ -697,7 +736,7 @@
                 
                 // Show previous result if available
                 if (isCorrect !== null) {
-                    showQuestionResult(isCorrect);
+                    showQuestionResult(isCorrect, userAnswer);
                 }
                 
                 // Update button states for attempted questions
@@ -756,9 +795,18 @@
             submitButton.textContent = "Already Submitted";
             submitButton.style.background = "#95a5a6";
             
-            // Enable next button for navigation - use submitAnswer for navigation
+            // Check if this is the last question
+            const currentQuestionNum = parseInt(document.body.dataset.questionNumber || '1');
+            const totalQuestions = parseInt(document.body.dataset.totalQuestions || '1');
+            
+            // Enable next button for navigation
             nextButton.disabled = false;
-            nextButton.textContent = "Continue to Next";
+            if (currentQuestionNum >= totalQuestions) {
+                nextButton.textContent = "Finish Exam";
+                nextButton.style.background = "linear-gradient(135deg, #4caf50 0%, #45a049 100%)";
+            } else {
+                nextButton.textContent = "Continue to Next";
+            }
             nextButton.onclick = function() {
                 goToNextQuestion();
             };
@@ -778,8 +826,9 @@
                 window.location.href = `/exam/${examId}/${currentQuestionNum + 1}`;
             } else {
                 // If this is the last question, go to exam summary
-                alert("You have completed all questions! Redirecting to exam summary...");
-                window.location.href = `/exam_summary/${examId}`;
+                if (confirm("You have completed all questions! Click OK to finish the exam and view your results.")) {
+                    window.location.href = `/exam_summary/${examId}`;
+                }
             }
         }
         
@@ -919,8 +968,26 @@
         document.addEventListener('DOMContentLoaded', function() {
             generateQuestionNavigation();
             updateTime();
+            updateProgressBar(); // Update progress bar on load
             checkQuestionStatus(); // Check if question was already attempted
+            updateNextButtonText(); // Update next button text based on question position
         });
+        
+        // Function to update next button text based on question position
+        function updateNextButtonText() {
+            const currentQuestionNum = parseInt(document.body.dataset.questionNumber || '1');
+            const totalQuestions = parseInt(document.body.dataset.totalQuestions || '1');
+            const nextButton = document.getElementById("next");
+            
+            if (nextButton && !nextButton.disabled) {
+                if (currentQuestionNum >= totalQuestions) {
+                    nextButton.textContent = "Finish Exam";
+                    nextButton.style.background = "linear-gradient(135deg, #4caf50 0%, #45a049 100%)";
+                } else {
+                    nextButton.textContent = "Next Question";
+                }
+            }
+        }
 
         // Generate question navigation buttons
         function generateQuestionNavigation() {
@@ -1351,17 +1418,36 @@
                     const result = await response.json();
                     isCorrect = result.isCorrect;
 
-                    // Display feedback with enhanced styling
+                    // Display feedback with enhanced styling and user's answer
                     const resultIcon = isCorrect ? '🎉' : '📝';
                     const resultText = isCorrect ? 'Excellent!' : 'Not Quite Right';
                     const resultColor = isCorrect ? '#4caf50' : '#ff9800';
                     const bgColor = isCorrect ? '#e8f5e9' : '#fff3e0';
 
+                    // Get user's submitted answers for display
+                    let userSubmittedAnswer = '';
+                    if (questionType === 'fill_in_the_blank') {
+                        const inputs = form.querySelectorAll('input[type="text"]');
+                        const answers = Array.from(inputs).map((input, index) => 
+                            `<div><strong>Blank ${index + 1}:</strong> ${input.value.trim()}</div>`
+                        ).join('');
+                        userSubmittedAnswer = answers;
+                    } else if (questionType === 'multiple') {
+                        const selected = Array.from(form.querySelectorAll('input[type="checkbox"]:checked'))
+                            .map(cb => cb.closest('label').textContent.trim());
+                        userSubmittedAnswer = `<strong>Selected:</strong> ${selected.join(', ')}`;
+                    } else if (questionType === 'single') {
+                        const selected = form.querySelector('input[type="radio"]:checked');
+                        if (selected) {
+                            userSubmittedAnswer = `<strong>Selected:</strong> ${selected.closest('label').textContent.trim()}`;
+                        }
+                    }
+
                     feedbackDiv.innerHTML = `
                         <div style="background: ${bgColor}; border: 2px solid ${resultColor}; 
                                    border-radius: 12px; padding: 20px; margin-top: 20px;
                                    animation: fadeIn 0.5s ease-out;">
-                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 10px;">
+                            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
                                 <span style="font-size: 28px;">${resultIcon}</span>
                                 <div>
                                     <h3 style="color: ${resultColor}; margin: 0; font-size: 1.3em;">${resultText}</h3>
@@ -1372,17 +1458,45 @@
                                     </p>
                                 </div>
                             </div>
-                            ${result.explanation ? `<p style="margin-top: 15px; color: #555; font-size: 1em; line-height: 1.5; padding: 10px; background: rgba(255,255,255,0.5); border-radius: 8px;">${result.explanation}</p>` : ''}
+                            ${userSubmittedAnswer ? `
+                                <div style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.7); border-radius: 8px; border-left: 3px solid #2196f3;">
+                                    <div style="color: #2196f3; font-weight: 600; margin-bottom: 5px;">Your Submitted Answer:</div>
+                                    <div style="color: #555;">${userSubmittedAnswer}</div>
+                                </div>
+                            ` : ''}
+                            ${result.explanation ? `
+                                <div style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.5); border-radius: 8px;">
+                                    <div style="color: #333; font-weight: 600; margin-bottom: 5px;">Explanation:</div>
+                                    <div style="color: #555; line-height: 1.5;">${result.explanation}</div>
+                                </div>
+                            ` : ''}
                         </div>
                     `;
 
                     // Disable form inputs after checking
                     disableFormInputs();
 
-                    // Disable submit button after use
+                    // Disable submit button after use and enable next button
                     const submitButton = document.getElementById("sb-button");
+                    const nextButton = document.getElementById("next");
+                    
                     submitButton.disabled = true;
                     submitButton.textContent = "Answer Submitted";
+                    
+                    // Check if this is the last question
+                    const currentQuestionNum = parseInt(document.body.dataset.questionNumber || '1');
+                    const totalQuestions = parseInt(document.body.dataset.totalQuestions || '1');
+                    
+                    nextButton.disabled = false;
+                    if (currentQuestionNum >= totalQuestions) {
+                        nextButton.textContent = "Finish Exam";
+                        nextButton.style.background = "linear-gradient(135deg, #4caf50 0%, #45a049 100%)";
+                    } else {
+                        nextButton.textContent = "Continue to Next";
+                    }
+                    nextButton.onclick = function() {
+                        goToNextQuestion();
+                    };
 
                     // Style the correct answer(s) if user was wrong
                     if (!isCorrect && result.correctAnswer) {
@@ -1403,13 +1517,57 @@
             } else {
                 // For textbox questions, use AI check
                 getAICheck();
-                // Also disable submit button for textbox questions
+                // Also disable submit button for textbox questions and enable next
                 const submitButton = document.getElementById("sb-button");
+                const nextButton = document.getElementById("next");
+                
                 submitButton.disabled = true;
                 submitButton.textContent = "Answer Submitted";
                 
+                // Check if this is the last question
+                const currentQuestionNum = parseInt(document.body.dataset.questionNumber || '1');
+                const totalQuestions = parseInt(document.body.dataset.totalQuestions || '1');
+                
+                nextButton.disabled = false;
+                if (currentQuestionNum >= totalQuestions) {
+                    nextButton.textContent = "Finish Exam";
+                    nextButton.style.background = "linear-gradient(135deg, #4caf50 0%, #45a049 100%)";
+                } else {
+                    nextButton.textContent = "Continue to Next";
+                }
+                nextButton.onclick = function() {
+                    goToNextQuestion();
+                };
+                
                 // Disable the textbox
                 textboxAnswer.disabled = true;
+                
+                // Show what the user submitted for textbox questions
+                const feedbackDiv = document.getElementById('answer-feedback') || document.createElement('div');
+                if (!document.getElementById('answer-feedback')) {
+                    feedbackDiv.id = 'answer-feedback';
+                    document.querySelector('.question-box').appendChild(feedbackDiv);
+                }
+                
+                feedbackDiv.innerHTML = `
+                    <div style="background: #e3f2fd; border: 2px solid #2196f3; 
+                               border-radius: 12px; padding: 20px; margin-top: 20px;
+                               animation: fadeIn 0.5s ease-out;">
+                        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 15px;">
+                            <span style="font-size: 28px;">📝</span>
+                            <div>
+                                <h3 style="color: #2196f3; margin: 0; font-size: 1.3em;">Answer Submitted</h3>
+                                <p style="margin: 5px 0 0 0; color: #666; font-size: 1em;">
+                                    Your answer has been recorded. You can get AI feedback below.
+                                </p>
+                            </div>
+                        </div>
+                        <div style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.7); border-radius: 8px; border-left: 3px solid #2196f3;">
+                            <div style="color: #2196f3; font-weight: 600; margin-bottom: 5px;">Your Submitted Answer:</div>
+                            <div style="max-height: 150px; overflow-y: auto; padding: 8px; background: #f5f5f5; border-radius: 4px; color: #555; font-family: monospace;">${textboxAnswer.value}</div>
+                        </div>
+                    </div>
+                `;
             }
         }
 
