@@ -525,7 +525,7 @@
       data-total-questions="{{ total_questions | default(0) }}"
       data-question-type="{{ question.question_type | default('single') }}"
       data-question-attempted="{{ 'true' if question_attempted else 'false' }}"
-      data-user-answer="{{ user_answer | tojson | e if user_answer else '' }}"
+     data-user-answer="{{ user_answer | tojson | safe if user_answer else '' }}"
       data-is-correct="{{ 'true' if is_correct == true else ('false' if is_correct == false else '') }}"
       data-attempted-questions="{{ attempted_question_ids | tojson | e if attempted_question_ids else '[]' }}">
 
