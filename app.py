@@ -700,7 +700,11 @@ def dashboard():
     user_class = current_user.student_class
     print(user_class)
    
-     
+    # Fetch exams mapped to the user's student class
+    exams = db.session.query(Exam).join(ExamMapping).filter(ExamMapping.class_name == user_class).all()
+    
+    learnings = db.session.query(Learning).join(LearningsMapping).filter(LearningsMapping.class_name == user_class).all()
+    
     return render_template("dashboard.html", exams=exams, attempts=attempts, learnings=learnings, todos=todos)
 
 
