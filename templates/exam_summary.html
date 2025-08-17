@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exam Results - {{ exam_session.exam.title }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .summary-container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 1000px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #f0f0f0;
+        }
+
+        .exam-title {
+            font-size: 2.5em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .completion-date {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #e3f2fd 100%);
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            border-left: 5px solid #2196f3;
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-number {
+            font-size: 3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            font-size: 1.1em;
+            color: #666;
+        }
+
+        .grade-display {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+            font-size: 4em;
+            font-weight: bold;
+        }
+
+        .percentage-display {
+            background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
+            color: white;
+            font-size: 3.5em;
+        }
+
+        .feedback-section {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .feedback-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .feedback-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        .questions-breakdown {
+            margin-bottom: 30px;
+        }
+
+        .breakdown-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .question-list {
+            max-height: 400px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+        }
+
+        .question-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+
+        .question-correct {
+            background: #4caf50;
+        }
+
+        .question-incorrect {
+            background: #f44336;
+        }
+
+        .question-content {
+            flex: 1;
+        }
+
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .question-answer {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .ai-help-badge {
+            background: #2196f3;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            margin-left: 10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+            color: white;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .progress-ring {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 20px;
+        }
+
+        .progress-ring-circle {
+            stroke: #e0e0e0;
+            stroke-width: 8;
+            fill: transparent;
+            r: 52;
+            cx: 60;
+            cy: 60;
+        }
+
+        .progress-ring-progress {
+            stroke: #4caf50;
+            stroke-width: 8;
+            stroke-linecap: round;
+            fill: transparent;
+            r: 52;
+            cx: 60;
+            cy: 60;
+            stroke-dasharray: 326.56;
+            stroke-dashoffset: calc(326.56 - (326.56 * {{ percentage }}) / 100);
+            transition: stroke-dashoffset 2s ease-in-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .summary-container {
+                padding: 20px;
+                margin: 10px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .exam-title {
+                font-size: 2em;
+            }
+
+            .stat-number {
+                font-size: 2.5em;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="summary-container">
+        <!-- Header Section -->
+        <div class="header">
+            <h1 class="exam-title">{{ exam_session.exam.title }}</h1>
+            <p class="completion-date">
+                Completed on {{ exam_session.end_time.strftime('%B %d, %Y at %I:%M %p') if exam_session.end_time else 'In Progress' }}
+            </p>
+        </div>
+
+        <!-- Statistics Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number grade-display">{{ grade }}</div>
+                <div class="stat-label">Final Grade</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-number percentage-display">{{ percentage }}%</div>
+                <div class="stat-label">Score Percentage</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-number" style="color: #4caf50;">{{ correct_answers }}</div>
+                <div class="stat-label">Correct Answers</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-number" style="color: #2196f3;">{{ questions_attempted }}</div>
+                <div class="stat-label">Questions Attempted</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-number" style="color: #ff9800;">{{ total_questions }}</div>
+                <div class="stat-label">Total Questions</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-number" style="color: #9c27b0;">{{ time_taken_minutes }}</div>
+                <div class="stat-label">Minutes Taken</div>
+            </div>
+        </div>
+
+        <!-- Progress Ring -->
+        <div class="progress-ring">
+            <svg width="120" height="120">
+                <circle class="progress-ring-circle"></circle>
+                <circle class="progress-ring-progress"></circle>
+            </svg>
+        </div>
+
+        <!-- Feedback Section -->
+        <div class="feedback-section">
+            <h3 class="feedback-title">📝 Your Performance Summary</h3>
+            <p class="feedback-text">{{ feedback }}</p>
+            
+            {% if ai_help_used > 0 %}
+            <div style="margin-top: 15px; padding: 10px; background: #e3f2fd; border-radius: 8px;">
+                <strong>🤖 AI Assistance:</strong> You used AI help on {{ ai_help_used }} question(s). 
+                Remember to use this as a learning tool to understand concepts better!
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Question Breakdown -->
+        <div class="questions-breakdown">
+            <h3 class="breakdown-title">📊 Question-by-Question Breakdown</h3>
+            <div class="question-list">
+                {% for attempt, question in attempts %}
+                <div class="question-item">
+                    <div class="question-number {{ 'question-correct' if attempt.is_correct else 'question-incorrect' }}">
+                        {{ loop.index }}
+                    </div>
+                    <div class="question-content">
+                        <div class="question-text">
+                            {{ question.question_text[:100] }}{% if question.question_text|length > 100 %}...{% endif %}
+                        </div>
+                        <div class="question-answer">
+                            <strong>Status:</strong> {{ 'Correct' if attempt.is_correct else 'Incorrect' }}
+                            | <strong>Points:</strong> {{ attempt.points_earned }}/{{ attempt.max_points }}
+                            | <strong>Type:</strong> {{ question.question_type.title() }}
+                        </div>
+                    </div>
+                    {% if attempt.ai_help_used %}
+                    <span class="ai-help-badge">🤖 AI Help Used</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                
+                {% if questions_attempted < total_questions %}
+                <div class="question-item" style="opacity: 0.6;">
+                    <div class="question-number" style="background: #9e9e9e;">!</div>
+                    <div class="question-content">
+                        <div class="question-text">
+                            {{ total_questions - questions_attempted }} question(s) not attempted
+                        </div>
+                        <div class="question-answer">
+                            <strong>Status:</strong> Skipped
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <a href="{{ url_for('papers') }}" class="btn btn-primary">
+                📋 Back to Exams
+            </a>
+            
+            <a href="{{ url_for('start_exam', exam_id=exam_session.exam_id) }}" class="btn btn-secondary">
+                🔄 Retake Exam
+            </a>
+            
+            <a href="{{ url_for('attempts') }}" class="btn btn-success">
+                📈 View All Attempts
+            </a>
+            
+            <button onclick="window.print()" class="btn btn-secondary">
+                🖨️ Print Results
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // Animate progress ring on load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                const progressRing = document.querySelector('.progress-ring-progress');
+                progressRing.style.strokeDashoffset = `calc(326.56 - (326.56 * {{ percentage }}) / 100)`;
+            }, 500);
+        });
+
+        // Add confetti for high scores
+        {% if percentage >= 80 %}
+        function createConfetti() {
+            const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7'];
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.style.position = 'fixed';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.top = '-10px';
+                confetti.style.zIndex = '1000';
+                confetti.style.borderRadius = '50%';
+                confetti.style.pointerEvents = 'none';
+                document.body.appendChild(confetti);
+
+                const animation = confetti.animate([
+                    { transform: 'translateY(0px) rotate(0deg)', opacity: 1 },
+                    { transform: `translateY(${window.innerHeight + 10}px) rotate(720deg)`, opacity: 0 }
+                ], {
+                    duration: Math.random() * 2000 + 1000,
+                    easing: 'cubic-bezier(0.5, 0, 0.5, 1)'
+                });
+
+                animation.onfinish = () => confetti.remove();
+            }
+        }
+
+        // Trigger confetti after a short delay
+        setTimeout(createConfetti, 1000);
+        {% endif %}
+    </script>
+</body>
+</html>
