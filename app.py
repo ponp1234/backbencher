@@ -258,6 +258,10 @@ def privacy():
     return render_template('privacy.html')
 
 
+@app.route('/t4')
+def privacy():
+    return render_template('p4st31.html')
+
 @app.route("/login", methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
