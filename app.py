@@ -235,7 +235,7 @@ class ExamAttempt(db.Model):
     __tablename__ = 'exam_attempts'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     exam_id = db.Column(db.Integer, db.ForeignKey('exams.id'), nullable=False)
     start_time = db.Column(db.DateTime, default=datetime.utcnow)
     end_time = db.Column(db.DateTime)
@@ -268,7 +268,7 @@ class StudentProgress(db.Model):
     __tablename__ = 'student_progress'
     
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     topic_id = db.Column(db.String(50), nullable=False)
     topic_title = db.Column(db.String(200), nullable=False)
     score = db.Column(db.Integer, default=0)
