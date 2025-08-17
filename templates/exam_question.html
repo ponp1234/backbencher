@@ -1093,6 +1093,28 @@ function goBack() {
             window.history.back();
         }
 
+
+ // Generate question navigation buttons
+        function generateQuestionNavigation() {
+            const grid = document.getElementById('questionGrid');
+            grid.innerHTML = '';
+            
+            for (let i = 0; i < data.total_questions; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'question-btn';
+                btn.textContent = i + 1;
+                btn.onclick = () => goToQuestion(i);
+                
+                if (i === currentQuestion) {
+                    btn.classList.add('current');
+                }
+                if (userAnswers[i] !== undefined) {
+                    btn.classList.add('answered');
+                }
+                
+                grid.appendChild(btn);
+            }
+        }
     </script>
 
 </body>
