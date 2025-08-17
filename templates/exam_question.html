@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -368,6 +367,48 @@
             background: #b71c1c;
         }
 
+        /* Question Navigation */
+        .question-nav {
+            margin-top: 20px;
+        }
+
+        .question-nav h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .question-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .question-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .question-btn.current {
+            background: #4caf50;
+        }
+
+        .question-btn.answered {
+            background: #2196f3;
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             body {
@@ -447,48 +488,6 @@
         #answer-feedback {
             transition: all 0.3s ease;
         }
-
-               .question-nav {
-            margin-top: 20px;
-        }
-
-        .question-nav h3 {
-            color: white;
-            margin-bottom: 15px;
-            font-size: 1.1em;
-        }
-
-        .question-grid {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr);
-            gap: 8px;
-        }
-
-        .question-btn {
-            width: 35px;
-            height: 35px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9em;
-        }
-
-        .question-btn:hover {
-            background: rgba(255, 255, 255, 0.4);
-        }
-
-        .question-btn.current {
-            background: #4caf50;
-        }
-
-        .question-btn.answered {
-            background: #2196f3;
-        }
-
     </style>
 </head>
 
@@ -500,7 +499,7 @@
 
         </div>
 
-          <div class="question-nav">
+        <div class="question-nav">
             <h3>Questions</h3>
             <div class="question-grid" id="questionGrid">
                 <!-- Question navigation buttons will be generated here -->
@@ -511,7 +510,7 @@
     </div>
 
     <!-- Top Bar with Exam Title, Question Number, Progress Bar, and Current Time -->
-  <div class="top-bar">
+    <div class="top-bar">
         <div class="exam-title">{{ exam.title }}</div>
         <div class="question-info">Question {{ question_number }} of {{ total_questions }}</div>
         <div class="progress-bar">
@@ -520,152 +519,128 @@
         <div class="current-time" id="current-time"></div>
     </div>
 
+    <div class="question-container">
+        <div class="question-box">
 
-<div class="question-container">
-    <div class="question-box">
-
-         <div class="question-header">
+            <div class="question-header">
                 <div class="question-number-badge">Question {{ question_number }}</div>
                 <div class="question-type-badge">{{ question.question_type.upper() }}</div>
             </div>
             
-             <!-- Use the |safe filter to allow rendering of HTML content -->
-        <div class="question-text" id="question-text">{{ question.question_text | safe }}</div>
-        
-        <form id="form" method="POST" action="{{ url_for('exam', exam_id=exam.id, question_number=question_number) }}" class="answer-options">
-            {% if question.question_type == 'textbox' %}
-                <textarea 
-                    class="textbox-answer" 
-                    name="textbox_answer" 
-                    id="textbox_answer" 
-                    placeholder="Type your answer here..."
-                    required
-                ></textarea>
-            {% elif question.question_type == 'fill_in_the_blank' %}
-                {% for i in range(1, question.blanks + 1) %}
-                    <label for="blank{{ i }}">Answer {{ i }}:</label>
-                    <input type="text" name="blank{{ i }}" id="blank{{ i }}" required>
-                {% endfor %}
-            {% elif question.question_type == 'multiple' %}
-                {% if question.option_a %}
-                    <label>
-                        <input type="checkbox" name="answer" value="option_a"> {{ question.option_a }}
-                    </label>
-                {% endif %}
-                {% if question.option_b %}
-                    <label>
-                        <input type="checkbox" name="answer" value="option_b"> {{ question.option_b }}
-                    </label>
-                {% endif %}
-                {% if question.option_c %}
-                    <label>
-                        <input type="checkbox" name="answer" value="option_c"> {{ question.option_c }}
-                    </label>
-                {% endif %}
-                {% if question.option_d %}
-                    <label>
-                        <input type="checkbox" name="answer" value="option_d"> {{ question.option_d }}
-                    </label>
-                {% endif %}
-            {% else %}
-                {% if question.option_a %}
-                    <label>
-                        <input type="radio" name="answer" value="option_a" required> {{ question.option_a }}
-                    </label>
-                {% endif %}
-                {% if question.option_b %}
-                    <label>
-                        <input type="radio" name="answer" value="option_b"> {{ question.option_b }}
-                    </label>
-                {% endif %}
-                {% if question.option_c %}
-                    <label>
-                        <input type="radio" name="answer" value="option_c"> {{ question.option_c }}
-                    </label>
-                {% endif %}
-                {% if question.option_d %}
-                    <label>
-                        <input type="radio" name="answer" value="option_d"> {{ question.option_d }}
-                    </label>
-                {% endif %}
-            {% endif %}
+            <!-- Use the |safe filter to allow rendering of HTML content -->
+            <div class="question-text" id="question-text">{{ question.question_text | safe }}</div>
             
-            <button type="button" class="submit-button" id="sb-button" onclick="checkAnswer()">Submit</button>
-            <button type="button" class="next-button" id="next" onclick="submitAnswer()">Next</button>
-            <button type="button" class="back-button" onclick="goBack()">Back</button>
-        </form>
+            <form id="form" method="POST" action="{{ url_for('exam', exam_id=exam.id, question_number=question_number) }}" class="answer-options">
+                {% if question.question_type == 'textbox' %}
+                    <textarea 
+                        class="textbox-answer" 
+                        name="textbox_answer" 
+                        id="textbox_answer" 
+                        placeholder="Type your answer here..."
+                        required
+                    ></textarea>
+                {% elif question.question_type == 'fill_in_the_blank' %}
+                    {% for i in range(1, question.blanks + 1) %}
+                        <label for="blank{{ i }}">Answer {{ i }}:</label>
+                        <input type="text" name="blank{{ i }}" id="blank{{ i }}" required>
+                    {% endfor %}
+                {% elif question.question_type == 'multiple' %}
+                    {% if question.option_a %}
+                        <label>
+                            <input type="checkbox" name="answer" value="option_a"> {{ question.option_a }}
+                        </label>
+                    {% endif %}
+                    {% if question.option_b %}
+                        <label>
+                            <input type="checkbox" name="answer" value="option_b"> {{ question.option_b }}
+                        </label>
+                    {% endif %}
+                    {% if question.option_c %}
+                        <label>
+                            <input type="checkbox" name="answer" value="option_c"> {{ question.option_c }}
+                        </label>
+                    {% endif %}
+                    {% if question.option_d %}
+                        <label>
+                            <input type="checkbox" name="answer" value="option_d"> {{ question.option_d }}
+                        </label>
+                    {% endif %}
+                {% else %}
+                    {% if question.option_a %}
+                        <label>
+                            <input type="radio" name="answer" value="option_a" required> {{ question.option_a }}
+                        </label>
+                    {% endif %}
+                    {% if question.option_b %}
+                        <label>
+                            <input type="radio" name="answer" value="option_b"> {{ question.option_b }}
+                        </label>
+                    {% endif %}
+                    {% if question.option_c %}
+                        <label>
+                            <input type="radio" name="answer" value="option_c"> {{ question.option_c }}
+                        </label>
+                    {% endif %}
+                    {% if question.option_d %}
+                        <label>
+                            <input type="radio" name="answer" value="option_d"> {{ question.option_d }}
+                        </label>
+                    {% endif %}
+                {% endif %}
+                
+                <button type="button" class="submit-button" id="sb-button" onclick="checkAnswer()">Submit</button>
+                <button type="button" class="next-button" id="next" onclick="submitAnswer()">Next</button>
+                <button type="button" class="back-button" onclick="goBack()">Back</button>
+            </form>
 
-        <!-- AI Assistance Button and Response Box -->
-        <button class="ai-button" onclick="getAIResponse()" id="ai-button" disabled>Ask AI for Help</button>
-        <div class="ai-response" id="ai-response"></div>
+            <!-- AI Assistance Button and Response Box -->
+            <button class="ai-button" onclick="getAIResponse()" id="ai-button" disabled>Ask AI for Help</button>
+            <div class="ai-response" id="ai-response"></div>
+        </div>
     </div>
-</div>
 
-    <!-- JavaScript to Update Current Time -->
-  
-    <!-- JavaScript to Update Current Time and Fetch AI Response -->
+    <!-- JavaScript for the page functionality -->
     <script>
-        generateQuestionNavigation()
-    
-    async function submitAnswer() {
-    const question = document.getElementById('question-text').textContent;
-    const form = document.querySelector('.answer-options');
-    const questionType = "{{ question.question_type }}"; // Use backend-provided question type
+        // Global variables for navigation - safely handle template variables
+        const EXAM_DATA = {
+            totalQuestions: parseInt('{{ total_questions | default(0) }}') || 0,
+            currentQuestion: (parseInt('{{ question_number | default(1) }}') || 1) - 1, // Convert to 0-based index
+            examId: parseInt('{{ exam.id | default(1) }}') || 1
+        };
 
-    let payload = { question }; // Start with the question text
-
-    try {
-        // Gather answers based on question type
-        if (questionType === "fill_in_the_blank") {
-            const blanks = Array.from(form.querySelectorAll('input[type="text"]'))
-                .map((input) => input.value.trim());
-            payload.answers = blanks;
-
-        } else if (questionType === "multiple") {
-            const selectedOptions = Array.from(form.querySelectorAll('input[type="checkbox"]:checked'))
-                .map((checkbox) => checkbox.value);
-            payload.answers = selectedOptions;
-
-        } else if (questionType === "single") {
-            const selectedOption = form.querySelector('input[type="radio"]:checked');
-            payload.answer = selectedOption ? selectedOption.value : null;
-        }
-
-        // Send JSON data via POST
-        const response = await fetch(`/exam/{{ exam.id }}/{{ question_number }}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(payload),
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            generateQuestionNavigation();
+            updateTime();
         });
 
-        // Process response
-        const data = await response.json();
-        console.log("Server Response:", data);
-
-        if (response.ok && data.next_question) {
-            // Navigate to the next question
-            window.location.href = `/exam/{{ exam.id }}/${data.next_question}`;
-        } else if (data.message === "Exam completed") {
-            // Navigate to the result page
-            // alert(data.score || "");
-             window.location.href = "/result/"+data.score+"/"+data.total_questions;
-        } else {
-            alert(data.error || "An error occurred while processing your answer.");
+        // Generate question navigation buttons
+        function generateQuestionNavigation() {
+            const grid = document.getElementById('questionGrid');
+            grid.innerHTML = '';
+            
+            for (let i = 0; i < EXAM_DATA.totalQuestions; i++) {
+                const btn = document.createElement('button');
+                btn.className = 'question-btn';
+                btn.textContent = i + 1;
+                btn.onclick = () => goToQuestion(i + 1); // Convert back to 1-based for URL
+                
+                if (i === EXAM_DATA.currentQuestion) {
+                    btn.classList.add('current');
+                }
+                
+                grid.appendChild(btn);
+            }
         }
-    } catch (error) {
-        console.error("Error submitting answer:", error);
-        alert("Failed to submit your answer. Please try again.");
-    }
-}
 
-    
-    function goToNextQuestion() {
+        // Navigate to specific question
+        function goToQuestion(questionNumber) {
+            if (questionNumber >= 1 && questionNumber <= EXAM_DATA.totalQuestions) {
+                window.location.href = `/exam/${EXAM_DATA.examId}/${questionNumber}`;
+            }
+        }
 
-    document.querySelector('form').submit();
-}
-
+        // Update time display
         function updateTime() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -674,447 +649,373 @@
             document.getElementById("current-time").textContent = `Time: ${hours}:${minutes}:${seconds}`;
         }
         setInterval(updateTime, 1000);
-        updateTime();
 
-async function getAIResponse() {
-    const question = document.getElementById('question-text').textContent;
-    const responseBox = document.getElementById('ai-response');
-    const form = document.querySelector('.answer-options');
-    
- 
- 
-    
-    responseBox.style.display = 'block';
-    responseBox.textContent = 'Loading AI response...';
+        // Submit answer functionality
+        async function submitAnswer() {
+            const question = document.getElementById('question-text').textContent;
+            const form = document.querySelector('.answer-options');
+            const questionType = '{{ question.question_type | default("single") }}';
 
-    // Collect all answer options based on question type
-    let answerOptions = {};
-    
-    // Check if it's a fill in the blank question
-    const blankInputs = form.querySelectorAll('input[type="text"]');
-    if (blankInputs.length > 0) {
-        answerOptions.type = 'fill_in_the_blank';
-        answerOptions.blanks = blankInputs.length;
-    } 
-    // Check if it's multiple choice (checkboxes)
-    else if (form.querySelector('input[type="checkbox"]')) {
-        answerOptions.type = 'multiple';
-        answerOptions.options = Array.from(form.querySelectorAll('label')).map(label => ({
-            value: label.querySelector('input').value,
-            text: label.textContent.trim()
-        }));
-    }
-    // Single choice (radio buttons)
-    else if (form.querySelector('input[type="radio"]')) {
-        answerOptions.type = 'single';
-        answerOptions.options = Array.from(form.querySelectorAll('label')).map(label => ({
-            value: label.querySelector('input').value,
-            text: label.textContent.trim()
-        }));
-    }
+            let payload = { question };
 
+            try {
+                if (questionType === "fill_in_the_blank") {
+                    const blanks = Array.from(form.querySelectorAll('input[type="text"]'))
+                        .map((input) => input.value.trim());
+                    payload.answers = blanks;
 
-    try {
-        // Construct a more detailed prompt
-        const prompt = {
-            question: question,
-            questionType: answerOptions.type,
-            options: answerOptions.type === 'fill_in_the_blank' ? 
-                    `Fill in the blank question with ${answerOptions.blanks} blank(s)` :
-                    answerOptions.options.map(opt => opt.text).join('\n'),
-            request: "Please analyze this question and provide:\n" +
-                    "1. The correct answer\n" +
-                    "2. A detailed explanation of why it's correct\n" +
-                    "3. Key concepts related to this question"
-        };
+                } else if (questionType === "multiple") {
+                    const selectedOptions = Array.from(form.querySelectorAll('input[type="checkbox"]:checked'))
+                        .map((checkbox) => checkbox.value);
+                    payload.answers = selectedOptions;
 
-        const response = await fetch('/ask-ai', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                messages: [{
-                    role: 'user',
-                    content: JSON.stringify(prompt, null, 2)
-                }]
-            })
-        });
+                } else if (questionType === "single") {
+                    const selectedOption = form.querySelector('input[type="radio"]:checked');
+                    payload.answer = selectedOption ? selectedOption.value : null;
+                }
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                const examId = '{{ exam.id | default(1) }}';
+                const questionNumber = '{{ question_number | default(1) }}';
+                
+                const response = await fetch(`/exam/${examId}/${questionNumber}`, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(payload),
+                });
+
+                const data = await response.json();
+                console.log("Server Response:", data);
+
+                if (response.ok && data.next_question) {
+                    window.location.href = `/exam/${examId}/${data.next_question}`;
+                } else if (data.message === "Exam completed") {
+                    window.location.href = "/result/"+data.score+"/"+data.total_questions;
+                } else {
+                    alert(data.error || "An error occurred while processing your answer.");
+                }
+            } catch (error) {
+                console.error("Error submitting answer:", error);
+                alert("Failed to submit your answer. Please try again.");
+            }
         }
 
-        const data = await response.json();
-        if (data.error) {
-            throw new Error(data.error);
-        }
-        
-        // Format and display the response with enhanced styling
-        responseBox.innerHTML = `
-            <div class="ai-response-content">
-                ${data.response
-                    .replace(/\n\n/g, '</p><p>')
-                    .replace(/\n/g, '<br>')
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/^1\./m, '<strong>Correct Answer:</strong>')
-                    .replace(/^2\./m, '<strong>Explanation:</strong>')
-                    .replace(/^3\./m, '<strong>Key Concepts:</strong>')}
-            </div>
-        `;
-
-        // Add helpful interaction hints
-        responseBox.innerHTML += `
-            <div class="ai-hints" style="margin-top: 15px; font-size: 0.9em; color: #666;">
-                <p>Use this information to understand the concept better. Try to answer yourself before looking at the correct answer.</p>
-            </div>
-        `;
-        
-    } catch (error) {
-        console.error('AI Response Error:', error);
-        responseBox.innerHTML = `
-            <div class="error-message" style="color: #d32f2f; padding: 10px; background: #fde7e7; border-radius: 4px;">
-                <strong>Error:</strong> ${error.message}
-                <button onclick="getAIResponse()" 
-                        style="margin-left: 10px; padding: 5px 10px; background: #d32f2f; color: white; border: none; border-radius: 3px; cursor: pointer;">
-                    Try Again
-                </button>
-            </div>
-        `;
-    }
-}
-
-//new
-
-async function getAICheck() {
-    const question = document.getElementById('question-text').textContent;
-    const responseBox = document.getElementById('ai-response');
-    const form = document.querySelector('.answer-options');
-    
-    
-    responseBox.style.display = 'block';
-    responseBox.textContent = 'Loading AI response...';
-
-    
-
-    try {
-        // Construct a more detailed prompt
-        const prompt = {
-            question: question,
-            questionType: "textbox",
-            useranswer: document.getElementById('textbox_answer').value,      
-        };
-
-        const response = await fetch('/check-with-ai', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                messages: [{
-                    role: 'user',
-                    content: JSON.stringify(prompt, null, 2),
-                    examId: getExamIdFromUrl(),
-                    questionNumber: getQuestionNumberFromUrl()
-                }]
-            })
+        // AI Response functionality
+        async function getAIResponse() {
+            const question = document.getElementById('question-text').textContent;
+            const responseBox = document.getElementById('ai-response');
+            const form = document.querySelector('.answer-options');
             
-        });
+            responseBox.style.display = 'block';
+            responseBox.textContent = 'Loading AI response...';
 
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+            let answerOptions = {};
+            
+            const blankInputs = form.querySelectorAll('input[type="text"]');
+            if (blankInputs.length > 0) {
+                answerOptions.type = 'fill_in_the_blank';
+                answerOptions.blanks = blankInputs.length;
+            } 
+            else if (form.querySelector('input[type="checkbox"]')) {
+                answerOptions.type = 'multiple';
+                answerOptions.options = Array.from(form.querySelectorAll('label')).map(label => ({
+                    value: label.querySelector('input').value,
+                    text: label.textContent.trim()
+                }));
+            }
+            else if (form.querySelector('input[type="radio"]')) {
+                answerOptions.type = 'single';
+                answerOptions.options = Array.from(form.querySelectorAll('label')).map(label => ({
+                    value: label.querySelector('input').value,
+                    text: label.textContent.trim()
+                }));
+            }
+
+            try {
+                const prompt = {
+                    question: question,
+                    questionType: answerOptions.type,
+                    options: answerOptions.type === 'fill_in_the_blank' ? 
+                            `Fill in the blank question with ${answerOptions.blanks} blank(s)` :
+                            answerOptions.options.map(opt => opt.text).join('\n'),
+                    request: "Please analyze this question and provide:\n" +
+                            "1. The correct answer\n" +
+                            "2. A detailed explanation of why it's correct\n" +
+                            "3. Key concepts related to this question"
+                };
+
+                const response = await fetch('/ask-ai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        messages: [{
+                            role: 'user',
+                            content: JSON.stringify(prompt, null, 2)
+                        }]
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                responseBox.innerHTML = `
+                    <div class="ai-response-content">
+                        ${data.response
+                            .replace(/\n\n/g, '</p><p>')
+                            .replace(/\n/g, '<br>')
+                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                            .replace(/^1\./m, '<strong>Correct Answer:</strong>')
+                            .replace(/^2\./m, '<strong>Explanation:</strong>')
+                            .replace(/^3\./m, '<strong>Key Concepts:</strong>')}
+                    </div>
+                    <div class="ai-hints" style="margin-top: 15px; font-size: 0.9em; color: #666;">
+                        <p>Use this information to understand the concept better. Try to answer yourself before looking at the correct answer.</p>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('AI Response Error:', error);
+                responseBox.innerHTML = `
+                    <div class="error-message" style="color: #d32f2f; padding: 10px; background: #fde7e7; border-radius: 4px;">
+                        <strong>Error:</strong> ${error.message}
+                        <button onclick="getAIResponse()" 
+                                style="margin-left: 10px; padding: 5px 10px; background: #d32f2f; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                            Try Again
+                        </button>
+                    </div>
+                `;
+            }
         }
 
-        const data = await response.json();
-        if (data.error) {
-            throw new Error(data.error);
+        // AI Check for textbox answers
+        async function getAICheck() {
+            const question = document.getElementById('question-text').textContent;
+            const responseBox = document.getElementById('ai-response');
+            
+            responseBox.style.display = 'block';
+            responseBox.textContent = 'Loading AI response...';
+
+            try {
+                const prompt = {
+                    question: question,
+                    questionType: "textbox",
+                    useranswer: document.getElementById('textbox_answer').value,      
+                };
+
+                const response = await fetch('/check-with-ai', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        messages: [{
+                            role: 'user',
+                            content: JSON.stringify(prompt, null, 2),
+                            examId: getExamIdFromUrl(),
+                            questionNumber: getQuestionNumberFromUrl()
+                        }]
+                    })
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                responseBox.innerHTML = `
+                    <div class="ai-response-content">
+                        ${data.response
+                            .replace(/\n\n/g, '</p><p>')
+                            .replace(/\n/g, '<br>')
+                            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')}
+                    </div>
+                    <div class="ai-hints" style="margin-top: 15px; font-size: 0.9em; color: #666;">
+                        <p>Use this information to understand the concept better.</p>
+                    </div>
+                `;
+                
+            } catch (error) {
+                console.error('AI Response Error:', error);
+                responseBox.innerHTML = `
+                    <div class="error-message" style="color: #d32f2f; padding: 10px; background: #fde7e7; border-radius: 4px;">
+                        <strong>Error:</strong> ${error.message}
+                        <button onclick="getAICheck()" 
+                                style="margin-left: 10px; padding: 5px 10px; background: #d32f2f; color: white; border: none; border-radius: 3px; cursor: pointer;">
+                            Try Again
+                        </button>
+                    </div>
+                `;
+            }
         }
-        
-        // Format and display the response with enhanced styling
-        responseBox.innerHTML = `
-            <div class="ai-response-content">
-                ${data.response
-                    .replace(/\n\n/g, '</p><p>')
-                    .replace(/\n/g, '<br>')
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                    .replace(/^1\./m, '<strong>Correct Answer:</strong>')
-                    .replace(/^2\./m, '<strong>Explanation:</strong>')
-                    .replace(/^3\./m, '<strong>Key Concepts:</strong>')}
-            </div>
-        `;
 
-        // Add helpful interaction hints
-        responseBox.innerHTML += `
-            <div class="ai-hints" style="margin-top: 15px; font-size: 0.9em; color: #666;">
-                <p>Use this information to understand the concept better. Try to answer yourself before looking at the correct answer.</p>
-            </div>
-        `;
-        
-    } catch (error) {
-        console.error('AI Response Error:', error);
-        responseBox.innerHTML = `
-            <div class="error-message" style="color: #d32f2f; padding: 10px; background: #fde7e7; border-radius: 4px;">
-                <strong>Error:</strong> ${error.message}
-                <button onclick="getAIResponse()" 
-                        style="margin-left: 10px; padding: 5px 10px; background: #d32f2f; color: white; border: none; border-radius: 3px; cursor: pointer;">
-                    Try Again
-                </button>
-            </div>
-        `;
-    }
-}
+        // Check answer functionality
+        async function checkAnswer() {
+            document.getElementById("ai-button").disabled = false;
+            document.getElementById("sb-button").disabled = true;
+            document.getElementById("next").disabled = false;
 
-
-// Add CSS styles for better AI response formatting
-const styles = document.createElement('style');
-styles.textContent = `
-
-     /* Style when the button is disabled */
-    .ai-button:disabled {
-        background-color: #cccccc; /* Gray color when disabled */
-        color: #666666;           /* Darker text for disabled state */
-        cursor: not-allowed;      /* Show a not-allowed cursor on hover */
-    }
-    
-    .submit-button:disabled {
-        background-color: #cccccc; /* Gray color when disabled */
-        color: #666666;           /* Darker text for disabled state */
-        cursor: not-allowed;      /* Show a not-allowed cursor on hover */
-    }
-
-    .ai-response-content {
-        padding: 15px;
-        background: #f8f9fa;
-        border-radius: 8px;
-        border-left: 4px solid #4e73df;
-    }
-    
-    .ai-response-content p {
-        margin: 10px 0;
-    }
-    
-    .ai-response-content strong {
-        color: #4e73df;
-        display: block;
-        margin-top: 15px;
-    }
-    
-    .error-message button:hover {
-        background: #b71c1c;
-    }
-    
-    .ai-hints {
-        background: #e3f2fd;
-        padding: 10px;
-        border-radius: 4px;
-        border-left: 4px solid #2196f3;
-    }
-`;
-document.head.appendChild(styles);
-
-
-// check answer
-
-async function checkAnswer() {
-    document.getElementById("ai-button").disabled = false;
-    document.getElementById("sb-button").disabled = true;
-    document.getElementById("next").disabled = false;
-
-     const form = document.querySelector('.answer-options');
-            const feedbackDiv = document.getElementById('answer-feedback');
+            const form = document.querySelector('.answer-options');
             const textboxAnswer = document.getElementById('textbox_answer');
-          
-    
-if (!textboxAnswer) {
-    const form = document.querySelector('.answer-options');
-    const question = document.querySelector('.question-box');
-    let isCorrect = false;
-
-    // Get question type
-    const hasTextInputs = form.querySelector('input[type="text"]');
-    const hasCheckboxes = form.querySelector('input[type="checkbox"]');
-    const hasRadios = form.querySelector('input[type="radio"]');
-
-    // Create feedback element if it doesn't exist
-    let feedbackDiv = document.getElementById('answer-feedback');
-    if (!feedbackDiv) {
-        feedbackDiv = document.createElement('div');
-        feedbackDiv.id = 'answer-feedback';
-        feedbackDiv.style.padding = '15px';
-        feedbackDiv.style.marginTop = '15px';
-        feedbackDiv.style.borderRadius = '5px';
-        question.appendChild(feedbackDiv);
-    }
-
-    try {
-        // Collect user answers based on question type
-        let userAnswers;
-        let questionType;
-
-        if (hasTextInputs) {
-            // Fill in the blank
-            questionType = 'fill_in_the_blank';
-            userAnswers = {};
-            const inputs = form.querySelectorAll('input[type="text"]');
-            inputs.forEach((input, index) => {
-                userAnswers[`blank${index + 1}`] = input.value.trim();
-            });
-        } else if (hasCheckboxes) {
-            // Multiple choice
-            questionType = 'multiple';
-            userAnswers = Array.from(form.querySelectorAll('input[type="checkbox"]:checked'))
-                .map(cb => cb.value);
-        } else if (hasRadios) {
-            // Single choice
-            questionType = 'single';
-            userAnswers = form.querySelector('input[type="radio"]:checked')?.value;
-        }
-
-        // Send to server for verification
-        const response = await fetch('/check-answer', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                questionType: questionType,
-                userAnswers: userAnswers,
-                examId: getExamIdFromUrl(),
-                questionNumber: getQuestionNumberFromUrl()
-            })
-        });
-
-        const result = await response.json();
-        isCorrect = result.isCorrect;
-
-        // Display feedback
-        feedbackDiv.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 10px;">
-                <span style="font-size: 24px;">${isCorrect ? '' : ''}</span>
-                <span style="font-weight: bold; color: ${isCorrect ? '#4caf50' : '#f44336'}">
-                    ${isCorrect ? 'Correct!' : 'Incorrect!'}</span>
-            </div>
-            <p style="margin-top: 10px;">${result.explanation || ''}</p>
-        `;
-        feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
-        feedbackDiv.style.border = `1px solid ${isCorrect ? '#4caf50' : '#f44336'}`;
-
-        // Disable form inputs after checking
-        const inputs = form.querySelectorAll('input');
-        inputs.forEach(input => input.disabled = true);
-
-        // Style the correct answer(s)
-        if (!isCorrect && result.correctAnswer) {
-            highlightCorrectAnswer(result.correctAnswer);
-        }
-
-    } catch (error) {
-        console.error('Error checking answer:', error);
-        feedbackDiv.innerHTML = `
-            <div style="color: #f44336;">
-                <strong>Error checking answer. Please try again.</strong>
-            </div>
-        `;
-        feedbackDiv.style.backgroundColor = '#ffebee';
-        feedbackDiv.style.border = '1px solid #f44336';
-    }
-    
- } //end here
- else {
-   getAICheck()
-    
-    
-    }
-    
-}
-
-// Helper function to highlight correct answer
-function highlightCorrectAnswer(correctAnswer) {
-    const form = document.querySelector('.answer-options');
-    
-    if (Array.isArray(correctAnswer)) {
-        // Multiple correct answers
-        correctAnswer.forEach(answer => {
-            const input = form.querySelector(`input[value="${answer}"]`);
-            if (input) {
-                const label = input.closest('label');
-                label.style.backgroundColor = '#e8f5e9';
-                label.style.padding = '5px';
-                label.style.borderRadius = '3px';
-                label.style.border = '1px solid #4caf50';
-            }
-        });
-    } else {
-        // Single correct answer
-        const input = form.querySelector(`input[value="${correctAnswer}"]`);
-        if (input) {
-            const label = input.closest('label');
-            label.style.backgroundColor = '#e8f5e9';
-            label.style.padding = '5px';
-            label.style.borderRadius = '3px';
-            label.style.border = '1px solid #4caf50';
-        }
-    }
-}
-
-// Helper functions to get exam ID and question number from URL
-function getExamIdFromUrl() {
-    const pathParts = window.location.pathname.split('/');
-    return pathParts[pathParts.length - 2];
-}
-
-function getQuestionNumberFromUrl() {
-    const pathParts = window.location.pathname.split('/');
-    return pathParts[pathParts.length - 1];
-}
-
-// Add necessary styles
-const checkAnswerStyles = document.createElement('style');
-checkAnswerStyles.textContent = `
-    .answer-options label {
-        transition: all 0.3s ease;
-    }
-    
-    .answer-options input:disabled {
-        opacity: 0.6;
-        cursor: not-allowed;
-    }
-    
-    #answer-feedback {
-        transition: all 0.3s ease;
-    }
-`;
-document.head.appendChild(checkAnswerStyles);
-
-function goBack() {
-            window.history.back();
-        }
-
-
- // Generate question navigation buttons
-        function generateQuestionNavigation() {
-            const grid = document.getElementById('questionGrid');
-            grid.innerHTML = '';
             
-            for (let i = 0; i < data.total_questions; i++) {
-                const btn = document.createElement('button');
-                btn.className = 'question-btn';
-                btn.textContent = i + 1;
-                btn.onclick = () => goToQuestion(i);
-                
-                if (i === currentQuestion) {
-                    btn.classList.add('current');
+            if (!textboxAnswer) {
+                const question = document.querySelector('.question-box');
+                let isCorrect = false;
+
+                // Get question type
+                const hasTextInputs = form.querySelector('input[type="text"]');
+                const hasCheckboxes = form.querySelector('input[type="checkbox"]');
+                const hasRadios = form.querySelector('input[type="radio"]');
+
+                // Create feedback element if it doesn't exist
+                let feedbackDiv = document.getElementById('answer-feedback');
+                if (!feedbackDiv) {
+                    feedbackDiv = document.createElement('div');
+                    feedbackDiv.id = 'answer-feedback';
+                    feedbackDiv.style.padding = '15px';
+                    feedbackDiv.style.marginTop = '15px';
+                    feedbackDiv.style.borderRadius = '5px';
+                    question.appendChild(feedbackDiv);
                 }
-                if (userAnswers[i] !== undefined) {
-                    btn.classList.add('answered');
+
+                try {
+                    // Collect user answers based on question type
+                    let userAnswers;
+                    let questionType;
+
+                    if (hasTextInputs) {
+                        // Fill in the blank
+                        questionType = 'fill_in_the_blank';
+                        userAnswers = {};
+                        const inputs = form.querySelectorAll('input[type="text"]');
+                        inputs.forEach((input, index) => {
+                            userAnswers[`blank${index + 1}`] = input.value.trim();
+                        });
+                    } else if (hasCheckboxes) {
+                        // Multiple choice
+                        questionType = 'multiple';
+                        userAnswers = Array.from(form.querySelectorAll('input[type="checkbox"]:checked'))
+                            .map(cb => cb.value);
+                    } else if (hasRadios) {
+                        // Single choice
+                        questionType = 'single';
+                        userAnswers = form.querySelector('input[type="radio"]:checked')?.value;
+                    }
+
+                    // Send to server for verification
+                    const response = await fetch('/check-answer', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            questionType: questionType,
+                            userAnswers: userAnswers,
+                            examId: getExamIdFromUrl(),
+                            questionNumber: getQuestionNumberFromUrl()
+                        })
+                    });
+
+                    const result = await response.json();
+                    isCorrect = result.isCorrect;
+
+                    // Display feedback
+                    feedbackDiv.innerHTML = `
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <span style="font-size: 24px;">${isCorrect ? '✓' : '✗'}</span>
+                            <span style="font-weight: bold; color: ${isCorrect ? '#4caf50' : '#f44336'}">
+                                ${isCorrect ? 'Correct!' : 'Incorrect!'}</span>
+                        </div>
+                        <p style="margin-top: 10px;">${result.explanation || ''}</p>
+                    `;
+                    feedbackDiv.style.backgroundColor = isCorrect ? '#e8f5e9' : '#ffebee';
+                    feedbackDiv.style.border = `1px solid ${isCorrect ? '#4caf50' : '#f44336'}`;
+
+                    // Disable form inputs after checking
+                    const inputs = form.querySelectorAll('input');
+                    inputs.forEach(input => input.disabled = true);
+
+                    // Style the correct answer(s)
+                    if (!isCorrect && result.correctAnswer) {
+                        highlightCorrectAnswer(result.correctAnswer);
+                    }
+
+                } catch (error) {
+                    console.error('Error checking answer:', error);
+                    feedbackDiv.innerHTML = `
+                        <div style="color: #f44336;">
+                            <strong>Error checking answer. Please try again.</strong>
+                        </div>
+                    `;
+                    feedbackDiv.style.backgroundColor = '#ffebee';
+                    feedbackDiv.style.border = '1px solid #f44336';
                 }
                 
-                grid.appendChild(btn);
+            } else {
+                // For textbox questions, use AI check
+                getAICheck();
             }
+        }
+
+        // Helper function to highlight correct answer
+        function highlightCorrectAnswer(correctAnswer) {
+            const form = document.querySelector('.answer-options');
+            
+            if (Array.isArray(correctAnswer)) {
+                // Multiple correct answers
+                correctAnswer.forEach(answer => {
+                    const input = form.querySelector(`input[value="${answer}"]`);
+                    if (input) {
+                        const label = input.closest('label');
+                        label.style.backgroundColor = '#e8f5e9';
+                        label.style.padding = '5px';
+                        label.style.borderRadius = '3px';
+                        label.style.border = '1px solid #4caf50';
+                    }
+                });
+            } else {
+                // Single correct answer
+                const input = form.querySelector(`input[value="${correctAnswer}"]`);
+                if (input) {
+                    const label = input.closest('label');
+                    label.style.backgroundColor = '#e8f5e9';
+                    label.style.padding = '5px';
+                    label.style.borderRadius = '3px';
+                    label.style.border = '1px solid #4caf50';
+                }
+            }
+        }
+
+        // Helper functions to get exam ID and question number from URL
+        function getExamIdFromUrl() {
+            const pathParts = window.location.pathname.split('/');
+            return pathParts[pathParts.length - 2];
+        }
+
+        function getQuestionNumberFromUrl() {
+            const pathParts = window.location.pathname.split('/');
+            return pathParts[pathParts.length - 1];
+        }
+
+        // Navigation functions
+        function goBack() {
+            window.history.back();
         }
     </script>
 
