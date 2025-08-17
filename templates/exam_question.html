@@ -608,10 +608,73 @@
             examId: parseInt('{{ exam.id | default(1) }}') || 1
         };
 
+        // Check if question is already attempted and disable form if so
+        function checkQuestionStatus() {
+            const questionAttempted = {{ question_attempted | default(false) | tojson }};
+            const userAnswer = {{ user_answer | default(null) | tojson }};
+            const isCorrect = {{ is_correct | default(null) | tojson }};
+            
+            if (questionAttempted) {
+                // Disable all form inputs
+                const inputs = document.querySelectorAll('.answer-options input, .answer-options textarea');
+                inputs.forEach(input => {
+                    input.disabled = true;
+                });
+                
+                // Restore user's previous answer
+                if (userAnswer) {
+                    restoreUserAnswer(userAnswer);
+                }
+                
+                // Show result
+                showQuestionResult(isCorrect);
+                
+                // Update button states
+                document.getElementById("sb-button").disabled = true;
+                document.getElementById("sb-button").textContent = "Already Attempted";
+                document.getElementById("ai-button").disabled = false;
+                
+                // Show "Already Attempted" message
+                const questionBox = document.querySelector('.question-box');
+                const attemptedBanner = document.createElement('div');
+                attemptedBanner.className = 'attempted-banner';
+                attemptedBanner.innerHTML = `
+                    <div style="background: #e3f2fd; padding: 10px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #2196f3;">
+                        <strong>📝 Already Attempted</strong>
+                        <p>You have already attempted this question. Your answer has been saved.</p>
+                    </div>
+                `;
+                questionBox.insertBefore(attemptedBanner, questionBox.firstChild.nextSibling);
+            }
+        }
+        
+        function restoreUserAnswer(userAnswer) {
+            const questionType = '{{ question.question_type | default("single") }}';
+            
+            if (questionType === 'single' && userAnswer.answer) {
+                const radio = document.querySelector(`input[value="${userAnswer.answer}"]`);
+                if (radio) radio.checked = true;
+            } else if (questionType === 'multiple' && userAnswer.answers) {
+                userAnswer.answers.forEach(answer => {
+                    const checkbox = document.querySelector(`input[value="${answer}"]`);
+                    if (checkbox) checkbox.checked = true;
+                });
+            } else if (questionType === 'fill_in_the_blank' && userAnswer.answers) {
+                userAnswer.answers.forEach((answer, index) => {
+                    const input = document.querySelector(`input[name="blank${index + 1}"]`);
+                    if (input) input.value = answer;
+                });
+            } else if (questionType === 'textbox' && userAnswer.textbox_answer) {
+                const textarea = document.getElementById('textbox_answer');
+                if (textarea) textarea.value = userAnswer.textbox_answer;
+            }
+        }
+        
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
             generateQuestionNavigation();
             updateTime();
+            checkQuestionStatus(); // Check if question was already attempted
         });
 
         // Generate question navigation buttons
@@ -619,13 +682,32 @@
             const grid = document.getElementById('questionGrid');
             grid.innerHTML = '';
             
+            // Get attempted question IDs from template variable
+            const attemptedQuestions = {{ attempted_question_ids | default([]) | tojson }};
+            
             for (let i = 0; i < EXAM_DATA.totalQuestions; i++) {
                 const btn = document.createElement('button');
                 btn.className = 'question-btn';
                 btn.textContent = i + 1;
-                btn.onclick = () => goToQuestion(i + 1); // Convert back to 1-based for URL
                 
-                if (i === EXAM_DATA.currentQuestion) {
+                const questionId = i + 1; // Assuming question IDs are sequential
+                
+                // Check if this question has been attempted
+                if (attemptedQuestions.includes(questionId)) {
+                    btn.classList.add('answered');
+                    btn.onclick = () => goToQuestion(i + 1); // Allow navigation to answered questions
+                } else {
+                    // Only allow navigation to current or previous questions
+                    if (i + 1 <= EXAM_DATA.currentQuestion) {
+                        btn.onclick = () => goToQuestion(i + 1);
+                    } else {
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+                        btn.style.cursor = 'not-allowed';
+                    }
+                }
+                
+                if (i === EXAM_DATA.currentQuestion - 1) {
                     btn.classList.add('current');
                 }
                 
@@ -691,7 +773,7 @@
                 if (response.ok && data.next_question) {
                     window.location.href = `/exam/${examId}/${data.next_question}`;
                 } else if (data.message === "Exam completed") {
-                    window.location.href = "/result/"+data.score+"/"+data.total_questions;
+                    window.location.href = `/exam_summary/${data.session_id}`;
                 } else {
                     alert(data.error || "An error occurred while processing your answer.");
                 }
