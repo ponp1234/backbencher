@@ -824,7 +824,6 @@ def exam2(exam_id, question_number):
     return render_template('exam_question.html', exam=exam, question=question, question_number=question_number, total_questions=len(questions))
 
 
-
 @app.route("/check-answer", methods=['POST'])
 @login_required
 def check_answer():
@@ -836,42 +835,103 @@ def check_answer():
     questions = Question.query.filter_by(exam_id=exam_id).all()
     question = questions[question_number - 1]
     
+    # Get or create exam session
+    exam_session_id = session.get('exam_session_id')
+    exam_session = None
+    
+    if exam_session_id:
+        exam_session = ExamSession.query.filter_by(session_id=exam_session_id).first()
+    
+    if not exam_session:
+        # Create new session if none exists
+        exam_session_id = str(uuid.uuid4())
+        exam_session = ExamSession(
+            session_id=exam_session_id,
+            user_id=current_user.id,
+            exam_id=exam_id,
+            start_time=datetime.utcnow()
+        )
+        db.session.add(exam_session)
+        db.session.commit()
+        session['exam_session_id'] = exam_session_id
+    
+    # Check if question already attempted
+    existing_attempt = QuestionAttempt.query.filter_by(
+        session_id=exam_session_id,
+        question_id=question.id
+    ).first()
+    
+    if existing_attempt:
+        return jsonify({'error': 'Question already attempted'}), 400
+    
     is_correct = False
     explanation = ""
     correct_answer = None
+    points_earned = 0
+    user_answer_json = json.dumps(data.get('userAnswers'))
     
-    if question.question_type == 'fill_in_the_blank':
-        correct_answers = question.correct_options.split(',')
-        user_answers = data.get('userAnswers', {})
-        correct_count = 0
+    try:
+        if question.question_type == 'fill_in_the_blank':
+            correct_answers = question.correct_options.split(',')
+            user_answers = data.get('userAnswers', {})
+            correct_count = 0
+            
+            for i in range(1, question.blanks + 1):
+                user_answer = user_answers.get(f"blank{i}", "").strip().lower()
+                if user_answer == correct_answers[i - 1].strip().lower():
+                    correct_count += 1
+                    
+            is_correct = correct_count == question.blanks
+            if is_correct:
+                points_earned = 1
+            correct_answer = correct_answers
+            explanation = f"The correct answer{'s are' if len(correct_answers) > 1 else ' is'}: {', '.join(correct_answers)}"
+            
+        elif question.question_type == 'multiple':
+            user_answers = set(data.get('userAnswers', []))
+            correct_answers = set(question.correct_options.split(','))
+            is_correct = user_answers == correct_answers
+            if is_correct:
+                points_earned = 1
+            correct_answer = list(correct_answers)
+            explanation = f"The correct answers are: {', '.join(correct_answer)}"
+            
+        else:  # single choice
+            user_answer = data.get('userAnswers')
+            is_correct = user_answer == question.correct_option
+            if is_correct:
+                points_earned = 1
+            correct_answer = question.correct_option
+            explanation = f"The correct answer is: {question.correct_option}"
         
-        for i in range(1, question.blanks + 1):
-            user_answer = user_answers.get(f"blank{i}", "").strip().lower()
-            if user_answer == correct_answers[i - 1].strip().lower():
-                correct_count += 1
-                
-        is_correct = correct_count == question.blanks
-        correct_answer = correct_answers
-        explanation = f"The correct answer{'s are' if len(correct_answers) > 1 else ' is'}: {', '.join(correct_answers)}"
+        # Record the attempt
+        attempt = QuestionAttempt(
+            session_id=exam_session_id,
+            question_id=question.id,
+            user_answer=user_answer_json,
+            is_correct=is_correct,
+            points_earned=points_earned,
+            attempt_time=datetime.utcnow(),
+            ai_help_used=session.get(f'ai_help_used_{question.id}', False)
+        )
+        db.session.add(attempt)
         
-    elif question.question_type == 'multiple':
-        user_answers = set(data.get('userAnswers', []))
-        correct_answers = set(question.correct_options.split(','))
-        is_correct = user_answers == correct_answers
-        correct_answer = list(correct_answers)
-        explanation = f"The correct answers are: {', '.join(correct_answer)}"
+        # Update session score
+        exam_session.total_score += points_earned
+        exam_session.current_question = max(exam_session.current_question or 0, question_number)
         
-    else:  # single choice
-        user_answer = data.get('userAnswers')
-        is_correct = user_answer == question.correct_option
-        correct_answer = question.correct_option
-        explanation = f"The correct answer is: {question.correct_option}"
-    
-    return jsonify({
-        'isCorrect': is_correct,
-        'correctAnswer': correct_answer,
-        'explanation': explanation
-    })
+        db.session.commit()
+        
+        return jsonify({
+            'isCorrect': is_correct,
+            'correctAnswer': correct_answer,
+            'explanation': explanation,
+            'pointsEarned': points_earned
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'error': str(e)}), 400
 
 @app.route("/logout")
 def logout():
