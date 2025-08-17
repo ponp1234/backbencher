@@ -648,9 +648,9 @@
 
         // Initialize EXAM_DATA safely
         try {
-            EXAM_DATA.totalQuestions = parseInt(document.querySelector('[data-total-questions]')?.dataset.totalQuestions || '0') || 0;
-            EXAM_DATA.currentQuestion = (parseInt(document.querySelector('[data-question-number]')?.dataset.questionNumber || '1') || 1) - 1;
-            EXAM_DATA.examId = parseInt(document.querySelector('[data-exam-id]')?.dataset.examId || '1') || 1;
+            EXAM_DATA.totalQuestions = parseInt(document.body.dataset.totalQuestions || '0') || 0;
+            EXAM_DATA.currentQuestion = (parseInt(document.body.dataset.questionNumber || '1') || 1) - 1;
+            EXAM_DATA.examId = parseInt(document.body.dataset.examId || '1') || 1;
         } catch (e) {
             console.error('Error initializing EXAM_DATA:', e);
         }
@@ -756,19 +756,37 @@
             submitButton.textContent = "Already Submitted";
             submitButton.style.background = "#95a5a6";
             
-            // Enable next button for navigation
+            // Enable next button for navigation - use submitAnswer for navigation
             nextButton.disabled = false;
             nextButton.textContent = "Continue to Next";
+            nextButton.onclick = function() {
+                goToNextQuestion();
+            };
             
             // Enable AI button for help/review
             aiButton.disabled = false;
             aiButton.textContent = "Get AI Help";
         }
         
+        // Function to navigate to next question
+        function goToNextQuestion() {
+            const currentQuestionNum = parseInt(document.body.dataset.questionNumber || '1');
+            const totalQuestions = parseInt(document.body.dataset.totalQuestions || '1');
+            const examId = document.body.dataset.examId || '1';
+            
+            if (currentQuestionNum < totalQuestions) {
+                window.location.href = `/exam/${examId}/${currentQuestionNum + 1}`;
+            } else {
+                // If this is the last question, go to exam summary
+                alert("You have completed all questions! Redirecting to exam summary...");
+                window.location.href = `/exam_summary/${examId}`;
+            }
+        }
+        
         function restoreUserAnswer(userAnswer) {
             let questionType = 'single';
             try {
-                questionType = document.querySelector('[data-question-type]')?.dataset.questionType || 'single';
+                questionType = document.body.dataset.questionType || 'single';
             } catch (e) {
                 console.error('Error getting question type:', e);
             }
@@ -810,7 +828,7 @@
             }
         }
         
-        function showQuestionResult(isCorrect) {
+        function showQuestionResult(isCorrect, userAnswer) {
             // Create or update feedback element
             let feedbackDiv = document.getElementById('answer-feedback');
             if (!feedbackDiv) {
@@ -824,20 +842,77 @@
             const resultColor = isCorrect ? '#4caf50' : '#f44336';
             const bgColor = isCorrect ? '#e8f5e9' : '#ffebee';
 
+            // Show what the user submitted
+            let submittedAnswerHtml = '';
+            if (userAnswer) {
+                submittedAnswerHtml = `
+                    <div style="margin-top: 15px; padding: 12px; background: rgba(255,255,255,0.7); border-radius: 8px; border-left: 3px solid #2196f3;">
+                        <strong style="color: #2196f3;">Your Submitted Answer:</strong>
+                        <div style="margin-top: 5px; color: #555;">
+                            ${formatUserAnswer(userAnswer)}
+                        </div>
+                    </div>
+                `;
+            }
+
             feedbackDiv.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 12px; 
-                           padding: 15px; margin-top: 20px; border-radius: 12px;
+                           padding: 20px; margin-top: 20px; border-radius: 12px;
                            background: ${bgColor}; border: 2px solid ${resultColor};
                            animation: fadeIn 0.5s ease-out;">
-                    <span style="font-size: 24px;">${resultIcon}</span>
-                    <div>
-                        <strong style="color: ${resultColor}; font-size: 1.2em;">${resultText}</strong>
+                    <span style="font-size: 28px;">${resultIcon}</span>
+                    <div style="flex: 1;">
+                        <strong style="color: ${resultColor}; font-size: 1.3em;">${resultText}</strong>
                         <p style="margin: 5px 0 0 0; color: #555;">
-                            ${isCorrect ? 'Great job! Your answer was correct.' : 'Your answer was not correct, but you can review it here.'}
+                            ${isCorrect ? 
+                                'Great job! Your answer was correct.' : 
+                                'Your answer was not correct. Review the material and try to understand the concept better.'}
                         </p>
+                        ${submittedAnswerHtml}
                     </div>
                 </div>
             `;
+        }
+        
+        // Helper function to format user answer for display
+        function formatUserAnswer(userAnswer) {
+            const questionType = document.body.dataset.questionType || 'single';
+            
+            if (questionType === 'single' && userAnswer.answer) {
+                // Find the option text for single choice
+                const selectedInput = document.querySelector(`input[value="${userAnswer.answer}"]`);
+                if (selectedInput) {
+                    const label = selectedInput.closest('label');
+                    const optionText = label.textContent.trim();
+                    return `<span style="font-weight: 600;">${optionText}</span>`;
+                }
+                return userAnswer.answer;
+                
+            } else if (questionType === 'multiple' && userAnswer.answers) {
+                // Format multiple choice answers
+                const selectedOptions = userAnswer.answers.map(answer => {
+                    const selectedInput = document.querySelector(`input[value="${answer}"]`);
+                    if (selectedInput) {
+                        const label = selectedInput.closest('label');
+                        return label.textContent.trim();
+                    }
+                    return answer;
+                });
+                return `<span style="font-weight: 600;">${selectedOptions.join(', ')}</span>`;
+                
+            } else if (questionType === 'fill_in_the_blank' && userAnswer.answers) {
+                // Format fill in the blank answers
+                const answersHtml = userAnswer.answers.map((answer, index) => 
+                    `<div><strong>Blank ${index + 1}:</strong> ${answer}</div>`
+                ).join('');
+                return answersHtml;
+                
+            } else if (questionType === 'textbox' && userAnswer.textbox_answer) {
+                // Format textbox answer
+                return `<div style="max-height: 150px; overflow-y: auto; padding: 8px; background: #f5f5f5; border-radius: 4px; font-family: monospace;">${userAnswer.textbox_answer}</div>`;
+            }
+            
+            return JSON.stringify(userAnswer);
         }
         
         // Initialize on page load
@@ -857,12 +932,13 @@
             // Get attempted question IDs from data attribute
             let attemptedQuestions = [];
             try {
-                const attemptedData = document.querySelector('[data-attempted-questions]')?.dataset.attemptedQuestions;
-                if (attemptedData) {
+                const attemptedData = document.body.dataset.attemptedQuestions;
+                if (attemptedData && attemptedData !== '[]' && attemptedData !== '') {
                     attemptedQuestions = JSON.parse(attemptedData);
                 }
             } catch (e) {
                 console.error('Error parsing attempted questions:', e);
+                console.log('Raw attempted data:', document.body.dataset.attemptedQuestions);
                 attemptedQuestions = [];
             }
             
@@ -919,7 +995,7 @@
             let questionType = 'single';
             
             try {
-                questionType = document.querySelector('[data-question-type]')?.dataset.questionType || 'single';
+                questionType = document.body.dataset.questionType || 'single';
             } catch (e) {
                 console.error('Error getting question type:', e);
             }
@@ -949,8 +1025,8 @@
                 let questionNumber = '1';
                 
                 try {
-                    examId = document.querySelector('[data-exam-id]')?.dataset.examId || '1';
-                    questionNumber = document.querySelector('[data-question-number]')?.dataset.questionNumber || '1';
+                    examId = document.body.dataset.examId || '1';
+                    questionNumber = document.body.dataset.questionNumber || '1';
                 } catch (e) {
                     console.error('Error getting exam data:', e);
                 }
@@ -1187,7 +1263,7 @@
             // Check if question is already attempted
             let questionAttempted = false;
             try {
-                questionAttempted = document.querySelector('[data-question-attempted]')?.dataset.questionAttempted === 'true';
+                questionAttempted = document.body.dataset.questionAttempted === 'true';
             } catch (e) {
                 console.error('Error checking question status:', e);
             }
@@ -1343,7 +1419,7 @@
             let questionType = 'single';
             
             try {
-                questionType = document.querySelector('[data-question-type]')?.dataset.questionType || 'single';
+                questionType = document.body.dataset.questionType || 'single';
             } catch (e) {
                 console.error('Error getting question type:', e);
             }
