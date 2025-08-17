@@ -92,8 +92,6 @@ class User(db.Model, UserMixin):
     student_class = db.Column(db.String(50), nullable=False)  
     wallet_balance = db.Column(db.Float, default=0.0)  # New field to store total balance
 
-   
-
 class ExamMapping(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     exam_id = db.Column(db.Integer, db.ForeignKey('exam.id'), nullable=False)
@@ -166,134 +164,11 @@ class HTMLMapping(db.Model):
 
 
 # Exam model (must be defined before Question model)
-class Exams(db.Model):
+class Exam(db.Model):
     __tablename__ = 'exam'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     questions = db.relationship('Question', backref='exam', lazy=True)
-
-
-
-class Exam(db.Model):
-    __tablename__ = 'exams'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(200), nullable=False)
-    description = db.Column(db.Text)
-    subject = db.Column(db.String(50), default='Science')
-    grade_level = db.Column(db.String(20), default='Primary 4')
-    duration_minutes = db.Column(db.Integer, default=60)
-    total_marks = db.Column(db.Integer, default=100)
-    is_active = db.Column(db.Boolean, default=True)
-    instructions = db.Column(db.Text)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    
-    # Relationships
-    questions = db.relationship('ExamQuestion', backref='exam', lazy=True, order_by='ExamQuestion.question_number')
-    attempts = db.relationship('ExamAttempt', backref='exam', lazy=True)
-
-class ExamQuestion(db.Model):
-    __tablename__ = 'exam_questions'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    exam_id = db.Column(db.Integer, db.ForeignKey('exams.id'), nullable=False)
-    question_number = db.Column(db.Integer, nullable=False)
-    section = db.Column(db.String(10), nullable=False)  # 'A', 'B', 'C', etc.
-    question_text = db.Column(db.Text, nullable=False)
-    question_type = db.Column(db.String(20), nullable=False)  # 'single', 'multiple', 'fill_blank', 'textbox'
-    
-    # Multiple choice options
-    option_a = db.Column(db.Text)
-    option_b = db.Column(db.Text)
-    option_c = db.Column(db.Text)
-    option_d = db.Column(db.Text)
-    correct_option = db.Column(db.String(10))  # 'option_a', 'option_b', etc.
-    
-    # Other question types
-    correct_answer = db.Column(db.Text)
-    alternative_answers = db.Column(db.Text)  # JSON array of acceptable answers
-    blanks = db.Column(db.Integer, default=1)
-    
-    # Question metadata
-    marks = db.Column(db.Integer, default=1)
-    explanation = db.Column(db.Text)
-    image_url = db.Column(db.String(255))
-    diagram_data = db.Column(db.Text)  # JSON for interactive diagrams
-    difficulty_level = db.Column(db.String(10), default='medium')
-    topic_tags = db.Column(db.Text)  # JSON array of topic tags
-    learning_objectives = db.Column(db.Text)
-    
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    # Relationships
-    responses = db.relationship('QuestionResponse', backref='question', lazy=True)
-
-class ExamAttempt(db.Model):
-    __tablename__ = 'exam_attempts'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    exam_id = db.Column(db.Integer, db.ForeignKey('exams.id'), nullable=False)
-    start_time = db.Column(db.DateTime, default=datetime.utcnow)
-    end_time = db.Column(db.DateTime)
-    total_score = db.Column(db.Integer, default=0)
-    max_possible_score = db.Column(db.Integer, default=0)
-    percentage = db.Column(db.Float, default=0.0)
-    time_taken_minutes = db.Column(db.Integer)
-    is_completed = db.Column(db.Boolean, default=False)
-    answers = db.Column(db.Text)  # JSON object storing all answers
-    feedback = db.Column(db.Text)  # Overall feedback for the student
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    # Relationships
-    responses = db.relationship('QuestionResponse', backref='attempt', lazy=True)
-
-class QuestionResponse(db.Model):
-    __tablename__ = 'question_responses'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    attempt_id = db.Column(db.Integer, db.ForeignKey('exam_attempts.id'), nullable=False)
-    question_id = db.Column(db.Integer, db.ForeignKey('exam_questions.id'), nullable=False)
-    student_answer = db.Column(db.Text)
-    is_correct = db.Column(db.Boolean, default=False)
-    marks_awarded = db.Column(db.Integer, default=0)
-    time_spent_seconds = db.Column(db.Integer)
-    feedback = db.Column(db.Text)  # Specific feedback for this question
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-
-class StudentProgress(db.Model):
-    __tablename__ = 'student_progress'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    topic_id = db.Column(db.String(50), nullable=False)
-    topic_title = db.Column(db.String(200), nullable=False)
-    score = db.Column(db.Integer, default=0)
-    total_questions = db.Column(db.Integer, default=0)
-    completed = db.Column(db.Boolean, default=False)
-    attempts = db.Column(db.Integer, default=0)
-    best_score = db.Column(db.Integer, default=0)
-    last_attempt = db.Column(db.DateTime, default=datetime.utcnow)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    __table_args__ = (db.UniqueConstraint('user_id', 'topic_id'),)
-
-class ExamAnalytics(db.Model):
-    __tablename__ = 'exam_analytics'
-    
-    id = db.Column(db.Integer, primary_key=True)
-    exam_id = db.Column(db.Integer, db.ForeignKey('exams.id'), nullable=False)
-    question_id = db.Column(db.Integer, db.ForeignKey('exam_questions.id'), nullable=False)
-    total_attempts = db.Column(db.Integer, default=0)
-    correct_attempts = db.Column(db.Integer, default=0)
-    average_time_seconds = db.Column(db.Float, default=0.0)
-    difficulty_rating = db.Column(db.Float, default=0.0)  # Calculated based on success rate
-    last_updated = db.Column(db.DateTime, default=datetime.utcnow)
-    
-    __table_args__ = (db.UniqueConstraint('exam_id', 'question_id'),)
-
-
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -890,8 +765,7 @@ def execute_query():
 
     finally:
         session.close()  # Ensure session is closed
-
-
+        
 if __name__ == '__main__':
     with app.app_context():
         
