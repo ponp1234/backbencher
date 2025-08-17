@@ -92,6 +92,10 @@ class User(db.Model, UserMixin):
     student_class = db.Column(db.String(50), nullable=False)  
     wallet_balance = db.Column(db.Float, default=0.0)  # New field to store total balance
 
+    exam_attempts = db.relationship('ExamAttempt', backref='user', lazy=True)
+    progress = db.relationship('StudentProgress', backref='user', lazy=True)
+
+
 class ExamMapping(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     exam_id = db.Column(db.Integer, db.ForeignKey('exam.id'), nullable=False)
@@ -164,11 +168,134 @@ class HTMLMapping(db.Model):
 
 
 # Exam model (must be defined before Question model)
-class Exam(db.Model):
+class Exams(db.Model):
     __tablename__ = 'exam'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     questions = db.relationship('Question', backref='exam', lazy=True)
+
+
+
+class Exam(db.Model):
+    __tablename__ = 'exams'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text)
+    subject = db.Column(db.String(50), default='Science')
+    grade_level = db.Column(db.String(20), default='Primary 4')
+    duration_minutes = db.Column(db.Integer, default=60)
+    total_marks = db.Column(db.Integer, default=100)
+    is_active = db.Column(db.Boolean, default=True)
+    instructions = db.Column(db.Text)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    questions = db.relationship('ExamQuestion', backref='exam', lazy=True, order_by='ExamQuestion.question_number')
+    attempts = db.relationship('ExamAttempt', backref='exam', lazy=True)
+
+class ExamQuestion(db.Model):
+    __tablename__ = 'exam_questions'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    exam_id = db.Column(db.Integer, db.ForeignKey('exams.id'), nullable=False)
+    question_number = db.Column(db.Integer, nullable=False)
+    section = db.Column(db.String(10), nullable=False)  # 'A', 'B', 'C', etc.
+    question_text = db.Column(db.Text, nullable=False)
+    question_type = db.Column(db.String(20), nullable=False)  # 'single', 'multiple', 'fill_blank', 'textbox'
+    
+    # Multiple choice options
+    option_a = db.Column(db.Text)
+    option_b = db.Column(db.Text)
+    option_c = db.Column(db.Text)
+    option_d = db.Column(db.Text)
+    correct_option = db.Column(db.String(10))  # 'option_a', 'option_b', etc.
+    
+    # Other question types
+    correct_answer = db.Column(db.Text)
+    alternative_answers = db.Column(db.Text)  # JSON array of acceptable answers
+    blanks = db.Column(db.Integer, default=1)
+    
+    # Question metadata
+    marks = db.Column(db.Integer, default=1)
+    explanation = db.Column(db.Text)
+    image_url = db.Column(db.String(255))
+    diagram_data = db.Column(db.Text)  # JSON for interactive diagrams
+    difficulty_level = db.Column(db.String(10), default='medium')
+    topic_tags = db.Column(db.Text)  # JSON array of topic tags
+    learning_objectives = db.Column(db.Text)
+    
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    responses = db.relationship('QuestionResponse', backref='question', lazy=True)
+
+class ExamAttempt(db.Model):
+    __tablename__ = 'exam_attempts'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    exam_id = db.Column(db.Integer, db.ForeignKey('exams.id'), nullable=False)
+    start_time = db.Column(db.DateTime, default=datetime.utcnow)
+    end_time = db.Column(db.DateTime)
+    total_score = db.Column(db.Integer, default=0)
+    max_possible_score = db.Column(db.Integer, default=0)
+    percentage = db.Column(db.Float, default=0.0)
+    time_taken_minutes = db.Column(db.Integer)
+    is_completed = db.Column(db.Boolean, default=False)
+    answers = db.Column(db.Text)  # JSON object storing all answers
+    feedback = db.Column(db.Text)  # Overall feedback for the student
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    responses = db.relationship('QuestionResponse', backref='attempt', lazy=True)
+
+class QuestionResponse(db.Model):
+    __tablename__ = 'question_responses'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    attempt_id = db.Column(db.Integer, db.ForeignKey('exam_attempts.id'), nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('exam_questions.id'), nullable=False)
+    student_answer = db.Column(db.Text)
+    is_correct = db.Column(db.Boolean, default=False)
+    marks_awarded = db.Column(db.Integer, default=0)
+    time_spent_seconds = db.Column(db.Integer)
+    feedback = db.Column(db.Text)  # Specific feedback for this question
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class StudentProgress(db.Model):
+    __tablename__ = 'student_progress'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    topic_id = db.Column(db.String(50), nullable=False)
+    topic_title = db.Column(db.String(200), nullable=False)
+    score = db.Column(db.Integer, default=0)
+    total_questions = db.Column(db.Integer, default=0)
+    completed = db.Column(db.Boolean, default=False)
+    attempts = db.Column(db.Integer, default=0)
+    best_score = db.Column(db.Integer, default=0)
+    last_attempt = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (db.UniqueConstraint('user_id', 'topic_id'),)
+
+class ExamAnalytics(db.Model):
+    __tablename__ = 'exam_analytics'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    exam_id = db.Column(db.Integer, db.ForeignKey('exams.id'), nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('exam_questions.id'), nullable=False)
+    total_attempts = db.Column(db.Integer, default=0)
+    correct_attempts = db.Column(db.Integer, default=0)
+    average_time_seconds = db.Column(db.Float, default=0.0)
+    difficulty_rating = db.Column(db.Float, default=0.0)  # Calculated based on success rate
+    last_updated = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (db.UniqueConstraint('exam_id', 'question_id'),)
+
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -765,7 +892,164 @@ def execute_query():
 
     finally:
         session.close()  # Ensure session is closed
+
+
+from flask import Blueprint, request, jsonify, render_template, session, redirect, url_for
+
+
+exam_bp = Blueprint('exam', __name__)
+
+@exam_bp.route('/save-exam-answer', methods=['POST'])
+def save_exam_answer():
+    """Save individual question answer to database"""
+    try:
+        if 'user_id' not in session:
+            return jsonify({'error': 'Not authenticated'}), 401
         
+        data = request.get_json()
+        exam_id = data.get('examId')
+        question_number = data.get('questionNumber')
+        question_id = data.get('questionId')
+        user_answer = data.get('userAnswer')
+        is_correct = data.get('isCorrect')
+        marks = data.get('marks', 0)
+        time_spent = data.get('timeSpent', 0)
+        
+        user_id = session['user_id']
+        
+        # Get or create exam attempt
+        attempt = ExamAttempt.query.filter_by(
+            user_id=user_id,
+            exam_id=exam_id,
+            is_completed=False
+        ).first()
+        
+        if not attempt:
+            return jsonify({'error': 'No active exam attempt found'}), 404
+        
+        # Save or update question response
+        response = QuestionResponse.query.filter_by(
+            attempt_id=attempt.id,
+            question_id=question_id
+        ).first()
+        
+        if response:
+            # Update existing response
+            response.student_answer = json.dumps(user_answer) if isinstance(user_answer, dict) else str(user_answer)
+            response.is_correct = is_correct
+            response.marks_awarded = marks
+            response.time_spent_seconds = time_spent
+        else:
+            # Create new response
+            response = QuestionResponse(
+                attempt_id=attempt.id,
+                question_id=question_id,
+                student_answer=json.dumps(user_answer) if isinstance(user_answer, dict) else str(user_answer),
+                is_correct=is_correct,
+                marks_awarded=marks,
+                time_spent_seconds=time_spent
+            )
+            db.session.add(response)
+        
+        # Update attempt total score
+        attempt.total_score = sum(r.marks_awarded for r in attempt.responses)
+        
+        db.session.commit()
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@exam_bp.route('/complete-exam', methods=['POST'])
+def complete_exam():
+    """Complete the exam and save final results"""
+    try:
+        if 'user_id' not in session:
+            return jsonify({'error': 'Not authenticated'}), 401
+        
+        data = request.get_json()
+        exam_id = data.get('examId')
+        total_score = data.get('totalScore')
+        max_score = data.get('maxScore')
+        percentage = data.get('percentage')
+        time_taken = data.get('timeTaken')
+        
+        user_id = session['user_id']
+        
+        # Get the exam attempt
+        attempt = ExamAttempt.query.filter_by(
+            user_id=user_id,
+            exam_id=exam_id,
+            is_completed=False
+        ).first()
+        
+        if not attempt:
+            return jsonify({'error': 'No active exam attempt found'}), 404
+        
+        # Complete the attempt
+        attempt.end_time = datetime.utcnow()
+        attempt.total_score = total_score
+        attempt.percentage = percentage
+        attempt.time_taken_minutes = time_taken
+        attempt.is_completed = True
+        
+        # Update student progress
+        from app.models import StudentProgress
+        progress = StudentProgress.query.filter_by(
+            user_id=user_id,
+            topic_id=f"exam_{exam_id}"
+        ).first()
+        
+        if progress:
+            progress.score = max(progress.score, total_score)
+            progress.best_score = max(progress.best_score, total_score)
+            progress.attempts += 1
+            progress.completed = percentage >= 50  # Pass mark
+        else:
+            progress = StudentProgress(
+                user_id=user_id,
+                topic_id=f"exam_{exam_id}",
+                topic_title=f"Exam: {attempt.exam.title}",
+                score=total_score,
+                total_questions=len(attempt.exam.questions),
+                completed=percentage >= 50,
+                attempts=1,
+                best_score=total_score
+            )
+            db.session.add(progress)
+        
+        db.session.commit()
+        
+        return jsonify({'success': True})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@exam_bp.route('/exam-results/<int:exam_id>')
+def exam_results(exam_id):
+    """Display exam results"""
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
+    
+    user_id = session['user_id']
+    
+    # Get the most recent completed attempt
+    attempt = ExamAttempt.query.filter_by(
+        user_id=user_id,
+        exam_id=exam_id,
+        is_completed=True
+    ).order_by(ExamAttempt.end_time.desc()).first()
+    
+    if not attempt:
+        return redirect(url_for('exam.start_exam', exam_id=exam_id))
+    
+    return render_template('exam_results.html', attempt=attempt)
+
+
+
+
+
 if __name__ == '__main__':
     with app.app_context():
         

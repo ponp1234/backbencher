@@ -447,6 +447,48 @@
         #answer-feedback {
             transition: all 0.3s ease;
         }
+
+               .question-nav {
+            margin-top: 20px;
+        }
+
+        .question-nav h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+        }
+
+        .question-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+        }
+
+        .question-btn:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .question-btn.current {
+            background: #4caf50;
+        }
+
+        .question-btn.answered {
+            background: #2196f3;
+        }
+
     </style>
 </head>
 
