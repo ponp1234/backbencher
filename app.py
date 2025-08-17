@@ -27,6 +27,83 @@ SessionLocal = sessionmaker(bind=execute_query_engine)
 
 
 
+# Add these new models to your existing app.py
+
+import uuid
+import json
+from datetime import datetime
+
+class ExamSession(db.Model):
+    __tablename__ = 'exam_sessions'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.String(255), unique=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    exam_id = db.Column(db.Integer, db.ForeignKey('exam.id'), nullable=False)
+    start_time = db.Column(db.DateTime, default=datetime.utcnow)
+    end_time = db.Column(db.DateTime)
+    current_question = db.Column(db.Integer, default=1)
+    total_score = db.Column(db.Integer, default=0)
+    is_completed = db.Column(db.Boolean, default=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    # Relationships
+    user = db.relationship('User', backref='exam_sessions')
+    exam = db.relationship('Exam', backref='exam_sessions')
+    question_attempts = db.relationship('QuestionAttempt', backref='exam_session', cascade='all, delete-orphan')
+
+class QuestionAttempt(db.Model):
+    __tablename__ = 'question_attempts'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.String(255), db.ForeignKey('exam_sessions.session_id'), nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('question.id'), nullable=False)
+    user_answer = db.Column(db.Text)  # JSON string for complex answers
+    is_correct = db.Column(db.Boolean, default=False)
+    points_earned = db.Column(db.Integer, default=0)
+    max_points = db.Column(db.Integer, default=1)
+    attempt_time = db.Column(db.DateTime, default=datetime.utcnow)
+    ai_help_used = db.Column(db.Boolean, default=False)
+    
+    # Relationships
+    question = db.relationship('Question', backref='attempts')
+    
+    # Ensure unique attempts per session-question
+    __table_args__ = (db.UniqueConstraint('session_id', 'question_id'),)
+
+
+@app.route("/start_exam/<int:exam_id>")
+@login_required
+def start_exam(exam_id):
+    """Start a new exam session"""
+    # Check if user has an active session for this exam
+    active_session = ExamSession.query.filter_by(
+        user_id=current_user.id,
+        exam_id=exam_id,
+        is_completed=False
+    ).first()
+    
+    if active_session:
+        # Resume existing session
+        return redirect(url_for('exam', exam_id=exam_id, question_number=active_session.current_question))
+    
+    # Create new session
+    session_id = str(uuid.uuid4())
+    exam_session = ExamSession(
+        session_id=session_id,
+        user_id=current_user.id,
+        exam_id=exam_id,
+        start_time=datetime.utcnow()
+    )
+    db.session.add(exam_session)
+    db.session.commit()
+    
+    # Store session ID in Flask session
+    session['exam_session_id'] = session_id
+    
+    return redirect(url_for('exam', exam_id=exam_id, question_number=1))
+
+
 
 
 class WalletTransaction(db.Model):
@@ -225,7 +302,258 @@ class HTMLMapping(db.Model):
                     .all())
         return render_template('wallet.html', transactions=transactions, balance=current_user.wallet_balance)
 
+@app.route("/exam/<int:exam_id>/<int:question_number>", methods=['GET', 'POST'])
+@login_required
+def exam(exam_id, question_number):
+    exam = Exam.query.get_or_404(exam_id)
+    questions = Question.query.filter_by(exam_id=exam_id).all()
+    
+    if question_number > len(questions) or question_number < 1:
+        flash('Invalid question number', 'error')
+        return redirect(url_for('papers'))
+    
+    question = questions[question_number - 1]
+    
+    # Get or create exam session
+    exam_session_id = session.get('exam_session_id')
+    exam_session = None
+    
+    if exam_session_id:
+        exam_session = ExamSession.query.filter_by(session_id=exam_session_id).first()
+    
+    if not exam_session:
+        # Create new session if none exists
+        exam_session_id = str(uuid.uuid4())
+        exam_session = ExamSession(
+            session_id=exam_session_id,
+            user_id=current_user.id,
+            exam_id=exam_id,
+            start_time=datetime.utcnow()
+        )
+        db.session.add(exam_session)
+        db.session.commit()
+        session['exam_session_id'] = exam_session_id
+    
+    # Check if question already attempted
+    existing_attempt = QuestionAttempt.query.filter_by(
+        session_id=exam_session_id,
+        question_id=question.id
+    ).first()
+    
+    if request.method == 'POST':
+        if existing_attempt:
+            return jsonify({'error': 'Question already attempted'}), 400
+        
+        try:
+            data = request.get_json()
+            question_type = question.question_type
+            is_correct = False
+            points_earned = 0
+            user_answer_json = json.dumps(data)
+            
+            # Evaluate answer based on question type
+            if question_type == 'fill_in_the_blank':
+                correct_answers = [ans.strip().lower() for ans in question.correct_options.split(',')]
+                user_answers = [ans.strip().lower() for ans in data.get('answers', [])]
+                if user_answers == correct_answers:
+                    is_correct = True
+                    points_earned = 1
+                    
+            elif question_type == 'multiple':
+                correct_answers = set(question.correct_options.split(','))
+                user_answers = set(data.get('answers', []))
+                if user_answers == correct_answers:
+                    is_correct = True
+                    points_earned = 1
+                    
+            elif question_type == 'single':
+                user_answer = data.get('answer')
+                if user_answer == question.correct_option:
+                    is_correct = True
+                    points_earned = 1
+            
+            # Record the attempt
+            attempt = QuestionAttempt(
+                session_id=exam_session_id,
+                question_id=question.id,
+                user_answer=user_answer_json,
+                is_correct=is_correct,
+                points_earned=points_earned,
+                attempt_time=datetime.utcnow(),
+                ai_help_used=session.get(f'ai_help_used_{question.id}', False)
+            )
+            db.session.add(attempt)
+            
+            # Update session score and current question
+            exam_session.total_score += points_earned
+            exam_session.current_question = min(question_number + 1, len(questions))
+            
+            # Check if exam is completed
+            if question_number == len(questions):
+                exam_session.is_completed = True
+                exam_session.end_time = datetime.utcnow()
+                
+                # Create final exam attempt record for compatibility
+                final_attempt = ExamAttempt(
+                    user_id=current_user.id,
+                    exam_id=exam_id,
+                    score=exam_session.total_score,
+                    total_questions=len(questions),
+                    attempt_date=datetime.utcnow()
+                )
+                db.session.add(final_attempt)
+                db.session.commit()
+                
+                # Clear session
+                session.pop('exam_session_id', None)
+                session.pop('score', None)
+                
+                return jsonify({
+                    'message': 'Exam completed',
+                    'session_id': exam_session_id
+                })
+            
+            db.session.commit()
+            return jsonify({
+                'message': 'Question processed',
+                'next_question': question_number + 1,
+                'is_correct': is_correct,
+                'points_earned': points_earned
+            })
+            
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({'error': str(e)}), 400
+    
+    # GET request - check if question is already attempted
+    question_attempted = existing_attempt is not None
+    user_answer = None
+    is_correct = None
+    
+    if existing_attempt:
+        user_answer = json.loads(existing_attempt.user_answer) if existing_attempt.user_answer else None
+        is_correct = existing_attempt.is_correct
+    
+    # Get all attempted questions for navigation
+    attempted_questions = db.session.query(QuestionAttempt.question_id).filter_by(
+        session_id=exam_session_id
+    ).all()
+    attempted_question_ids = [q[0] for q in attempted_questions]
+    
+    return render_template(
+        'exam_question.html',
+        exam=exam,
+        question=question,
+        question_number=question_number,
+        total_questions=len(questions),
+        question_attempted=question_attempted,
+        user_answer=user_answer,
+        is_correct=is_correct,
+        attempted_question_ids=attempted_question_ids
+    )
 
+@app.route("/exam_summary/<session_id>")
+@login_required
+def exam_summary(session_id):
+    """Display comprehensive exam summary"""
+    exam_session = ExamSession.query.filter_by(session_id=session_id).first_or_404()
+    
+    # Security check
+    if exam_session.user_id != current_user.id:
+        flash('Unauthorized access', 'error')
+        return redirect(url_for('papers'))
+    
+    # Get all question attempts for this session
+    attempts = db.session.query(QuestionAttempt, Question).join(
+        Question, QuestionAttempt.question_id == Question.id
+    ).filter(
+        QuestionAttempt.session_id == session_id
+    ).order_by(Question.id).all()
+    
+    # Calculate statistics
+    total_questions = Question.query.filter_by(exam_id=exam_session.exam_id).count()
+    questions_attempted = len(attempts)
+    correct_answers = sum(1 for attempt, _ in attempts if attempt.is_correct)
+    ai_help_used = sum(1 for attempt, _ in attempts if attempt.ai_help_used)
+    
+    # Calculate time taken
+    time_taken_minutes = 0
+    if exam_session.end_time and exam_session.start_time:
+        time_taken = exam_session.end_time - exam_session.start_time
+        time_taken_minutes = int(time_taken.total_seconds() / 60)
+    
+    # Calculate percentage
+    percentage = (correct_answers / total_questions * 100) if total_questions > 0 else 0
+    
+    # Determine grade/feedback
+    grade = get_grade(percentage)
+    feedback = get_feedback(percentage, ai_help_used, questions_attempted, total_questions)
+    
+    return render_template(
+        'exam_summary.html',
+        exam_session=exam_session,
+        attempts=attempts,
+        total_questions=total_questions,
+        questions_attempted=questions_attempted,
+        correct_answers=correct_answers,
+        percentage=round(percentage, 1),
+        time_taken_minutes=time_taken_minutes,
+        ai_help_used=ai_help_used,
+        grade=grade,
+        feedback=feedback
+    )
+
+def get_grade(percentage):
+    """Convert percentage to grade"""
+    if percentage >= 90:
+        return 'A*'
+    elif percentage >= 80:
+        return 'A'
+    elif percentage >= 70:
+        return 'B'
+    elif percentage >= 60:
+        return 'C'
+    elif percentage >= 50:
+        return 'D'
+    elif percentage >= 40:
+        return 'E'
+    else:
+        return 'U'
+
+def get_feedback(percentage, ai_help_used, attempted, total):
+    """Generate personalized feedback"""
+    feedback = []
+    
+    if percentage >= 90:
+        feedback.append("🎉 Excellent work! You have a strong understanding of this topic.")
+    elif percentage >= 70:
+        feedback.append("👍 Good job! You're on the right track.")
+    elif percentage >= 50:
+        feedback.append("📚 You're making progress, but there's room for improvement.")
+    else:
+        feedback.append("💪 Keep studying! Practice makes perfect.")
+    
+    if attempted < total:
+        feedback.append(f"⚠️ You attempted {attempted} out of {total} questions. Try to complete all questions next time.")
+    
+    if ai_help_used > 0:
+        feedback.append(f"🤖 You used AI help on {ai_help_used} question(s). Use this as a learning tool!")
+    
+    return " ".join(feedback)
+
+# Update the result route to redirect to summary
+@app.route("/result/<int:score>/<int:total>")
+@login_required  
+def result(score, total):
+    # If there's an active exam session, redirect to summary
+    exam_session_id = session.get('exam_session_id')
+    if exam_session_id:
+        exam_session = ExamSession.query.filter_by(session_id=exam_session_id).first()
+        if exam_session and exam_session.is_completed:
+            return redirect(url_for('exam_summary', session_id=exam_session_id))
+    
+    # Fallback to original result page
+    return render_template("result.html", score=score, total=total)
 
 # Exam model (must be defined before Question model)
 class Exam(db.Model):
