@@ -715,9 +715,9 @@ def resultt(score, total):
 
 
 
-@app.route("/exam/<int:exam_id>/<int:question_number>", methods=['GET', 'POST'])
+@app.route("/exam2/<int:exam_id>/<int:question_number>", methods=['GET', 'POST'])
 @login_required
-def exam(exam_id, question_number):
+def exam2(exam_id, question_number):
     exam = Exam.query.get_or_404(exam_id)
     questions = Question.query.filter_by(exam_id=exam_id).all()
     question = questions[question_number - 1]
