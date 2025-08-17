@@ -366,8 +366,7 @@ def exam(exam_id, question_number):
     ).first()
     
     if request.method == 'POST':
-        if existing_attempt:
-            return jsonify({'error': 'Question already attempted'}), 400
+
         
         try:
             data = request.get_json()
