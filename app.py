@@ -897,7 +897,7 @@ def execute_query():
 from flask import Blueprint, request, jsonify, render_template, session, redirect, url_for
 
 
-exam_bp = Blueprint('exam', __name__)
+
 
 @app.route('/save-exam-answer', methods=['POST'])
 @login_required
@@ -959,94 +959,6 @@ def save_exam_answer():
         
     except Exception as e:
         return jsonify({'error': str(e)}), 500
-
-@exam_bp.route('/complete-exam', methods=['POST'])
-def complete_exam():
-    """Complete the exam and save final results"""
-    try:
-        if 'user_id' not in session:
-            return jsonify({'error': 'Not authenticated'}), 401
-        
-        data = request.get_json()
-        exam_id = data.get('examId')
-        total_score = data.get('totalScore')
-        max_score = data.get('maxScore')
-        percentage = data.get('percentage')
-        time_taken = data.get('timeTaken')
-        
-        user_id = session['user_id']
-        
-        # Get the exam attempt
-        attempt = ExamAttempt.query.filter_by(
-            user_id=user_id,
-            exam_id=exam_id,
-            is_completed=False
-        ).first()
-        
-        if not attempt:
-            return jsonify({'error': 'No active exam attempt found'}), 404
-        
-        # Complete the attempt
-        attempt.end_time = datetime.utcnow()
-        attempt.total_score = total_score
-        attempt.percentage = percentage
-        attempt.time_taken_minutes = time_taken
-        attempt.is_completed = True
-        
-        # Update student progress
-        from app.models import StudentProgress
-        progress = StudentProgress.query.filter_by(
-            user_id=user_id,
-            topic_id=f"exam_{exam_id}"
-        ).first()
-        
-        if progress:
-            progress.score = max(progress.score, total_score)
-            progress.best_score = max(progress.best_score, total_score)
-            progress.attempts += 1
-            progress.completed = percentage >= 50  # Pass mark
-        else:
-            progress = StudentProgress(
-                user_id=user_id,
-                topic_id=f"exam_{exam_id}",
-                topic_title=f"Exam: {attempt.exam.title}",
-                score=total_score,
-                total_questions=len(attempt.exam.questions),
-                completed=percentage >= 50,
-                attempts=1,
-                best_score=total_score
-            )
-            db.session.add(progress)
-        
-        db.session.commit()
-        
-        return jsonify({'success': True})
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
-@exam_bp.route('/exam-results/<int:exam_id>')
-def exam_results(exam_id):
-    """Display exam results"""
-    if 'user_id' not in session:
-        return redirect(url_for('auth.login'))
-    
-    user_id = session['user_id']
-    
-    # Get the most recent completed attempt
-    attempt = ExamAttempt.query.filter_by(
-        user_id=user_id,
-        exam_id=exam_id,
-        is_completed=True
-    ).order_by(ExamAttempt.end_time.desc()).first()
-    
-    if not attempt:
-        return redirect(url_for('exam.start_exam', exam_id=exam_id))
-    
-    return render_template('exam_results.html', attempt=attempt)
-
-
-
 
 
 if __name__ == '__main__':
