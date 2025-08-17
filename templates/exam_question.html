@@ -461,18 +461,25 @@
     </div>
 
     <!-- Top Bar with Exam Title, Question Number, Progress Bar, and Current Time -->
-    <div class="top-bar">
-        <div>{{ exam.title }}</div>
-        <div>Question {{ question_number }} of {{ total_questions }}</div>
+  <div class="top-bar">
+        <div class="exam-title">{{ exam.title }}</div>
+        <div class="question-info">Question {{ question_number }} of {{ total_questions }}</div>
         <div class="progress-bar">
             <div class="progress-bar-fill"></div>
         </div>
-        <div id="current-time"></div>
+        <div class="current-time" id="current-time"></div>
     </div>
+
 
 <div class="question-container">
     <div class="question-box">
-        <!-- Use the |safe filter to allow rendering of HTML content -->
+
+         <div class="question-header">
+                <div class="question-number-badge">Question {{ question_number }}</div>
+                <div class="question-type-badge">{{ question.question_type.upper() }}</div>
+            </div>
+            
+             <!-- Use the |safe filter to allow rendering of HTML content -->
         <div class="question-text" id="question-text">{{ question.question_text | safe }}</div>
         
         <form id="form" method="POST" action="{{ url_for('exam', exam_id=exam.id, question_number=question_number) }}" class="answer-options">
