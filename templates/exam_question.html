@@ -542,7 +542,7 @@
             </div>
         </div>
         
-        <a href="{{ url_for('papers') }}">End Exam</a>
+        <a href="#" onclick="endExam()">📋 End Exam</a>
     </div>
 
     <!-- Top Bar with Exam Title, Question Number, Progress Bar, and Current Time -->
@@ -639,6 +639,45 @@
 
     <!-- JavaScript for the page functionality -->
     <script>
+
+  // End exam early
+        function endExam() {
+            if (confirm('Are you sure you want to end the exam? Your current progress will be saved.')) {
+                finishExam();
+            }
+        }
+
+         // Finish exam
+        async function finishExam() {
+            const totalMarks = examData.questions.reduce((sum, q) => sum + q.marks, 0);
+            const percentage = Math.round((score / totalMarks) * 100);
+            const timeTaken = Math.round((Date.now() - startTime) / 60000); // minutes
+
+            // Save exam completion to database
+            try {
+                await fetch('/complete-exam', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        examId: examData.id,
+                        totalScore: score,
+                        maxScore: totalMarks,
+                        percentage: percentage,
+                        timeTaken: timeTaken,
+                        results: examResults
+                    })
+                });
+            } catch (error) {
+                console.error('Error saving exam completion:', error);
+            }
+
+            // Redirect to results page
+            window.location.href = `/exam-results/${examData.id}?score=${score}&total=${totalMarks}&percentage=${percentage}&time=${timeTaken}`;
+        }
+
+
         // Global variables for navigation - safely handle template variables
         const EXAM_DATA = {
             totalQuestions: 0,
