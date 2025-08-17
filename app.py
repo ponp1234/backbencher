@@ -396,17 +396,7 @@ def exam(exam_id, question_number):
                     is_correct = True
                     points_earned = 1
             
-            # Record the attempt
-            attempt = QuestionAttempt(
-                session_id=exam_session_id,
-                question_id=question.id,
-                user_answer=user_answer_json,
-                is_correct=is_correct,
-                points_earned=points_earned,
-                attempt_time=datetime.utcnow(),
-                ai_help_used=session.get(f'ai_help_used_{question.id}', False)
-            )
-            db.session.add(attempt)
+  
             
             # Update session score and current question
             exam_session.total_score += points_earned
