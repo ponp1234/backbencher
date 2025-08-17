@@ -736,8 +736,8 @@
                 if (userAnswerData && 
                     userAnswerData !== '' && 
                     userAnswerData !== 'null' && 
-                    !userAnswerData.includes('{{') && 
-                    !userAnswerData.includes('}}')) {
+                    userAnswerData.indexOf('{' + '{') === -1 && 
+                    userAnswerData.indexOf('}' + '}') === -1) {
                     try {
                         userAnswer = JSON.parse(userAnswerData);
                     } catch (parseError) {
@@ -747,7 +747,7 @@
                 }
                 
                 const isCorrectData = document.body.dataset.isCorrect;
-                if (isCorrectData && isCorrectData !== '' && !isCorrectData.includes('{{')) {
+                if (isCorrectData && isCorrectData !== '' && isCorrectData.indexOf('{' + '{') === -1) {
                     isCorrect = isCorrectData === 'true';
                 }
                 
@@ -1074,8 +1074,8 @@
                 if (attemptedData && 
                     attemptedData !== '[]' && 
                     attemptedData !== '' && 
-                    !attemptedData.includes('{{') && 
-                    !attemptedData.includes('}}')) {
+                    attemptedData.indexOf('{' + '{') === -1 && 
+                    attemptedData.indexOf('}' + '}') === -1) {
                     try {
                         attemptedQuestions = JSON.parse(attemptedData);
                     } catch (parseError) {
