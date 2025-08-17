@@ -709,7 +709,7 @@ def settings():
 
 @app.route("/result/<int:score>/<int:total>")
 @login_required
-def result(score, total):
+def resultt(score, total):
     return render_template("result.html", score=score, total=total)
 
 
