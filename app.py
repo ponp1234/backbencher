@@ -904,9 +904,7 @@ exam_bp = Blueprint('exam', __name__)
 def save_exam_answer():
     """Save individual question answer to database"""
     try:
-        if 'user_id' not in session:
-            return jsonify({'error': 'Not authenticated'}), 401
-        
+        print("inside save")
         data = request.get_json()
         exam_id = data.get('examId')
         question_number = data.get('questionNumber')
