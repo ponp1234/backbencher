@@ -92,9 +92,7 @@ class User(db.Model, UserMixin):
     student_class = db.Column(db.String(50), nullable=False)  
     wallet_balance = db.Column(db.Float, default=0.0)  # New field to store total balance
 
-    exam_attempts = db.relationship('ExamAttempt', backref='user', lazy=True)
-    progress = db.relationship('StudentProgress', backref='user', lazy=True)
-
+   
 
 class ExamMapping(db.Model):
     id = db.Column(db.Integer, primary_key=True)
