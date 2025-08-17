@@ -542,13 +542,13 @@
             </div>
         </div>
         
-        <a href="/papers">End Exam</a>
+        <a href="{% if url_for %}{{ url_for('papers') }}{% else %}/papers{% endif %}">End Exam</a>
     </div>
 
     <!-- Top Bar with Exam Title, Question Number, Progress Bar, and Current Time -->
     <div class="top-bar">
-        <div class="exam-title">{{ exam.title if exam else 'Sample Exam' }}</div>
-        <div class="question-info">Question <span id="current-question-display">{{ question_number if question_number else 1 }}</span> of <span id="total-questions-display">{{ total_questions if total_questions else 10 }}</span></div>
+        <div class="exam-title">{% if exam and exam.title %}{{ exam.title }}{% else %}Sample Exam{% endif %}</div>
+        <div class="question-info">Question <span id="current-question-display">{% if question_number %}{{ question_number }}{% else %}1{% endif %}</span> of <span id="total-questions-display">{% if total_questions %}{{ total_questions }}{% else %}10{% endif %}</span></div>
         <div class="progress-bar">
             <div class="progress-bar-fill"></div>
         </div>
@@ -559,14 +559,14 @@
         <div class="question-box">
 
             <div class="question-header">
-                <div class="question-number-badge">Question <span id="question-number-display">{{ question_number if question_number else 1 }}</span></div>
-                <div class="question-type-badge">{{ question.question_type.upper() if question else 'SINGLE' }}</div>
+                <div class="question-number-badge">Question <span id="question-number-display">{% if question_number %}{{ question_number }}{% else %}1{% endif %}</span></div>
+                <div class="question-type-badge">{% if question and question.question_type %}{{ question.question_type.upper() }}{% else %}SINGLE{% endif %}</div>
             </div>
             
             <!-- Question text with fallback -->
-            <div class="question-text" id="question-text">{{ question.question_text|safe if question else 'What is the capital of France?' }}</div>
+            <div class="question-text" id="question-text">{% if question and question.question_text %}{{ question.question_text|safe }}{% else %}What is the capital of France?{% endif %}</div>
             
-            <form id="form" method="POST" action="{{ url_for('exam', exam_id=(exam.id if exam else 1), question_number=(question_number if question_number else 1)) if url_for else '/exam/1/1' }}" class="answer-options">
+            <form id="form" method="POST" action="{% if url_for %}{{ url_for('exam', exam_id=exam.id, question_number=question_number) }}{% else %}/exam/1/1{% endif %}" class="answer-options">
                 {% if question and question.question_type == 'textbox' %}
                     <textarea 
                         class="textbox-answer" 
