@@ -65,6 +65,70 @@ class Question(db.Model):
     question_type = db.Column(db.String(20), nullable=False, default="single")  # 'single', 'multiple', 'fill_in_the_blank'
 
 
+class ExamAttempts(db.Model):
+    __tablename__ = 'exam_attempts'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    exam_id = db.Column(db.Integer, db.ForeignKey('exams.id'), nullable=False)
+    start_time = db.Column(db.DateTime, default=datetime.utcnow)
+    end_time = db.Column(db.DateTime)
+    total_score = db.Column(db.Integer, default=0)
+    max_possible_score = db.Column(db.Integer, default=0)
+    percentage = db.Column(db.Float, default=0.0)
+    time_taken_minutes = db.Column(db.Integer)
+    is_completed = db.Column(db.Boolean, default=False)
+    answers = db.Column(db.Text)  # JSON object storing all answers
+    feedback = db.Column(db.Text)  # Overall feedback for the student
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    # Relationships
+    responses = db.relationship('QuestionResponse', backref='attempt', lazy=True)
+
+class QuestionResponse(db.Model):
+    __tablename__ = 'question_responses'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    attempt_id = db.Column(db.Integer, db.ForeignKey('exam_attempts.id'), nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('exam_questions.id'), nullable=False)
+    student_answer = db.Column(db.Text)
+    is_correct = db.Column(db.Boolean, default=False)
+    marks_awarded = db.Column(db.Integer, default=0)
+    time_spent_seconds = db.Column(db.Integer)
+    feedback = db.Column(db.Text)  # Specific feedback for this question
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class StudentProgress(db.Model):
+    __tablename__ = 'student_progress'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    topic_id = db.Column(db.String(50), nullable=False)
+    topic_title = db.Column(db.String(200), nullable=False)
+    score = db.Column(db.Integer, default=0)
+    total_questions = db.Column(db.Integer, default=0)
+    completed = db.Column(db.Boolean, default=False)
+    attempts = db.Column(db.Integer, default=0)
+    best_score = db.Column(db.Integer, default=0)
+    last_attempt = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (db.UniqueConstraint('user_id', 'topic_id'),)
+
+class ExamAnalytics(db.Model):
+    __tablename__ = 'exam_analytics'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    exam_id = db.Column(db.Integer, db.ForeignKey('exams.id'), nullable=False)
+    question_id = db.Column(db.Integer, db.ForeignKey('exam_questions.id'), nullable=False)
+    total_attempts = db.Column(db.Integer, default=0)
+    correct_attempts = db.Column(db.Integer, default=0)
+    average_time_seconds = db.Column(db.Float, default=0.0)
+    difficulty_rating = db.Column(db.Float, default=0.0)  # Calculated based on success rate
+    last_updated = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    __table_args__ = (db.UniqueConstraint('exam_id', 'question_id'),)
+
+
 class ExamAttempt(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
