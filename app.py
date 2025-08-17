@@ -469,6 +469,7 @@ def exam(exam_id, question_number):
 @app.route("/exam_summary/<session_id>")
 @login_required
 def exam_summary(session_id):
+    print("Session ID:", session_id)  # Debugging - print session ID
     """Display comprehensive exam summary"""
     exam_session = ExamSession.query.filter_by(session_id=session_id).first_or_404()
     
