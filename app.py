@@ -899,7 +899,8 @@ from flask import Blueprint, request, jsonify, render_template, session, redirec
 
 exam_bp = Blueprint('exam', __name__)
 
-@exam_bp.route('/save-exam-answer', methods=['POST'])
+@app.route('/save-exam-answer', methods=['POST'])
+@login_required
 def save_exam_answer():
     """Save individual question answer to database"""
     try:
