@@ -172,7 +172,7 @@ class ExamAttempts(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
-    exam_id = db.Column(db.Integer, db.ForeignKey('exams.id'), nullable=False)
+    exam_id = db.Column(db.Integer, db.ForeignKey('exam.id'), nullable=False)
     start_time = db.Column(db.DateTime, default=datetime.utcnow)
     end_time = db.Column(db.DateTime)
     total_score = db.Column(db.Integer, default=0)
@@ -220,7 +220,7 @@ class ExamAnalytics(db.Model):
     __tablename__ = 'exam_analytics'
     
     id = db.Column(db.Integer, primary_key=True)
-    exam_id = db.Column(db.Integer, db.ForeignKey('exams.id'), nullable=False)
+    exam_id = db.Column(db.Integer, db.ForeignKey('exam.id'), nullable=False)
     question_id = db.Column(db.Integer, db.ForeignKey('exam_questions.id'), nullable=False)
     total_attempts = db.Column(db.Integer, default=0)
     correct_attempts = db.Column(db.Integer, default=0)
