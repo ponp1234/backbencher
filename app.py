@@ -1072,6 +1072,9 @@ import json
 import requests
 import json
 
+import requests
+import json
+
 @app.route('/ask-ai', methods=['POST'])
 def ask_groq():
     try:
@@ -1095,60 +1098,101 @@ def ask_groq():
             groq_api_key = "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"
             groq_url = "https://api.groq.com/openai/v1/chat/completions"
             
+            # Test with minimal payload first
             headers = {
                 "Authorization": f"Bearer {groq_api_key}",
                 "Content-Type": "application/json"
             }
             
+            # Simplified payload to test
             payload = {
-                "model": "llama-3.1-70b-versatile",  # You can also use "mixtral-8x7b-32768" or other available models
+                "model": "llama-3.3-70b-versatile",  # Using llama-3.3-70b-versatile
                 "messages": [
                     {
                         "role": "user",
-                        "content": prompt
+                        "content": "Hello, can you help me?"  # Simple test message
                     }
-                ],
-                "max_tokens": 1024,
-                "temperature": 0.7
+                ]
             }
             
+            print(f"Testing with simple payload: {json.dumps(payload, indent=2)}")
+            
             # Make API request to Groq
-            response = requests.post(groq_url, headers=headers, json=payload)
-            response.raise_for_status()  # Raises an HTTPError for bad responses
+            response = requests.post(groq_url, headers=headers, json=payload, timeout=30)
+            
+            print(f"Response status code: {response.status_code}")
+            print(f"Response headers: {dict(response.headers)}")
+            print(f"Response text: {response.text}")
+            
+            if response.status_code == 401:
+                return jsonify({
+                    'error': "Authentication failed - please check your API key"
+                }), 401
+            elif response.status_code == 429:
+                return jsonify({
+                    'error': "Rate limit exceeded - please try again later"
+                }), 429
+            elif response.status_code != 200:
+                return jsonify({
+                    'error': f"API returned status {response.status_code}: {response.text}"
+                }), response.status_code
             
             response_data = response.json()
             
-            # Debug logging
-            print("Groq API Response received")
+            # If the test works, now try with the actual prompt
+            if response.status_code == 200:
+                payload["messages"][0]["content"] = prompt
+                payload["max_tokens"] = 1024
+                payload["temperature"] = 0.7
+                
+                print("Test successful, now sending actual prompt...")
+                response = requests.post(groq_url, headers=headers, json=payload, timeout=30)
+                
+                if response.status_code == 200:
+                    response_data = response.json()
+                    ai_response = response_data['choices'][0]['message']['content']
+                    
+                    return jsonify({
+                        'response': ai_response
+                    })
+                else:
+                    print(f"Actual request failed: {response.status_code} - {response.text}")
+                    return jsonify({
+                        'error': f"Request failed: {response.status_code} - {response.text}"
+                    }), response.status_code
             
-            # Extract the response text
-            ai_response = response_data['choices'][0]['message']['content']
-            
+        except requests.exceptions.Timeout:
+            print("Request timeout")
             return jsonify({
-                'response': ai_response
-            })
+                'error': "Request timeout - please try again"
+            }), 408
+            
+        except requests.exceptions.ConnectionError:
+            print("Connection error")
+            return jsonify({
+                'error': "Connection error - please check your internet connection"
+            }), 503
             
         except requests.exceptions.RequestException as api_error:
-            print(f"Groq API request error: {str(api_error)}")  # Debug log
-            print(f"Response content: {api_error.response.text if hasattr(api_error, 'response') and api_error.response else 'No response content'}")
+            print(f"Groq API request error: {str(api_error)}")
             return jsonify({
                 'error': f"Groq API request error: {str(api_error)}"
             }), 500
             
         except KeyError as key_error:
-            print(f"Groq API response format error: {str(key_error)}")  # Debug log
+            print(f"Groq API response format error: {str(key_error)}")
             return jsonify({
                 'error': f"Groq API response format error: {str(key_error)}"
             }), 500
             
         except Exception as api_error:
-            print(f"Groq API error: {str(api_error)}")  # Debug log
+            print(f"Groq API error: {str(api_error)}")
             return jsonify({
                 'error': f"Groq API error: {str(api_error)}"
             }), 500
     
     except Exception as e:
-        print(f"Server error: {str(e)}")  # Debug log
+        print(f"Server error: {str(e)}")
         return jsonify({
             'error': f"Server error: {str(e)}"
         }), 500
