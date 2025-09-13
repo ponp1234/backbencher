@@ -1413,3 +1413,11 @@ if __name__ == '__main__':
     app.run(host='0.0.0.0', port=443, debug=True, ssl_context=context)
     
     #app.run(host='0.0.0.0', port=443, debug=True)
+
+# Instead, add this function to initialize the database
+def create_tables():
+    with app.app_context():
+        db.create_all()
+
+# Call this function when the module is imported
+create_tables()
