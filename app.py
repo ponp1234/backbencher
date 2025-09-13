@@ -1065,16 +1065,12 @@ from flask_cors import CORS
 CORS(app)
 
 
-# Configure the Gemini API
-genai.configure(api_key='AIzaSyB265GIXXq5REPMHi_y_X1luKzaDFtgR6E')
 
-# Initialize Gemini model
-model = genai.GenerativeModel('gemini-2.5-flash')
-
-
+import requests
+import json
 
 @app.route('/ask-ai', methods=['POST'])
-def ask_gemini():
+def ask_groq():
     try:
         data = request.json
         question = data['messages'][0]['content']
@@ -1083,7 +1079,7 @@ def ask_gemini():
         print(f"Received question: {question}")  # Debug log
         
         # Structure the prompt
-        prompt = f"""Please help explain this exam question and provide guidance with respect to IGCSC sylabus. 
+        prompt = f"""Please help explain this exam question and provide guidance with respect to IGCSE syllabus. 
         Question: {question}
         Please provide:
         1. A clear explanation of the question
@@ -1092,20 +1088,59 @@ def ask_gemini():
         """
         
         try:
-            # Generate response using Gemini
-            response = model.generate_content(prompt)
+            # Groq API configuration
+            groq_api_key = "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"
+            groq_url = "https://api.groq.com/openai/v1/chat/completions"
+            
+            headers = {
+                "Authorization": f"Bearer {groq_api_key}",
+                "Content-Type": "application/json"
+            }
+            
+            payload = {
+                "model": "llama-3.1-70b-versatile",  # You can also use "mixtral-8x7b-32768" or other available models
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                "max_tokens": 1024,
+                "temperature": 0.7
+            }
+            
+            # Make API request to Groq
+            response = requests.post(groq_url, headers=headers, json=payload)
+            response.raise_for_status()  # Raises an HTTPError for bad responses
+            
+            response_data = response.json()
             
             # Debug logging
-            print("API Response received")
+            print("Groq API Response received")
+            
+            # Extract the response text
+            ai_response = response_data['choices'][0]['message']['content']
             
             return jsonify({
-                'response': response.text if hasattr(response, 'text') else str(response)
+                'response': ai_response
             })
             
-        except Exception as api_error:
-            print(f"Gemini API error: {str(api_error)}")  # Debug log
+        except requests.exceptions.RequestException as api_error:
+            print(f"Groq API request error: {str(api_error)}")  # Debug log
             return jsonify({
-                'error': f"Gemini API error: {str(api_error)}"
+                'error': f"Groq API request error: {str(api_error)}"
+            }), 500
+            
+        except KeyError as key_error:
+            print(f"Groq API response format error: {str(key_error)}")  # Debug log
+            return jsonify({
+                'error': f"Groq API response format error: {str(key_error)}"
+            }), 500
+            
+        except Exception as api_error:
+            print(f"Groq API error: {str(api_error)}")  # Debug log
+            return jsonify({
+                'error': f"Groq API error: {str(api_error)}"
             }), 500
     
     except Exception as e:
@@ -1113,8 +1148,6 @@ def ask_gemini():
         return jsonify({
             'error': f"Server error: {str(e)}"
         }), 500
-
-
 
 
 @app.route('/add_todo', methods=['POST'])
