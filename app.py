@@ -1069,6 +1069,9 @@ CORS(app)
 import requests
 import json
 
+import requests
+import json
+
 @app.route('/ask-ai', methods=['POST'])
 def ask_groq():
     try:
@@ -1127,6 +1130,7 @@ def ask_groq():
             
         except requests.exceptions.RequestException as api_error:
             print(f"Groq API request error: {str(api_error)}")  # Debug log
+            print(f"Response content: {api_error.response.text if hasattr(api_error, 'response') and api_error.response else 'No response content'}")
             return jsonify({
                 'error': f"Groq API request error: {str(api_error)}"
             }), 500
@@ -1148,6 +1152,7 @@ def ask_groq():
         return jsonify({
             'error': f"Server error: {str(e)}"
         }), 500
+
 
 
 @app.route('/add_todo', methods=['POST'])
