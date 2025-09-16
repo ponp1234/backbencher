@@ -1095,7 +1095,7 @@ def ask_groq():
         
         try:
             # Groq API configuration
-            groq_api_key = "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"
+            groq_api_key = "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"
             groq_url = "https://api.groq.com/openai/v1/chat/completions"
             
             # Test with minimal payload first
