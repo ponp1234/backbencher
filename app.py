@@ -9,6 +9,7 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from authlib.integrations.flask_client import OAuth
 from flask import Flask, redirect, url_for, session, current_app
+from sqlalchemy.sql import quoted_name
 
 
 app = Flask(__name__)
