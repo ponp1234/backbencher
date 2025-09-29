@@ -1439,7 +1439,7 @@ def google_callback():
     userinfo = google.parse_id_token(token, nonce)
 
     # TODO: log the user in using userinfo fields
-    # login_user(user)
+    login_user(userinfo["name"])
 
     return redirect(url_for("dashboard"))
 
