@@ -1409,6 +1409,7 @@ def exam_results(exam_id):
 
 oauth = OAuth(app)
 
+
 google = oauth.register(
     name="google",
     client_id="734064412863-5pjrf147t12urb3cq6va8ghk1iutlemo.apps.googleusercontent.com",
@@ -1417,21 +1418,28 @@ google = oauth.register(
     client_kwargs={"scope": "openid email profile"},
 )
 
+import secrets
+from flask import session, url_for
+
 @app.route("/login/google")
 def google_login():
-    redirect_uri = url_for("google_callback", _external=True)
-    return google.authorize_redirect(redirect_uri)
+    nonce = secrets.token_urlsafe(16)
+    session["google_oauth_nonce"] = nonce
+    redirect_uri = url_for("google_callback", _external=True)  # add _scheme="https" if behind proxy
+    return google.authorize_redirect(redirect_uri, nonce=nonce)
 
 @app.route("/auth/google/callback")
 def google_callback():
-    # Exchange code for tokens
     token = google.authorize_access_token()
 
-    # Best: verify and read claims from the ID token
-    userinfo = google.parse_id_token(token)
+    # Retrieve and clear the nonce from session
+    nonce = session.pop("google_oauth_nonce", None)
 
-    # TODO: use userinfo to sign the user in
-    # login_user(user) or set session keys
+    # Verify ID token with nonce
+    userinfo = google.parse_id_token(token, nonce)
+
+    # TODO: log the user in using userinfo fields
+    # login_user(user)
 
     return redirect(url_for("dashboard"))
 
