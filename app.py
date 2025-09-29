@@ -1424,12 +1424,12 @@ def google_login():
 
 @app.route("/auth/google/callback")
 def google_callback():
-    current_app.logger.info("callback query keys: %s", list(request.args.keys()))
-    current_app.logger.info("session keys at callback: %s", list(session.keys()))
-    token = google.authorize_access_token()  # will raise if state missing
-    userinfo = google.get("oauth2/v3/userinfo").json()
-    login_user("userinfo")  # Implement user loading/creation logic here
-    return redirect(url_for('dashboard'))  # Redirect to user home page after login
+
+    token = google.authorize_access_token()
+    # since we used server_metadata_url, this alias works:
+    resp = google.get("userinfo")
+    userinfo = resp.json() 
+    return redirect(url_for('dashboard'))
 
 
 if __name__ == '__main__':
