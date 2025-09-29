@@ -8,7 +8,7 @@ from sqlalchemy import text, exc
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from authlib.integrations.flask_client import OAuth
-from flask import Flask, redirect, url_for, session
+from flask import Flask, redirect, url_for, session, current_app
 
 
 app = Flask(__name__)
@@ -1427,9 +1427,11 @@ def google_login():
 
 @app.route("/auth/google/callback")
 def google_callback():
-    token = google.authorize_access_token()
+    current_app.logger.info("callback query keys: %s", list(request.args.keys()))
+    current_app.logger.info("session keys at callback: %s", list(session.keys()))
+    token = google.authorize_access_token()  # will raise if state missing
     userinfo = google.get("oauth2/v3/userinfo").json()
-    login_user(userinfo)
+    login_user("userinfo")  # Implement user loading/creation logic here
     return redirect(url_for('dashboard'))  # Redirect to user home page after login
 
 
