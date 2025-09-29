@@ -251,6 +251,22 @@ class ToDo(db.Model):
     date = db.Column(db.Date, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+class Users(db.Model, UserMixin):
+    # Force exact case Users across engines that are case sensitive
+    __tablename__ = quoted_name("Users", True)
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(255), unique=True, index=True, nullable=False)
+    name = db.Column(db.String(255))
+    google_sub = db.Column(db.String(255), unique=True, index=True)
+    picture_url = db.Column(db.String(512))
+    is_active_flag = db.Column(db.Boolean, nullable=False, default=True)
+    created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    last_login_at = db.Column(db.DateTime)
+
+    @property
+    def is_active(self):
+        return bool(self.is_active_flag)
 
 # User Model
 class User(db.Model, UserMixin):
@@ -284,51 +300,47 @@ class HTMLMapping(db.Model):
     html = db.Column(db.String(50), nullable=False)        # HTML 
 
 
-    @app.route('/wallet', methods=['GET', 'POST'])
-    @login_required
-    def wallet():
-        if request.method == 'POST':
-            transaction_type = request.form.get('transaction_type')
-            amount = float(request.form.get('amount'))
-            description = request.form.get('description', '')
-            
-            if transaction_type == 'Initial':
-                # Set initial money
-                current_user.wallet_balance = amount
-                description = 'Set Initial Money'
-            elif transaction_type == 'Allowance':
-                # Add daily allowance
-                current_user.wallet_balance += amount
-                description = 'Added Daily Allowance'
-            elif transaction_type == 'Spending':
-                # Deduct spending
-                if amount > current_user.wallet_balance:
-                    flash("Insufficient balance!", "danger")
-                    return redirect(url_for('wallet'))
-                current_user.wallet_balance -= amount
-                description = f"Spent on {description}"
-    
-            # Save transaction
-            transaction = WalletTransaction(
-                user_id=current_user.id,
-                transaction_type=transaction_type,
-                amount=amount,
-                description=description
-            )
-            db.session.add(transaction)
-            db.session.commit()
-    
-            flash(f"Transaction successful! New Balance: ${current_user.wallet_balance:.2f}", "success")
-            return redirect(url_for('wallet'))
-        
-        # Fetch transactions
-        transactions = (WalletTransaction.query
-                    .filter_by(user_id=current_user.id)
-                    .order_by(WalletTransaction.date.desc())
-                    .limit(20)
-                    .all())
-        return render_template('wallet.html', transactions=transactions, balance=current_user.wallet_balance)
 
+login_manager = LoginManager()
+
+@login_manager.user_loader
+def load_user(user_id: str):
+    return Users.query.get(int(user_id))
+
+
+def get_or_create_user_from_google(userinfo: dict) -> Users:
+    sub = userinfo.get("sub")
+    email = userinfo.get("email")
+    name = userinfo.get("name")
+    picture = userinfo.get("picture")
+
+    if not sub or not email:
+        raise ValueError("Google response missing sub or email")
+
+    user = Users.query.filter(
+        or_(Users.google_sub == sub, Users.email == email)
+    ).first()
+
+    if not user:
+        user = Users(
+            email=email,
+            name=name,
+            google_sub=sub,
+            picture_url=picture,
+        )
+        db.session.add(user)
+    else:
+        if not user.google_sub:
+            user.google_sub = sub
+        if name:
+            user.name = name
+        if picture:
+            user.picture_url = picture
+
+    user.last_login_at = datetime.utcnow()
+    db.session.commit()
+    return user
+ 
 @app.route("/exam/<int:exam_id>/<int:question_number>", methods=['GET', 'POST'])
 @login_required
 def exam(exam_id, question_number):
@@ -1428,21 +1440,16 @@ def google_login():
     redirect_uri = url_for("google_callback", _external=True)  # add _scheme="https" if behind proxy
     return google.authorize_redirect(redirect_uri, nonce=nonce)
 
+
+    return redirect(url_for("dashboard"))
 @app.route("/auth/google/callback")
 def google_callback():
     token = google.authorize_access_token()
-
-    # Retrieve and clear the nonce from session
     nonce = session.pop("google_oauth_nonce", None)
-
-    # Verify ID token with nonce
     userinfo = google.parse_id_token(token, nonce)
-
-    # TODO: log the user in using userinfo fields
-    login_user(userinfo["name"])
-
+    user = get_or_create_user_from_google(userinfo)
+    login_user(user, remember=True)
     return redirect(url_for("dashboard"))
-
 
 if __name__ == '__main__':
     with app.app_context():
