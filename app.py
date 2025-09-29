@@ -1424,12 +1424,16 @@ def google_login():
 
 @app.route("/auth/google/callback")
 def google_callback():
-
+    # Exchange code for tokens
     token = google.authorize_access_token()
-    # since we used server_metadata_url, this alias works:
-    resp = google.get("userinfo")
-    userinfo = resp.json() 
-    return redirect(url_for('dashboard'))
+
+    # Best: verify and read claims from the ID token
+    userinfo = google.parse_id_token(token)
+
+    # TODO: use userinfo to sign the user in
+    # login_user(user) or set session keys
+
+    return redirect(url_for("dashboard"))
 
 
 if __name__ == '__main__':
