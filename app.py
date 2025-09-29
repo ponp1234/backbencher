@@ -7,6 +7,8 @@ from datetime import datetime, timedelta
 from sqlalchemy import text, exc
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
+from authlib.integrations.flask_client import OAuth
+from flask import Flask, redirect, url_for, session
 
 
 app = Flask(__name__)
@@ -1403,6 +1405,33 @@ def exam_results(exam_id):
     
     return render_template('exam_results.html', attempt=attempt)
 
+
+
+oauth = OAuth(app)
+google = oauth.register(
+    name="google",
+    client_id="734064412863-5pjrf147t12urb3cq6va8ghk1iutlemo.apps.googleusercontent.com",
+    client_secret="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",
+    access_token_url="https://oauth2.googleapis.com/token",
+    access_token_params=None,
+    authorize_url="https://accounts.google.com/o/oauth2/v2/auth",
+    authorize_params={"prompt": "select_account", "access_type": "offline"},
+    api_base_url="https://www.googleapis.com/",
+    client_kwargs={"scope": "openid email profile"},
+)
+
+@app.route("/login/google")
+def google_login():
+    redirect_uri = url_for("google_callback", _external=True)
+    return google.authorize_redirect(redirect_uri)
+
+@app.route("/auth/google/callback")
+def google_callback():
+    token = google.authorize_access_token()
+    userinfo = google.get("oauth2/v3/userinfo").json()
+    # Do your user lookup or create here
+    # session["user_id"] = ...
+    return redirect(url_for("home"))
 
 if __name__ == '__main__':
     with app.app_context():
