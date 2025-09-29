@@ -316,7 +316,7 @@ def get_or_create_user_from_google(userinfo: dict) -> Users:
         raise ValueError("Google response missing sub or email")
 
     user = Users.query.filter(
-        or_(Users.google_sub == sub, Users.email == email)
+        (Users.google_sub == sub) | (Users.email == email)
     ).first()
 
     if not user:
