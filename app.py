@@ -1429,9 +1429,9 @@ def google_login():
 def google_callback():
     token = google.authorize_access_token()
     userinfo = google.get("oauth2/v3/userinfo").json()
-    # Do your user lookup or create here
-    # session["user_id"] = ...
-    return redirect(url_for("home"))
+    login_user(userinfo)
+    return redirect(url_for('dashboard'))  # Redirect to user home page after login
+
 
 if __name__ == '__main__':
     with app.app_context():
