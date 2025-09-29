@@ -1408,15 +1408,12 @@ def exam_results(exam_id):
 
 
 oauth = OAuth(app)
+
 google = oauth.register(
     name="google",
     client_id="734064412863-5pjrf147t12urb3cq6va8ghk1iutlemo.apps.googleusercontent.com",
     client_secret="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",
-    access_token_url="https://oauth2.googleapis.com/token",
-    access_token_params=None,
-    authorize_url="https://accounts.google.com/o/oauth2/v2/auth",
-    authorize_params={"prompt": "select_account", "access_type": "offline"},
-    api_base_url="https://www.googleapis.com/",
+    server_metadata_url="https://accounts.google.com/.well-known/openid-configuration",
     client_kwargs={"scope": "openid email profile"},
 )
 
