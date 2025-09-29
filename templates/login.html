@@ -7,6 +7,53 @@
     <title>Backbench PRO</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
+/* OAuth divider */
+.oauth-divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 18px 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+.oauth-divider::before,
+.oauth-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: #e0e0e0;
+}
+
+/* Google button */
+.google-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 0.75rem;
+  border-radius: 6px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  color: #333;
+  font-size: 1rem;
+  text-decoration: none;
+  transition: background-color 0.2s, border-color 0.2s, transform 0.02s;
+}
+.google-btn i {
+  font-size: 1.1rem;
+}
+.google-btn:hover {
+  background: #f7f7f7;
+  border-color: #d8d8d8;
+}
+.google-btn:active {
+  transform: translateY(1px);
+}
+</style>
+
+    <style>
+        
         * {
             margin: 0;
             padding: 0;
@@ -573,10 +620,21 @@
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" placeholder="Enter your password" required>
                 </div>
-                <button type="submit" class="login-button">Login!</button>
-                <div class="register-link">
-                    <p>New to Backbench? <a href="{{ url_for('register') }}">Sign Up BB!</a></p>
-                </div>
+               <button type="submit" class="login-button">Login!</button>
+
+            <div class="oauth-divider">
+            <span>or</span>
+            </div>
+
+            <a class="google-btn" href="{{ url_for('google_login') }}">
+            <i class="fab fa-google"></i>
+            <span>Continue with Google</span>
+            </a>
+
+            <div class="register-link" style="margin-top: 12px;">
+            <p>New to Backbench? <a href="{{ url_for('register') }}">Sign Up BB!</a></p>
+            </div>
+
             </form>
             </br>
             <center><p>&copy; 2025 Backbench. All rights reserved.</p></center>
