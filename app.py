@@ -254,7 +254,7 @@ class ToDo(db.Model):
 
 class Users(db.Model, UserMixin):
     # Force exact case Users across engines that are case sensitive
-    __tablename__ = quoted_name("Users", True)
+    __tablename__ = quoted_name("Usersg", True)
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(255), unique=True, index=True, nullable=False)
