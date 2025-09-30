@@ -1043,7 +1043,7 @@ def dashboard():
 
     # Filter To-Do items by date <= duedate
     todos = ToDo.query.filter(
-        ToDo.user_id == current_user.name,
+        ToDo.user_id == current_user.id,
         ToDo.date <= duedate
     ).order_by(ToDo.date.asc()).all()
 
