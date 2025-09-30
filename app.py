@@ -1030,7 +1030,7 @@ def pastpapers():
 
 @app.route("/dashboard")
 def dashboard():
-    print("Logged in inside:")
+    print("Logged in inside:"+current_user.id)
     duedate_str = request.args.get('duedate')
     today = datetime.now().date()
     if duedate_str:
@@ -1045,7 +1045,7 @@ def dashboard():
 
     # Filter To-Do items by date <= duedate
     todos = ToDo.query.filter(
-        ToDo.user_id == current_user.name,
+        ToDo.user_id == current_user.id,
         ToDo.date <= duedate
     ).order_by(ToDo.date.asc()).all()
 
