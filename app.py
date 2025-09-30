@@ -321,7 +321,6 @@ def get_or_create_user_from_google(userinfo: dict) -> Users:
 
     if not user:
         user = Users(
-            id=name,
             email=email,
             name=name,
             google_sub=sub,
@@ -1028,9 +1027,11 @@ def pastpapers():
     return render_template("pastpapers.html", exams=exams, attempts=attempts, learnings=learnings, todos=todos)
 
 
+
 @app.route("/dashboard")
 def dashboard():
-    print("Logged in inside:"+current_user.id)
+
+    print("Logged in inside:"+current_user.is_authenticated)
     duedate_str = request.args.get('duedate')
     today = datetime.now().date()
     if duedate_str:
@@ -1450,6 +1451,9 @@ def google_callback():
     login_user(user, remember=True)
     print("Logged in user:"+user.name)
     return redirect(url_for("dashboard"))
+
+
+
 
 from sqlalchemy import inspect, text
 # Make sure Users class is imported before this call
