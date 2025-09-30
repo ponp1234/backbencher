@@ -1030,6 +1030,7 @@ def pastpapers():
 @app.route("/dashboard")
 @login_required
 def dashboard():
+    print("Logged in inside:")
     duedate_str = request.args.get('duedate')
     today = datetime.now().date()
     if duedate_str:
