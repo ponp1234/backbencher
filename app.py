@@ -1028,7 +1028,6 @@ def pastpapers():
 
 
 @app.route("/dashboard")
-@login_required
 def dashboard():
     duedate_str = request.args.get('duedate')
     today = datetime.now().date()
