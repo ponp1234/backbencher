@@ -342,11 +342,12 @@ def get_or_create_user_from_google(userinfo: dict) -> Users:
 
         user.last_login_at = datetime.utcnow()
         db.session.commit()
+        return user
     except Exception as e:
         db.session.rollback()
         logging.error(f"Database error: {e}")
         
-    return user
+    
  
 @app.route("/exam/<int:exam_id>/<int:question_number>", methods=['GET', 'POST'])
 @login_required
