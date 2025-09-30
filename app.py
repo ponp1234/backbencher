@@ -1053,6 +1053,7 @@ def pastpapers():
 
 
 @app.route("/dashboard")
+@login_required
 def dashboard():
 
     print(current_user.is_authenticated)
