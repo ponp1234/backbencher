@@ -1043,14 +1043,14 @@ def dashboard():
 
     # Filter To-Do items by date <= duedate
     todos = ToDo.query.filter(
-        ToDo.user_id == current_user.id,
+        ToDo.user_id == current_user.name,
         ToDo.date <= duedate
     ).order_by(ToDo.date.asc()).all()
 
     
     print(todos)
     # Get the current user's student class
-    user_class = current_user.student_class
+    user_class = ""
     print(user_class)
    
     # Fetch exams mapped to the user's student class
