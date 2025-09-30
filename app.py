@@ -1449,9 +1449,50 @@ def google_callback():
     login_user(user, remember=True)
     return redirect(url_for("dashboard"))
 
+from sqlalchemy import inspect, text
+# Make sure Users class is imported before this call
+# from models import Users  # or wherever your Users model lives
+
+def ensure_users_schema():
+    with app.app_context():
+        insp = inspect(db.engine)
+        tables = set(insp.get_table_names())
+
+        # If you previously had a table named user, rename it
+        if "Users" not in tables and "user" in tables:
+            db.session.execute(text('ALTER TABLE "user" RENAME TO "Users"'))
+            db.session.commit()
+            tables = set(insp.get_table_names())
+
+        # Create metadata driven tables, including Users
+        db.create_all()
+
+        # Ensure columns exist on Users
+        if "Users" in tables or "Users" in set(insp.get_table_names()):
+            cols = {c["name"] for c in insp.get_columns("Users")}
+            with db.engine.begin() as conn:
+                if "google_sub" not in cols:
+                    conn.exec_driver_sql('ALTER TABLE "Users" ADD COLUMN google_sub VARCHAR(255)')
+                if "picture_url" not in cols:
+                    conn.exec_driver_sql('ALTER TABLE "Users" ADD COLUMN picture_url VARCHAR(512)')
+                if "is_active_flag" not in cols:
+                    conn.exec_driver_sql('ALTER TABLE "Users" ADD COLUMN is_active_flag BOOLEAN DEFAULT 1')
+                if "created_at" not in cols:
+                    conn.exec_driver_sql('ALTER TABLE "Users" ADD COLUMN created_at DATETIME')
+                if "last_login_at" not in cols:
+                    conn.exec_driver_sql('ALTER TABLE "Users" ADD COLUMN last_login_at DATETIME')
+
+        # Helpful logs
+        app.logger.info("DB URI: %s", app.config["SQLALCHEMY_DATABASE_URI"])
+        app.logger.info("Tables: %s", insp.get_table_names())
+
+# Run it at import time so it works under gunicorn or flask run
+ensure_users_schema()
+
+
+
 if __name__ == '__main__':
     with app.app_context():
-        
         db.create_all()  # Creates database tables if they don't exist
 
     context = (r'/home/bb/exam/ssl/bb.pem', r'/home/bb/exam/ssl/bb.key')
