@@ -705,16 +705,7 @@ def privacy():
 def practise():
     return render_template('p4st31.html')
 
-@app.route("/login", methods=['GET', 'POST'])
-def login():
-    if request.method == 'POST':
-        user = User.query.filter_by(username=request.form['username']).first()
-        if user and bcrypt.check_password_hash(user.password, request.form['password']):
-            login_user(user)
-            return redirect(url_for('dashboard'))  # Redirect to user home page after login
-        else:
-            flash('Login Unsuccessful. Please check username and password', 'danger')
-    return render_template('login.html')
+
 
 
 @app.route("/attempts")
