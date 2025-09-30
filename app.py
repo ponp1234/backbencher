@@ -1447,7 +1447,7 @@ def google_callback():
     userinfo = google.parse_id_token(token, nonce)
     user = get_or_create_user_from_google(userinfo)
     login_user(user, remember=True)
-    print("Logged in user:")
+    print("Logged in user:"+user.name)
     return redirect(url_for("dashboard"))
 
 from sqlalchemy import inspect, text
