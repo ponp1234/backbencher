@@ -303,23 +303,36 @@ class HTMLMapping(db.Model):
 
 
 
+from sqlalchemy import or_
+
+@login_manager.user_loader
 def load_user(user_id: str):
+    # Use your new model
     return Users.query.get(int(user_id))
 
+def get_or_create_user_from_google(userinfo) -> Users:
+    """
+    Accepts either Authlib's UserInfo or a plain dict.
+    """
+    # Ensure we can use .get
+    if not hasattr(userinfo, "get"):
+        try:
+            userinfo = dict(userinfo)
+        except Exception:
+            # As a last resort, this will surface a clear error
+            raise TypeError("userinfo is not mapping-like")
 
-def get_or_create_user_from_google(userinfo: dict) -> Users:
+    sub     = userinfo.get("sub")
+    email   = userinfo.get("email")
+    name    = userinfo.get("name")
+    picture = userinfo.get("picture")
+
+    if not sub or not email:
+        raise ValueError("Google response missing sub or email")
+
     try:
-        userinfo = userinfo.to_dict()
-        sub = userinfo.get("sub")
-        email = userinfo.get("email")
-        name = userinfo.get("name")
-        picture = userinfo.get("picture")
-
-        if not sub or not email:
-            raise ValueError("Google response missing sub or email")
-
         user = Users.query.filter(
-            (Users.google_sub == sub) | (Users.email == email)
+            or_(Users.google_sub == sub, Users.email == email)
         ).first()
 
         if not user:
@@ -330,7 +343,6 @@ def get_or_create_user_from_google(userinfo: dict) -> Users:
                 picture_url=picture,
             )
             db.session.add(user)
-            print("Creating new user:")
         else:
             if not user.google_sub:
                 user.google_sub = sub
@@ -338,14 +350,16 @@ def get_or_create_user_from_google(userinfo: dict) -> Users:
                 user.name = name
             if picture:
                 user.picture_url = picture
-        print("Creating new user1:")
 
         user.last_login_at = datetime.utcnow()
         db.session.commit()
         return user
+
     except Exception as e:
         db.session.rollback()
-        logging.error(f"Database error: {e}")
+        current_app.logger.exception("Database error during Google login")
+        # Re-raise so callers don't proceed with a None user
+        raise
         
     
  
