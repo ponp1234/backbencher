@@ -10,7 +10,9 @@ from sqlalchemy.orm import sessionmaker
 from authlib.integrations.flask_client import OAuth
 from flask import Flask, redirect, url_for, session, current_app
 from sqlalchemy.sql import quoted_name
-
+import secrets
+from flask import session, url_for
+import logging
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '12345'
@@ -21,7 +23,6 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'login'
 
 
-import logging
 
 
 
@@ -307,36 +308,44 @@ def load_user(user_id: str):
 
 
 def get_or_create_user_from_google(userinfo: dict) -> Users:
-    sub = userinfo.get("sub")
-    email = userinfo.get("email")
-    name = userinfo.get("name")
-    picture = userinfo.get("picture")
+    try:
+        userinfo = userinfo.to_dict()
+        sub = userinfo.get("sub")
+        email = userinfo.get("email")
+        name = userinfo.get("name")
+        picture = userinfo.get("picture")
 
-    if not sub or not email:
-        raise ValueError("Google response missing sub or email")
+        if not sub or not email:
+            raise ValueError("Google response missing sub or email")
 
-    user = Users.query.filter(
-        (Users.google_sub == sub) | (Users.email == email)
-    ).first()
+        user = Users.query.filter(
+            (Users.google_sub == sub) | (Users.email == email)
+        ).first()
 
-    if not user:
-        user = Users(
-            email=email,
-            name=name,
-            google_sub=sub,
-            picture_url=picture,
-        )
-        db.session.add(user)
-    else:
-        if not user.google_sub:
-            user.google_sub = sub
-        if name:
-            user.name = name
-        if picture:
-            user.picture_url = picture
+        if not user:
+            user = Users(
+                email=email,
+                name=name,
+                google_sub=sub,
+                picture_url=picture,
+            )
+            db.session.add(user)
+            print("Creating new user:")
+        else:
+            if not user.google_sub:
+                user.google_sub = sub
+            if name:
+                user.name = name
+            if picture:
+                user.picture_url = picture
+        print("Creating new user1:")
 
-    user.last_login_at = datetime.utcnow()
-    db.session.commit()
+        user.last_login_at = datetime.utcnow()
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        logging.error(f"Database error: {e}")
+        
     return user
  
 @app.route("/exam/<int:exam_id>/<int:question_number>", methods=['GET', 'POST'])
@@ -1430,8 +1439,7 @@ google = oauth.register(
     client_kwargs={"scope": "openid email profile"},
 )
 
-import secrets
-from flask import session, url_for
+
 
 @app.route("/login/google")
 def google_login():
