@@ -215,3 +215,52 @@
 @media(max-width:900px){nav{display:none}}
 @media(max-width:768px){.cards,.grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:repeat(2,1fr)}.footer-bottom{grid-template-columns:1fr}}
 
+/* ----- Level intro (top hero on level page) ----- */
+.level-intro{
+  padding:48px 0 10px;
+  background:linear-gradient(180deg,#f7f9ff,#ffffff);
+}
+.level-title{
+  margin:0 0 12px;
+  font-size:clamp(34px,6vw,56px);
+  font-weight:800;
+  letter-spacing:-.02em;
+}
+.level-blurb{
+  max-width:980px;
+  font-size:18px;
+  color:var(--muted);
+  line-height:1.6;
+  margin:0 0 24px;
+}
+
+/* Pill list like the screenshot */
+.pill-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  max-width:980px;
+}
+.pill{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:12px 16px;
+  box-shadow:var(--shadow);
+}
+.pill .check{
+  display:inline-grid;
+  place-items:center;
+  width:22px; height:22px;
+  border-radius:999px;
+  background:#eaffef;
+  color:#16a34a;
+  font-weight:800;
+  border:1px solid #a7f3d0;
+}
+@media (max-width:720px){
+  .pill-grid{ grid-template-columns:1fr; }
+}
