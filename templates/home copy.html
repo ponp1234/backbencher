@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="static/logo2.png" type="image/icon type">
+    <title>Backbench - AI-Powered Learning for Success</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+           font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: #333;
+        }
+
+        /* Header with Logo */
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 0;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .header img {
+            width: 300px;
+            height: auto;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg,  #071952 0%, #0081c6 100%);
+            text-align: center;
+            padding: 60px 20px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('/api/placeholder/1920/300') center/cover;
+            opacity: 0.1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            animation: fadeInDown 1s;
+        }
+
+        .hero p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            animation: fadeIn 1s;
+        }
+
+        /* Buttons */
+        .cta-button {
+            padding: 12px 25px;
+            font-size: 1em;
+            background-color: #0D9276;
+            color: white;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: fadeInUp 1s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        /* Courses Section */
+        .section {
+            padding: 60px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section h2 {
+            text-align: center;
+            font-size: 2em;
+            margin-bottom: 40px;
+            color: #2c3e50;
+        }
+
+        .courses {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .course-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .course-card img {
+            width: 110px;
+            height: 200px;
+            margin-bottom: 20px;
+            border-radius: 20px;
+        }
+
+          .course-card1 img {
+            width: 110px;
+            height: 100px;
+            margin-bottom: 20px;
+            border-radius: 20px;
+        }
+
+        .course-card h3 {
+            font-size: 1.5em;
+            margin: 15px 0;
+            color: #2c3e50;
+        }
+
+        .course-card p {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Features Section */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            padding: 20px;
+        }
+
+        .feature-item {
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .feature-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background-color: #e3f2fd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .feature-text {
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #555;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2em;
+            }
+            
+            .courses {
+                grid-template-columns: 1fr;
+            }
+            
+            .features {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        
+        
+        .section {
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+.section {
+    padding: 20px;
+    background-color: #f9f9f9;
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 24px;
+    color: #333;
+}
+
+.courses {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.course-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+}
+
+.course-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+}
+
+.course-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.course-content h3 {
+    font-size: 18px;
+    color: #222;
+    margin: 0;
+}
+
+.course-content p {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+}
+
+.course-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 12px;
+    color: #888;
+}
+
+.course-meta span {
+    display: inline-block;
+    padding: 3px 6px;
+    background: #f0f0f0;
+    border-radius: 5px;
+}
+        
+    </style>
+    
+    
+    
+</head>
+<body>
+    <!-- Header with Logo -->
+    <div class="header">
+        <img src="static/logo3.png" alt="Backbench Logo">
+    </div>
+
+    <!-- Hero Section -->
+    <div class="hero">
+        <div class="hero-content">
+            <h1> </h1>
+            <h1>Powered by Edu AI PRO*</h1>
+            <p>Transforming young learners into  experts through our fully AI-powered, personalized platform.</p>
+            <button class="cta-button" onclick="window.location.href='{{ url_for('login') }}'">Get Started</button>
+        </div>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: center; margin: 30px 0; gap: 30px; flex-wrap: wrap;">
+    <div style="flex: 1; min-width: 220px; max-width: 500px; text-align: left;">
+        <h2 style="color: #071952; margin-bottom: 15px;">Success Stories with Backbench</h2>
+        <p style="font-size: 1.15em; color: #2c3e50;">
+            Hundres of students have transformed their academic journeys with Backbench! Our AI-powered, personalized learning platform has helped learners achieve top results in their exams, boost their confidence, and unlock their full potential. <br><br>
+            Whether you're aiming for higher grades, mastering tough concepts, or preparing for important milestones like the PSLE and IGCSE, Backbench is here to guide you every step of the way. Join our community of achievers and start your success story today!
+        </p>
+    </div>
+    <div style="flex: 0 0 180px; text-align: center;">
+        <img src="static/PSLE.png" alt="Backbench Logo" style="width: 340px; height: auto; display: inline-block;">
+    </div>
+</div>
+
+  <div class="section">
+    <h2>Courses by Backbench</h2>
+    <div class="courses">
+        <div class="course-card">
+        <img src="static/p4.png" alt="5 Terre" style="width:100%">
+            <div class="course-content">
+                <h3>Primary 4 Science</h3>
+                <p>Skills you'll gain: Mathematics</p>
+                <div class="course-meta">
+                    <span class="rating">4.8</span>
+                    <span class="reviews">5K reviews</span>
+                    <span class="difficulty">Beginner</span>
+                </div>
+            </div>
+        </div>
+        <div class="course-card">
+            <img src="static/p5.png" alt="Science"  style="width:100%">
+            <div class="course-content">
+                <h3>Primary 5 Science</h3>
+                <p>Skills you'll gain: Science</p>
+                <div class="course-meta">
+                    <span class="rating">4.7</span>
+                    <span class="reviews">2K reviews</span>
+                    <span class="difficulty">Intermediate</span>
+                </div>
+            </div>
+        </div>
+        <div class="course-card">
+            <img src="static/p6.png" alt="Computer Science"  style="width:100%">
+            <div class="course-content">
+                <h3>Primary 6 Science</h3>
+                <p>Skills you'll gain: English</p>
+                <div class="course-meta">
+                    <span class="rating">4.0</span>
+                    <span class="reviews">1K reviews</span>
+                    <span class="difficulty">Advanced</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    
+     <!-- Testimonials Section -->
+    <div class="section" style="background: #f9fbfc; padding: 60px 20px;">
+        <h2 style="color: #2c3e50;">What Students & Parents Say</h2>
+        <div class="courses">
+            <div class="course-card1">
+            <center>
+                <img src="static/one.png" alt="Student 1" style="border-radius: 100%;"></center>
+                <h3 style="color: #2c3e50;">Nancy</h3>
+                <p style="font-style: italic;">"Backbench helped me  my Primary exams with personalized learning!"</p>
+            </div>
+            <div class="course-card1">
+              <center>  <img src="static/three.png" alt="Parent 1" style="border-radius: 50%;"></center>
+                <h3 style="color: #2c3e50;">Mrs. Sumitha</h3>
+                <p style="font-style: italic;">"As a parent, I loved how Backbench kept my child motivated and engaged."</p>
+            </div>
+            <div class="course-card1">
+             <center>   <img src="static/two.png" alt="Student 2" style="border-radius: 50%;"></center>
+                <h3 style="color: #2c3e50;">Arav</h3>
+                <p style="font-style: italic;">"The AI-powered feedback system is amazing. It pinpointed my weak areas!"</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="section">
+    <h2>Why Choose Backbench?</h2>
+    <div class="features">
+        <div class="feature-item">
+            <div class="feature-icon" style="width: 250px; height: 250px; background: #e3f2fd; border-radius: 30px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <img src="static/v1.png" alt="AI-Powered Personalization" style="width:220px; height:220px; object-fit:contain;">
+            </div>
+            <div class="feature-text">
+                <strong>AI-Powered Personalization</strong><br>
+                Every learner gets a unique path and feedback powered by advanced AI.
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon" style="width: 250px; height: 250px; background: #e3f2fd; border-radius: 30px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <img src="static/v2.png" alt=" Curriculum Aligned" style="width:220px; height:220px; object-fit:contain;">
+            </div>
+            <div class="feature-text">
+                <strong>International Curriculum Aligned</strong><br>
+                Content and practice designed for PSLE, IGCSE, and top international standards.
+            </div>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon" style="width: 250px; height: 250px; background: #e3f2fd; border-radius: 30px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+                <img src="static/v3.png" alt="Real-Time Progress Tracking" style="width:220px; height:220px; object-fit:contain;">
+            </div>
+            <div class="feature-text">
+                <strong>Real-Time Progress Tracking</strong><br>
+                Instantly see strengths, weaknesses, and improvements as you learn.
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+
+<!-- Footer Section -->
+<footer style="background: #2c3e50; color: white; padding: 20px 10px; text-align: center; margin-top: 20px;">
+    <div style="margin-top: 10px;">
+        <a href="{{ url_for('contact') }}" style="color: #ecf0f1; text-decoration: none; margin: 0 10px;">Contact Us</a>
+        <a href="{{ url_for('terms') }}" style="color: #ecf0f1; text-decoration: none; margin: 0 10px;">Terms of Service</a>
+        <a href="{{ url_for('privacy') }}" style="color: #ecf0f1; text-decoration: none; margin: 0 10px;">Privacy Policy</a>
+    </div>
+    <div style="margin-top: 20px; font-size: 0.9em;">
+        <p>&copy; 2025 Backbench. All rights reserved.</p>
+    </div>
+</footer>
+
+</html>
