@@ -264,3 +264,9 @@
 @media (max-width:720px){
   .pill-grid{ grid-template-columns:1fr; }
 }
+
+/* Bottom encouragement block */
+.tools{padding:44px 0 80px;border-top:1px solid var(--line);background:#fff}
+.tools-title{margin:0 0 12px;text-align:center;font-size:clamp(28px,4.5vw,42px);font-weight:800;letter-spacing:-.02em}
+.tools .lead{max-width:920px;margin:0 auto 20px;text-align:center;color:var(--muted);font-size:18px;line-height:1.6}
+.tool-cta{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
