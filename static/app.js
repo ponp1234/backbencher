@@ -1,8 +1,30 @@
 // Footer year
+// Footer year
 document.addEventListener("DOMContentLoaded", () => {
-  const yearEl = document.getElementById("y");
-  if (yearEl) yearEl.textContent = new Date().getFullYear();
+  const y = document.getElementById("y");
+  if (y) y.textContent = new Date().getFullYear();
 });
+
+// Mobile menu with body scroll lock + resize close
+const btn = document.getElementById("menuBtn");
+const menu = document.getElementById("mobileMenu");
+if (btn && menu) {
+  btn.addEventListener("click", () => {
+    const isOpen = menu.classList.toggle("show");
+    btn.setAttribute("aria-expanded", String(isOpen));
+    document.body.style.overflow = isOpen ? "hidden" : "";
+  });
+  window.addEventListener("resize", () => {
+    if (window.innerWidth > 900 && menu.classList.contains("show")) {
+      menu.classList.remove("show");
+      btn.setAttribute("aria-expanded", "false");
+      document.body.style.overflow = "";
+    }
+  });
+}
+
+/* (keep your existing courses dropdown + auth modal code as-is) */
+
 
 // Mobile menu
 const btn = document.getElementById("menuBtn");
