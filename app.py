@@ -632,6 +632,7 @@ RESOURCE_TILES = [
 def home():
     return render_template("index.html", site_name=SITE_NAME)
 
+
 @app.route("/level/<level_slug>")
 def level(level_slug: str):
     level_slug = level_slug.lower()
@@ -641,6 +642,38 @@ def level(level_slug: str):
     title = "Primary" if level_slug == "primary" else "Secondary"
     segments = PRIMARY_SEGMENTS if level_slug == "primary" else SECONDARY_SEGMENTS
 
+    if level_slug == "primary":
+        intro_heading = "Primary Revision (PSLE)"
+        intro_blurb = (
+            "Our team of expert teachers and examiners has created course-specific "
+            "revision resources for the PSLE, covering exactly what you need to get the "
+            "grades you want. From clear notes and topic questions to past papers and "
+            "AI-powered feedback, everything you need is in one place."
+        )
+        intro_bullets = [
+            "Expert-written Revision Notes",
+            "Custom-made diagrams",
+            "Course-specific questions and Model Answers",
+            "PSLE Past Papers",
+            "Top tips on what PSLE examiners are looking for",
+            "Maximise your marks in your exams",
+        ]
+    else:
+        intro_heading = "Secondary (O-Level) Revision"
+        intro_blurb = (
+            "Examiner-approved resources tailored to the O-Level syllabus. Practise with "
+            "topic questions and past papers, review model answers, and use our tools to "
+            "get instant feedback so you can study smarter and achieve your full potential."
+        )
+        intro_bullets = [
+            "Clear Revision Notes written by experts",
+            "Concept maps & custom diagrams",
+            "Topic-specific questions with Model Answers",
+            "O-Level Past Papers",
+            "What examiners are looking for — top tips",
+            "Tools to maximise your grades",
+        ]
+
     return render_template(
         "level.html",
         site_name=SITE_NAME,
@@ -648,8 +681,10 @@ def level(level_slug: str):
         title=title,
         segments=segments,
         resource_tiles=RESOURCE_TILES,
+        intro_heading=intro_heading,
+        intro_blurb=intro_blurb,
+        intro_bullets=intro_bullets,
     )
-
 
 
 

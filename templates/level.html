@@ -1,10 +1,29 @@
 {% extends "base.html" %}
 {% block content %}
+
+<!-- Intro block (like the screenshot) -->
+<section class="level-intro">
+  <div class="container">
+    <h1 class="level-title">{{ intro_heading }}</h1>
+    <p class="level-blurb">{{ intro_blurb }}</p>
+
+    <div class="pill-grid">
+      {% for text in intro_bullets %}
+      <div class="pill">
+        <span class="check" aria-hidden="true">✓</span>
+        <span>{{ text }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Existing resources section -->
 <main class="wrap">
   <div class="container">
     <section class="card">
       <div class="header-card">
-        <h1>{{ title }}</h1>
+        <h2 style="margin:0 0 6px">{{ title }}</h2>
         <p style="color:var(--muted);margin:0 0 12px">Choose your class</p>
 
         <div class="segments" role="tablist" aria-label="Choose class">
