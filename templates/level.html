@@ -46,6 +46,24 @@
       </div>
     </section>
   </div>
+  
+<section class="level-intro">
+  <div class="container">
+    <h1 class="level-title">{{ intro_heading }}</h1>
+    <p class="level-blurb">{{ intro_blurb }}</p>
+
+    <div class="pill-grid">
+      {% for text in intro_bullets %}
+      <div class="pill">
+        <span class="check" aria-hidden="true">✓</span>
+        <span>{{ text }}</span>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+
 </main>
 
 {# Bottom encouragement block with CTAs #}
