@@ -1,5 +1,4 @@
 // Footer year
-// Footer year
 document.addEventListener("DOMContentLoaded", () => {
   const y = document.getElementById("y");
   if (y) y.textContent = new Date().getFullYear();
@@ -24,17 +23,6 @@ if (btn && menu) {
 }
 
 /* (keep your existing courses dropdown + auth modal code as-is) */
-
-
-// Mobile menu
-const btn = document.getElementById("menuBtn");
-const menu = document.getElementById("mobileMenu");
-if (btn && menu) {
-  btn.addEventListener("click", () => {
-    const isOpen = menu.classList.toggle("show");
-    btn.setAttribute("aria-expanded", String(isOpen));
-  });
-}
 
 // Courses dropdown
 const coursesBtn = document.getElementById("coursesBtn");
