@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero">
+  <div class="container">
+    <div class="hero-grid">
+      <h1 class="headline">
+        Master your PSLE, O-Levels & A-Levels with
+        <span class="nowrap"><span class="scribble">Singapore's trusted platform</span></span>
+      </h1>
+      <p class="sub">
+        Tailored for MOE curriculum. Join 50,000+ Singapore students achieving excellence in Math, Science, English and more.
+        On average, our resources help students improve by 2 grade bands.
+      </p>
+      <div class="cta">
+        <a class="btn btn-primary" href="{{ url_for('register') }}">Start free today</a>
+        <a class="btn btn-outline" href="#teacher">For educators</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features" class="steps">
+  <div class="container">
+    <h2 style="text-align:center;font-size:clamp(28px,4vw,42px);font-weight:800;margin:0 0 48px;letter-spacing:-.02em">
+      How it works for Singapore students
+    </h2>
+    <div class="cards">
+      <article class="card">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M6 3h12a2 2 0 0 1 2 2v14l-4-2-4 2-4-2-4 2V5a2 2 0 0 1 2-2z"/></svg></div>
+        <h3>1. Choose your level</h3>
+        <p>Select PSLE, O-Level, or A-Level. Access comprehensive notes covering all MOE syllabus topics.</p>
+      </article>
+      <article class="card">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h7M17 12l3 3 3-6"/></svg></div>
+        <h3>2. Practice with past papers</h3>
+        <p>Master exam techniques with topic-based questions and complete past year papers.</p>
+      </article>
+      <article class="card">
+        <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 19a7 7 0 1 1 6.9-8.1M12 8v5l3 2"/></svg></div>
+        <h3>3. Track progress & excel</h3>
+        <p>AI-powered analytics identify weak areas and recommend targeted practice.</p>
+      </article>
+    </div>
+  </div>
+</section>
+{% endblock %}

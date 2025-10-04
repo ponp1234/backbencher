@@ -614,9 +614,44 @@ class Exam(db.Model):
     questions = db.relationship('Question', backref='exam', lazy=True)
 
 
+SITE_NAME = "Backbench AI"
+
+# Data for Level page
+PRIMARY_SEGMENTS = ["Primary 3", "Primary 4", "Primary 5"]
+SECONDARY_SEGMENTS = ["Sec 1", "Sec 2", "Sec 3", "Sec 4"]
+RESOURCE_TILES = [
+    ("Revision Notes", "#"),
+    ("Exam Questions", "#"),
+    ("Flashcards", "#"),
+    ("Target Test", "#"),
+    ("Mock Exams", "#"),
+    ("Past Papers", "#"),
+]
+
 @app.route("/")
 def home():
-    return render_template("home.html")
+    return render_template("index.html", site_name=SITE_NAME)
+
+@app.route("/level/<level_slug>")
+def level(level_slug: str):
+    level_slug = level_slug.lower()
+    if level_slug not in {"primary", "secondary"}:
+        abort(404)
+
+    title = "Primary" if level_slug == "primary" else "Secondary"
+    segments = PRIMARY_SEGMENTS if level_slug == "primary" else SECONDARY_SEGMENTS
+
+    return render_template(
+        "level.html",
+        site_name=SITE_NAME,
+        level_slug=level_slug,
+        title=title,
+        segments=segments,
+        resource_tiles=RESOURCE_TILES,
+    )
+
+
+
 
 @app.route("/help")
 def help():
