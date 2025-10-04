@@ -270,3 +270,5 @@
 .tools-title{margin:0 0 12px;text-align:center;font-size:clamp(28px,4.5vw,42px);font-weight:800;letter-spacing:-.02em}
 .tools .lead{max-width:920px;margin:0 auto 20px;text-align:center;color:var(--muted);font-size:18px;line-height:1.6}
 .tool-cta{display:flex;justify-content:center;gap:12px;flex-wrap:wrap}
+
+.segments{display:flex;gap:12px;margin:12px 0 24px}

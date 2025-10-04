@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
 
-<!-- Intro block (like the screenshot) -->
+<!-- Intro block -->
 <section class="level-intro">
   <div class="container">
     <h1 class="level-title">{{ intro_heading }}</h1>
@@ -18,7 +18,7 @@
   </div>
 </section>
 
-<!-- Existing resources section -->
+<!-- Resources section -->
 <main class="wrap">
   <div class="container">
     <section class="card">
@@ -26,6 +26,7 @@
         <h2 style="margin:0 0 6px">{{ title }}</h2>
         <p style="color:var(--muted);margin:0 0 12px">Choose your class</p>
 
+        <!-- added extra space via CSS (margin-bottom) -->
         <div class="segments" role="tablist" aria-label="Choose class">
           {% for seg in segments %}
           <button class="seg {{ 'active' if loop.first else '' }}">{{ seg }}</button>
@@ -35,7 +36,9 @@
 
       <div class="grid">
         {% for label, href in resource_tiles %}
-          <a class="tile" href="{{ href }}">
+          {# stable IDs for deep-linking from CTAs below #}
+          {% set tile_id = label|lower|replace(' ', '-') %}
+          <a class="tile" href="{{ href }}" id="{{ tile_id }}">
             <h3>{{ label }}</h3>
             <span class="arrow">→</span>
           </a>
@@ -45,20 +48,18 @@
   </div>
 </main>
 
+{# Bottom encouragement block with CTAs #}
 {% set exam_name = 'PSLE' if level_slug == 'primary' else 'O-Level' %}
-
 <section class="tools">
   <div class="container">
     <h2 class="tools-title">
       <span class="scribble">{{ exam_name }}</span> revision tools
     </h2>
-
     <p class="lead">
-      At {{ site_name }}, we provide expert-created Revision Notes, Exam Questions & Answers,
+      At {{ site_name }}, we provide expert-created Revision Notes, Exam Questions &amp; Answers,
       Past Papers, Flashcards and more—tailored to help you learn efficiently and boost your grades.
       Our resources simplify complex topics, build confidence, and make exam prep stress-free.
     </p>
-
     <div class="tool-cta">
       <a class="btn btn-primary" href="#mock-exams">Try a Mock Exam</a>
       <a class="btn btn-outline" href="#past-papers">Browse Past Papers</a>
