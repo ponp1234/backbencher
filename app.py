@@ -959,7 +959,7 @@ def check_answer():
 @app.route("/logout")
 def logout():
     logout_user()
-    return redirect(url_for('/'))
+    return render_template("home.html")
 
 @app.route("/user_home")
 @login_required
