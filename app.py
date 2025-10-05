@@ -632,6 +632,9 @@ RESOURCE_TILES = [
 def home():
     return render_template("index.html", site_name=SITE_NAME)
 
+@app.route("/index")
+def index():
+    return render_template("index.html", site_name=SITE_NAME)
 
 @app.route("/level/<level_slug>")
 def level(level_slug: str):
@@ -1029,7 +1032,7 @@ def check_answer():
 @app.route("/logout")
 def logout():
     logout_user()
-    return render_template("index.html")
+    return redirect(url_for('index'))
 
 @app.route("/user_home")
 @login_required
