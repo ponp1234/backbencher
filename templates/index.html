@@ -809,13 +809,13 @@
     <!-- Mobile menu -->
     <div id="mobileMenu" class="mobile-menu" aria-label="Mobile navigation" hidden>
       <strong style="display:block;margin:8px 0">Courses by class</strong>
-      <a href="#">Primary 3</a>
-      <a href="#">Primary 4</a>
-      <a href="#">Primary 5</a>
-      <a href="#">Sec 1</a>
-      <a href="#">Sec 2</a>
-      <a href="#">Sec 3</a>
-      <a href="#">Sec 4</a>
+      <a href="{{ url_for('level', level_slug='primary') }}">Primary 3</a>
+      <a href="{{ url_for('level', level_slug='primary') }}">Primary 4</a>
+      <a href="{{ url_for('level', level_slug='primary') }}">Primary 5</a>
+      <a href="{{ url_for('level', level_slug='secondary') }}">Sec 1</a>
+      <a href="{{ url_for('level', level_slug='secondary') }}">Sec 2</a>
+      <a href="{{ url_for('level', level_slug='secondary') }}">Sec 3</a>
+      <a href="{{ url_for('level', level_slug='secondary') }}">Sec 4</a>
       <a href="#" id="mLogin">Log in</a>
     </div>
   </header>
