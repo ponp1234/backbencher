@@ -18,6 +18,50 @@
         <span>{{ site_name }}</span>
       </a>
 
+
+   <!-- Auth modal -->
+  <div id="authBackdrop" class="backdrop" hidden></div>
+  <div id="authModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle" hidden>
+    <button id="closeAuth" class="close" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6L6 18" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+    <h2 id="authTitle" class="modal-title">Sign up now. It is free</h2>
+
+    <!-- Flask friendly Google button -->
+    <a class="google-btn" href="{{ url_for('google_login') }}" role="button">
+      <i class="fab fa-google" aria-hidden="true"></i>
+      <span id="googleText">Continue with Google</span>
+    </a>
+    <div id="registerLink" class="register-link" style="margin-top:12px;">
+      <p>New to Backbench? <a href="{{ url_for('register') }}">Sign Up BB!</a></p>
+    </div>
+
+    <div class="divider" aria-hidden="true">or</div>
+
+    <form id="authForm" class="form" novalidate>
+      <div id="fullNameGroup" class="field">
+        <label class="label" for="fullname">Full name</label>
+        <input id="fullname" class="input" type="text" placeholder="Jane Doe" autocomplete="name" />
+      </div>
+      <div class="field">
+        <label class="label" for="email">Email</label>
+        <input id="email" class="input" type="email" placeholder="user@example.com" autocomplete="email" />
+      </div>
+      <div class="field pw">
+        <label class="label" for="password">Password</label>
+        <input id="password" class="input" type="password" placeholder="••••••••" autocomplete="new-password" />
+        <button id="togglePw" class="pw-toggle" type="button" aria-label="Show or hide password">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" stroke="#475569" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="#475569" stroke-width="2"/></svg>
+        </button>
+      </div>
+      <button id="primarySubmit" class="btn btn-primary modal-cta" type="submit">Sign up</button>
+    </form>
+
+    <a href="#" class="switch" id="switchAnchor"><span id="switchText">Already have an account</span>? <span id="switchLink">Log in</span></a>
+    <p class="terms">By signing up you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
+  </div>
+
+
       <!-- Primary nav with Courses dropdown -->
       <nav aria-label="Primary" class="primary-nav">
         <div class="menu-item">
@@ -159,6 +203,6 @@
   <script src="{{ url_for('static', filename='app.js') }}"></script>
 
 
-  
+
 </body>
 </html>
