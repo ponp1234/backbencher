@@ -14,10 +14,8 @@
   <header class="header">
     <div class="container header-inner">
       <a class="brand" href="{{ url_for('home') }}" aria-label="{{ site_name }} home">
-            <span>{{ site_name }}</span>
+        <span>{{ site_name }}</span>
       </a>
-
-
 
       <!-- Primary nav with Courses dropdown -->
       <nav aria-label="Primary" class="primary-nav">
@@ -71,8 +69,8 @@
       </button>
     </div>
 
-    <!-- Mobile menu -->
-    <div id="mobileMenu" class="mobile-menu container" aria-label="Mobile navigation">
+    <!-- Mobile menu (full-width overlay; no .container here) -->
+    <div id="mobileMenu" class="mobile-menu" aria-label="Mobile navigation" hidden>
       <a href="{{ url_for('home') }}#about">About</a>
       <strong style="display:block;margin:8px 0">Courses by class</strong>
       <a href="{{ url_for('level', level_slug='primary') }}">Primary 3</a>
@@ -157,9 +155,67 @@
     </div>
   </footer>
 
+  <!-- If you have static/app.js, keep it. The snippet below ensures mobile behavior works even without it. -->
+  <script>
+    // Footer year
+    (function(){ var y=document.getElementById('y'); if(y) y.textContent=new Date().getFullYear(); })();
+
+    // Mobile menu toggle + body scroll lock + accessibility
+    (function(){
+      const btn = document.getElementById('menuBtn');
+      const menu = document.getElementById('mobileMenu');
+      if(!btn || !menu) return;
+
+      function openMenu(){
+        menu.classList.add('show');
+        menu.removeAttribute('hidden');
+        btn.setAttribute('aria-expanded','true');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeMenu(){
+        menu.classList.remove('show');
+        menu.setAttribute('hidden','');
+        btn.setAttribute('aria-expanded','false');
+        document.body.style.overflow = '';
+      }
+      btn.addEventListener('click', () => {
+        const isOpen = menu.classList.contains('show');
+        isOpen ? closeMenu() : openMenu();
+      });
+      // Close on link click
+      menu.addEventListener('click', (e) => {
+        if(e.target.closest('a')) closeMenu();
+      });
+      // Close on Esc
+      window.addEventListener('keydown', (e)=>{ if(e.key==='Escape') closeMenu(); });
+      // Close if resized to desktop
+      window.addEventListener('resize', ()=>{ if(window.innerWidth > 900) closeMenu(); });
+    })();
+
+    // Desktop Courses dropdown (click/hover, closes on outside click)
+    (function(){
+      const btn = document.getElementById('coursesBtn');
+      const dd  = document.getElementById('coursesMenu');
+      if(!btn || !dd) return;
+
+      let open = false;
+      function setOpen(v){
+        open = v;
+        dd.classList.toggle('show', v);
+        btn.setAttribute('aria-expanded', String(v));
+      }
+      btn.addEventListener('click', (e)=>{ e.preventDefault(); setOpen(!open); });
+      btn.addEventListener('mouseenter', ()=>{ if(window.innerWidth>900) setOpen(true); });
+      dd.addEventListener('mouseleave', ()=>{ if(window.innerWidth>900) setOpen(false); });
+      document.addEventListener('click', (e)=>{
+        if(!open) return;
+        if(!dd.contains(e.target) && !btn.contains(e.target)) setOpen(false);
+      });
+      window.addEventListener('resize', ()=>{ if(window.innerWidth<=900) setOpen(false); });
+    })();
+  </script>
+
+  <!-- Optional: keep your external JS too -->
   <script src="{{ url_for('static', filename='app.js') }}"></script>
-
-
-
 </body>
 </html>
