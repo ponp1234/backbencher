@@ -1,40 +1,859 @@
-{% extends "base.html" %}
-{% block content %}
-<section class="hero">
-  <div class="container">
-    <div class="hero-grid">
-      <h1 class="headline">
-        Master your PSLE, O-Levels & A-Levels with
-        <span class="nowrap"><span class="scribble">Singapore's trusted platform</span></span>
-      </h1>
-      <p class="sub">
-        Tailored for MOE curriculum. Join 50,000+ Singapore students achieving excellence in Math, Science, English and more.
-        On average, our resources help students improve by 2 grade bands.
-      </p>
-      <div class="cta">
-        <a class="btn btn-primary" href="{{ url_for('register') }}">Start free today</a>
-        <a class="btn btn-outline" href="#teacher">For educators</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EduPlatform — Exam specific revision by trusted examiners</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --text: #0f172a;
+      --text-light: #475569;
+      --border: #e2e8f0;
+      --bg: #ffffff;
+      --bg-light: #f8fafc;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header Styles */
+    .header {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      gap: 16px;
+    }
+
+    .brand {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    /* Mobile-first navigation */
+    .primary-nav {
+      display: none;
+    }
+
+    .search {
+      display: none;
+    }
+
+    .actions {
+      display: none;
+    }
+
+    .menu-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Mobile Menu */
+    .mobile-menu {
+      position: fixed;
+      top: 65px;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--bg);
+      padding: 20px;
+      overflow-y: auto;
+      transform: translateX(100%);
+      transition: transform 0.3s ease;
+      z-index: 999;
+    }
+
+    .mobile-menu.show {
+      transform: translateX(0);
+    }
+
+    .mobile-menu a {
+      display: block;
+      padding: 14px 0;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 500;
+      border-bottom: 1px solid var(--border);
+      transition: color 0.2s;
+    }
+
+    .mobile-menu a:hover {
+      color: var(--primary);
+    }
+
+    .mobile-menu strong {
+      color: var(--text-light);
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 40px 0 60px;
+      background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+    }
+
+    .hero-grid {
+      text-align: center;
+    }
+
+    .headline {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+    }
+
+    .scribble {
+      color: var(--primary);
+      position: relative;
+    }
+
+    .sub {
+      font-size: 16px;
+      color: var(--text-light);
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    .cta {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      max-width: 300px;
+      margin: 0 auto;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+      font-size: 15px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn-outline {
+      border-color: var(--border);
+      color: var(--text);
+      background: white;
+    }
+
+    .btn-outline:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    /* Steps Section */
+    .steps {
+      padding: 60px 0;
+      background: var(--bg);
+    }
+
+    .steps h2 {
+      text-align: center;
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 40px;
+      letter-spacing: -0.02em;
+    }
+
+    .cards {
+      display: grid;
+      gap: 24px;
+    }
+
+    .card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    }
+
+    .icon-wrap {
+      width: 48px;
+      height: 48px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+
+    .icon-wrap svg {
+      width: 24px;
+      height: 24px;
+      fill: white;
+    }
+
+    .card h3 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      color: var(--text-light);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Modal Styles */
+    .backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 1100;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .backdrop.show {
+      opacity: 1;
+    }
+
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0.9);
+      background: white;
+      border-radius: 16px;
+      padding: 32px 24px;
+      width: calc(100% - 40px);
+      max-width: 440px;
+      max-height: 90vh;
+      overflow-y: auto;
+      z-index: 1200;
+      opacity: 0;
+      transition: all 0.3s;
+    }
+
+    .modal.show {
+      opacity: 1;
+      transform: translate(-50%, -50%) scale(1);
+    }
+
+    .close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .modal-title {
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 24px;
+      padding-right: 32px;
+    }
+
+    .google-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 12px 24px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      color: var(--text);
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+
+    .google-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      color: var(--text-light);
+      margin: 24px 0;
+      font-size: 14px;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .divider::before {
+      margin-right: 12px;
+    }
+
+    .divider::after {
+      margin-left: 12px;
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+    }
+
+    .label {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .input {
+      padding: 12px 14px;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      font-size: 15px;
+      font-family: inherit;
+      transition: border-color 0.2s;
+    }
+
+    .input:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    .pw-toggle {
+      position: absolute;
+      right: 12px;
+      bottom: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .modal-cta {
+      margin-top: 8px;
+      width: 100%;
+    }
+
+    .switch {
+      display: block;
+      text-align: center;
+      margin-top: 20px;
+      font-size: 14px;
+      color: var(--text-light);
+      text-decoration: none;
+    }
+
+    .switch #switchLink {
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .terms {
+      font-size: 13px;
+      color: var(--text-light);
+      text-align: center;
+      margin-top: 16px;
+      line-height: 1.5;
+    }
+
+    .terms a {
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .register-link {
+      text-align: center;
+      font-size: 14px;
+      color: var(--text-light);
+    }
+
+    .register-link a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* Footer */
+    .mega-footer {
+      background: var(--text);
+      color: white;
+      padding: 60px 0 24px;
+    }
+
+    .footer-top {
+      margin-bottom: 48px;
+    }
+
+    .footer-logo {
+      margin-bottom: 32px;
+      display: flex;
+      justify-content: center;
+    }
+
+    .brand-bolt {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      border-radius: 8px;
+    }
+
+    .footer-grid {
+      display: grid;
+      gap: 32px;
+    }
+
+    .footer-grid h4 {
+      font-size: 16px;
+      font-weight: 700;
+      margin-bottom: 16px;
+      color: white;
+    }
+
+    .footer-grid ul {
+      list-style: none;
+    }
+
+    .footer-grid li {
+      margin-bottom: 10px;
+    }
+
+    .footer-grid a {
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    .footer-grid a:hover {
+      color: white;
+    }
+
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.1);
+      padding-top: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .footer-bottom p {
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 8px;
+    }
+
+    .disclaimer {
+      font-size: 12px !important;
+      line-height: 1.5;
+    }
+
+    .socials {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+
+    .socials a {
+      width: 40px;
+      height: 40px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .socials a:hover {
+      background: var(--primary);
+    }
+
+    .socials svg {
+      width: 20px;
+      height: 20px;
+      fill: white;
+    }
+
+    /* Tablet styles */
+    @media (min-width: 640px) {
+      .headline {
+        font-size: 42px;
+      }
+
+      .sub {
+        font-size: 18px;
+      }
+
+      .cta {
+        flex-direction: row;
+        max-width: none;
+        justify-content: center;
+      }
+
+      .cards {
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      }
+
+      .footer-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Desktop styles */
+    @media (min-width: 900px) {
+      .header-inner {
+        padding: 20px;
+      }
+
+      .primary-nav {
+        display: flex;
+        align-items: center;
+        gap: 32px;
+      }
+
+      .menu-item {
+        position: relative;
+      }
+
+      .nav-link {
+        color: var(--text);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 15px;
+        padding: 8px 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        transition: color 0.2s;
+      }
+
+      .nav-link:hover {
+        color: var(--primary);
+      }
+
+      .dropdown {
+        position: absolute;
+        top: 100%;
+        left: -20px;
+        margin-top: 8px;
+        background: white;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 20px;
+        min-width: 400px;
+        box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.2s;
+      }
+
+      .dropdown.show {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+      }
+
+      .dd-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+
+      .dd-col h5 {
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--text-light);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 12px;
+      }
+
+      .dd-list {
+        list-style: none;
+      }
+
+      .dd-link {
+        display: block;
+        padding: 8px 12px;
+        color: var(--text);
+        text-decoration: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 500;
+        transition: background 0.2s;
+      }
+
+      .dd-link:hover {
+        background: var(--bg-light);
+      }
+
+      .dd-badge {
+        display: inline-block;
+        background: var(--primary);
+        color: white;
+        font-size: 11px;
+        padding: 2px 8px;
+        border-radius: 4px;
+        margin-left: 8px;
+        font-weight: 600;
+      }
+
+      .search {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 10px 16px;
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        background: var(--bg-light);
+        flex: 0 1 280px;
+      }
+
+      .search input {
+        border: none;
+        background: none;
+        outline: none;
+        flex: 1;
+        font-size: 14px;
+        font-family: inherit;
+      }
+
+      .actions {
+        display: flex;
+        gap: 12px;
+      }
+
+      .menu-btn {
+        display: none;
+      }
+
+      .mobile-menu {
+        display: none;
+      }
+
+      .hero {
+        padding: 80px 0 100px;
+      }
+
+      .headline {
+        font-size: 56px;
+      }
+
+      .sub {
+        font-size: 20px;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .steps {
+        padding: 100px 0;
+      }
+
+      .steps h2 {
+        font-size: 42px;
+      }
+
+      .footer-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .footer-bottom {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .socials {
+        justify-content: flex-end;
+      }
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="#" aria-label="EduPlatform home">
+        <span>EduPlatform</span>
+      </a>
+
+      <!-- Primary nav with Courses dropdown -->
+      <nav aria-label="Primary" class="primary-nav">
+        <div class="menu-item">
+          <a href="#" class="nav-link menu-trigger" id="coursesBtn" aria-expanded="false" aria-haspopup="true">
+            Courses
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 9l6 6 6-6" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <div class="dropdown" id="coursesMenu" role="menu" aria-label="Courses menu">
+            <div class="dd-grid">
+              <div class="dd-col">
+                <h5>Primary</h5>
+                <ul class="dd-list">
+                  <li><a class="dd-link" href="#">Primary 3</a></li>
+                  <li><a class="dd-link" href="#">Primary 4</a></li>
+                  <li><a class="dd-link" href="#">Primary 5</a></li>
+                </ul>
+              </div>
+              <div class="dd-col">
+                <h5>Secondary</h5>
+                <ul class="dd-list">
+                  <li><a class="dd-link" href="#">Sec 1 <span class="dd-badge">New</span></a></li>
+                  <li><a class="dd-link" href="#">Sec 2</a></li>
+                  <li><a class="dd-link" href="#">Sec 3</a></li>
+                  <li><a class="dd-link" href="#">Sec 4</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <a class="nav-link" href="#about">About</a>
+      </nav>
+
+      <div class="search" role="search">
+        <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input aria-label="Search subjects" type="search" placeholder="Search for a subject" />
+      </div>
+
+      <div class="actions">
+        <a class="btn btn-outline" href="#" id="openLogin">Log in</a>
+        <a class="btn btn-primary" href="#" id="openSignup">Join now for free</a>
+      </div>
+
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+
+    <!-- Mobile menu -->
+    <div id="mobileMenu" class="mobile-menu" aria-label="Mobile navigation" hidden>
+      <strong style="display:block;margin:8px 0">Courses by class</strong>
+      <a href="#">Primary 3</a>
+      <a href="#">Primary 4</a>
+      <a href="#">Primary 5</a>
+      <a href="#">Sec 1</a>
+      <a href="#">Sec 2</a>
+      <a href="#">Sec 3</a>
+      <a href="#">Sec 4</a>
+      <a href="#" id="mLogin">Log in</a>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <h1 class="headline">
+          Master your PSLE, O-Levels & A-Levels with
+          <span class="nowrap"><span class="scribble">Singapore's trusted platform</span></span>
+        </h1>
+        <p class="sub">
+          Tailored for MOE curriculum. Join 50,000+ Singapore students achieving excellence in Math, Science, English and more.
+          On average, our resources help students improve by 2 grade bands.
+        </p>
+        <div class="cta">
+          <a class="btn btn-primary" href="#">Start free today</a>
+          <a class="btn btn-outline" href="#teacher">For educators</a>
+        </div>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-
-   <!-- Auth modal -->
+  <!-- Auth modal -->
   <div id="authBackdrop" class="backdrop" hidden></div>
   <div id="authModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="authTitle" hidden>
     <button id="closeAuth" class="close" aria-label="Close">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M6 6l12 12M18 6L6 18" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/></svg>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/></svg>
     </button>
     <h2 id="authTitle" class="modal-title">Sign up now. It is free</h2>
 
-    <!-- Flask friendly Google button -->
-    <a class="google-btn" href="{{ url_for('google_login') }}" role="button">
+    <a class="google-btn" href="#" role="button">
       <i class="fab fa-google" aria-hidden="true"></i>
       <span id="googleText">Continue with Google</span>
     </a>
     <div id="registerLink" class="register-link" style="margin-top:12px;">
-      <p>New to Backbench? <a href="{{ url_for('register') }}">Sign Up BB!</a></p>
+      <p>New to Backbench? <a href="#">Sign Up BB!</a></p>
     </div>
 
     <div class="divider" aria-hidden="true">or</div>
@@ -52,7 +871,7 @@
         <label class="label" for="password">Password</label>
         <input id="password" class="input" type="password" placeholder="••••••••" autocomplete="new-password" />
         <button id="togglePw" class="pw-toggle" type="button" aria-label="Show or hide password">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" stroke="#475569" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="#475569" stroke-width="2"/></svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z" stroke="#475569" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="#475569" stroke-width="2"/></svg>
         </button>
       </div>
       <button id="primarySubmit" class="btn btn-primary modal-cta" type="submit">Sign up</button>
@@ -62,29 +881,300 @@
     <p class="terms">By signing up you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.</p>
   </div>
 
-
-<section id="features" class="steps">
-  <div class="container">
-    <h2 style="text-align:center;font-size:clamp(28px,4vw,42px);font-weight:800;margin:0 0 48px;letter-spacing:-.02em">
-      How it works for Singapore students
-    </h2>
-    <div class="cards">
-      <article class="card">
-        <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M6 3h12a2 2 0 0 1 2 2v14l-4-2-4 2-4-2-4 2V5a2 2 0 0 1 2-2z"/></svg></div>
-        <h3>1. Choose your level</h3>
-        <p>Select PSLE, O-Level, or A-Level. Access comprehensive notes covering all MOE syllabus topics.</p>
-      </article>
-      <article class="card">
-        <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h7M17 12l3 3 3-6"/></svg></div>
-        <h3>2. Practice with past papers</h3>
-        <p>Master exam techniques with topic-based questions and complete past year papers.</p>
-      </article>
-      <article class="card">
-        <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 19a7 7 0 1 1 6.9-8.1M12 8v5l3 2"/></svg></div>
-        <h3>3. Track progress & excel</h3>
-        <p>AI-powered analytics identify weak areas and recommend targeted practice.</p>
-      </article>
+  <!-- Features Section -->
+  <section id="features" class="steps">
+    <div class="container">
+      <h2>How it works for Singapore students</h2>
+      <div class="cards">
+        <article class="card">
+          <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M6 3h12a2 2 0 0 1 2 2v14l-4-2-4 2-4-2-4 2V5a2 2 0 0 1 2-2z"/></svg></div>
+          <h3>1. Choose your level</h3>
+          <p>Select PSLE, O-Level, or A-Level. Access comprehensive notes covering all MOE syllabus topics.</p>
+        </article>
+        <article class="card">
+          <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h10M4 18h7M17 12l3 3 3-6"/></svg></div>
+          <h3>2. Practice with past papers</h3>
+          <p>Master exam techniques with topic-based questions and complete past year papers.</p>
+        </article>
+        <article class="card">
+          <div class="icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 19a7 7 0 1 1 6.9-8.1M12 8v5l3 2"/></svg></div>
+          <h3>3. Track progress & excel</h3>
+          <p>AI-powered analytics identify weak areas and recommend targeted practice.</p>
+        </article>
+      </div>
     </div>
-  </div>
-</section>
-{% endblock %}
+  </section>
+
+  <!-- Footer -->
+  <footer class="mega-footer">
+    <div class="container footer-top">
+      <div class="footer-logo" aria-hidden="true">
+        <span class="brand-bolt"></span>
+      </div>
+      <div class="footer-grid" aria-label="Site footer links">
+        <div>
+          <h4>Resources</h4>
+          <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Learning Hub</a></li>
+            <li><a href="#">Teachers</a></li>
+            <li><a href="#">Ambassadors</a></li>
+            <li><a href="#">Scholarship</a></li>
+            <li><a href="#" id="footerJoin">Join</a></li>
+            <li><a href="#">Past Papers</a></li>
+            <li><a href="#">Solution Banks</a></li>
+            <li><a href="#">Sitemap</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Singapore Levels</h4>
+          <ul>
+            <li><a href="#">PSLE (Primary 5–6)</a></li>
+            <li><a href="#">O-Level (Secondary)</a></li>
+            <li><a href="#">A-Level (JC)</a></li>
+            <li><a href="#">IP Programme</a></li>
+            <li><a href="#">IB Diploma</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Popular Subjects</h4>
+          <ul>
+            <li><a href="#">Mathematics</a></li>
+            <li><a href="#">Sciences</a></li>
+            <li><a href="#">English and Literature</a></li>
+            <li><a href="#">Mother Tongue</a></li>
+            <li><a href="#">Humanities</a></li>
+            <li><a href="#">All Subjects</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Company</h4>
+          <ul>
+            <li><a href="#">About us</a></li>
+            <li><a href="#terms">Terms</a></li>
+            <li><a href="#privacy">Privacy</a></li>
+            <li><a href="#help">Help and support</a></li>
+            <li><a href="#" id="footerLogin">Log in</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <div>
+        <p>© Copyright 2015–<span id="y"></span> EduPlatform Ltd. All Rights Reserved.</p>
+        <p class="disclaimer">Content aligned with MOE syllabuses for Singapore schools. EduPlatform is an independent platform and is not affiliated with the Ministry of Education Singapore or SEAB.</p>
+      </div>
+      <div class="socials" aria-label="Social links">
+        <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M16 3c1 2 2 3 4 3v4c-1 0-3-.6-4-1.5V15a6 6 0 1 1-6-6c.3 0 .7 0 1 .1V7.1A10 10 0 0 0 10 7a8 8 0 1 0 8 8V3h-2z"/></svg></a>
+        <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M7 3h10a4 4 0 0 1 4 4v10a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V7a4 4 0 0 1 4-4zm5 4a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm6-.5a1.5 1.5 0 1 0 0 3 1.5 1.5 0 0 0 0-3z"/></svg></a>
+        <a href="#" aria-label="Facebook"><svg viewBox="0 0 24 24"><path d="M14 9h3V6h-3c-1.7 0-3 1.3-3 3v2H8v3h3v7h3v-7h3l1-3h-4V9c0-.6.4-1 1-1z"/></svg></a>
+        <a href="#" aria-label="X"><svg viewBox="0 0 24 24"><path d="M17.5 3H20l-6.3 7.2L21 21h-4.7l-5-6-4.4 6H4l6.7-7.7L3 3h4.8l4.3 5.4L17.5 3z"/></svg></a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // Footer year
+    (function(){ 
+      const y = document.getElementById('y'); 
+      if(y) y.textContent = new Date().getFullYear(); 
+    })();
+
+    // Mobile menu toggle
+    (function(){
+      const btn = document.getElementById('menuBtn');
+      const menu = document.getElementById('mobileMenu');
+      if(!btn || !menu) return;
+
+      function openMenu(){
+        menu.classList.add('show');
+        menu.removeAttribute('hidden');
+        btn.setAttribute('aria-expanded','true');
+        document.body.style.overflow = 'hidden';
+      }
+      
+      function closeMenu(){
+        menu.classList.remove('show');
+        menu.setAttribute('hidden','');
+        btn.setAttribute('aria-expanded','false');
+        document.body.style.overflow = '';
+      }
+      
+      btn.addEventListener('click', () => {
+        const isOpen = menu.classList.contains('show');
+        isOpen ? closeMenu() : openMenu();
+      });
+      
+      menu.addEventListener('click', (e) => {
+        if(e.target.closest('a')) closeMenu();
+      });
+      
+      window.addEventListener('keydown', (e) => { 
+        if(e.key === 'Escape') closeMenu(); 
+      });
+      
+      window.addEventListener('resize', () => { 
+        if(window.innerWidth > 900) closeMenu(); 
+      });
+    })();
+
+    // Desktop Courses dropdown
+    (function(){
+      const btn = document.getElementById('coursesBtn');
+      const dd = document.getElementById('coursesMenu');
+      if(!btn || !dd) return;
+
+      let open = false;
+      
+      function setOpen(v){
+        open = v;
+        dd.classList.toggle('show', v);
+        btn.setAttribute('aria-expanded', String(v));
+      }
+      
+      btn.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        setOpen(!open); 
+      });
+      
+      btn.addEventListener('mouseenter', () => { 
+        if(window.innerWidth > 900) setOpen(true); 
+      });
+      
+      dd.addEventListener('mouseleave', () => { 
+        if(window.innerWidth > 900) setOpen(false); 
+      });
+      
+      document.addEventListener('click', (e) => {
+        if(!open) return;
+        if(!dd.contains(e.target) && !btn.contains(e.target)) setOpen(false);
+      });
+      
+      window.addEventListener('resize', () => { 
+        if(window.innerWidth <= 900) setOpen(false); 
+      });
+    })();
+
+    // Auth modal
+    (function(){
+      const backdrop = document.getElementById('authBackdrop');
+      const modal = document.getElementById('authModal');
+      const closeBtn = document.getElementById('closeAuth');
+      const openLogin = document.getElementById('openLogin');
+      const openSignup = document.getElementById('openSignup');
+      const switchAnchor = document.getElementById('switchAnchor');
+      const modalTitle = document.getElementById('authTitle');
+      const fullNameGroup = document.getElementById('fullNameGroup');
+      const primarySubmit = document.getElementById('primarySubmit');
+      const switchText = document.getElementById('switchText');
+      const switchLink = document.getElementById('switchLink');
+      const googleText = document.getElementById('googleText');
+      const mLogin = document.getElementById('mLogin');
+      const footerLogin = document.getElementById('footerLogin');
+      const footerJoin = document.getElementById('footerJoin');
+      const registerLink = document.getElementById('registerLink');
+
+      let isSignup = true;
+
+      function openModal(signup = true){
+        isSignup = signup;
+        updateModalContent();
+        backdrop.removeAttribute('hidden');
+        modal.removeAttribute('hidden');
+        setTimeout(() => {
+          backdrop.classList.add('show');
+          modal.classList.add('show');
+        }, 10);
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeModal(){
+        backdrop.classList.remove('show');
+        modal.classList.remove('show');
+        setTimeout(() => {
+          backdrop.setAttribute('hidden', '');
+          modal.setAttribute('hidden', '');
+          document.body.style.overflow = '';
+        }, 300);
+      }
+
+      function updateModalContent(){
+        if(isSignup){
+          modalTitle.textContent = 'Sign up now. It is free';
+          fullNameGroup.style.display = 'flex';
+          primarySubmit.textContent = 'Sign up';
+          switchText.textContent = 'Already have an account';
+          switchLink.textContent = 'Log in';
+          googleText.textContent = 'Continue with Google';
+          registerLink.style.display = 'block';
+        } else {
+          modalTitle.textContent = 'Welcome back';
+          fullNameGroup.style.display = 'none';
+          primarySubmit.textContent = 'Log in';
+          switchText.textContent = "Don't have an account";
+          switchLink.textContent = 'Sign up';
+          googleText.textContent = 'Sign in with Google';
+          registerLink.style.display = 'none';
+        }
+      }
+
+      if(openLogin) openLogin.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        openModal(false); 
+      });
+      
+      if(openSignup) openSignup.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        openModal(true); 
+      });
+      
+      if(mLogin) mLogin.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        openModal(false); 
+      });
+      
+      if(footerLogin) footerLogin.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        openModal(false); 
+      });
+      
+      if(footerJoin) footerJoin.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        openModal(true); 
+      });
+
+      if(closeBtn) closeBtn.addEventListener('click', closeModal);
+      if(backdrop) backdrop.addEventListener('click', closeModal);
+
+      if(switchAnchor) switchAnchor.addEventListener('click', (e) => {
+        e.preventDefault();
+        isSignup = !isSignup;
+        updateModalContent();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape') closeModal();
+      });
+
+      // Password toggle
+      const togglePw = document.getElementById('togglePw');
+      const passwordInput = document.getElementById('password');
+      if(togglePw && passwordInput){
+        togglePw.addEventListener('click', () => {
+          const type = passwordInput.type === 'password' ? 'text' : 'password';
+          passwordInput.type = type;
+        });
+      }
+
+      // Form submission
+      const authForm = document.getElementById('authForm');
+      if(authForm){
+        authForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          alert(isSignup ? 'Sign up functionality would go here' : 'Login functionality would go here');
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
