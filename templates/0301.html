@@ -6,15 +6,922 @@
   <title>Primary 3 Revision Notes - BackBenchAI</title>
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    /* Global Resets */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    <style>
+        /* Global Resets */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-           .dropdown {
+        /* Root Variables (Combined and refined) */
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #dbeafe; /* From the second block, useful */
+            --text: #0f172a;
+            --text-light: #475569; /* From the first block */
+            --muted: #64748b; /* From the second block, similar to text-light */
+            --border: #e2e8f0;
+            --bg: #ffffff;
+            --bg-light: #f8fafc;
+            --success: #10b981; /* From the second block */
+        }
+
+        /* Base Body Styles */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            background: var(--bg-light); /* From the second block */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px; /* Using 16px from the second block for mobile padding */
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            gap: 16px;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        /* Mobile-first navigation */
+        .primary-nav {
+            display: none;
+        }
+
+        .search {
+            display: none;
+        }
+
+        .actions {
+            display: none;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            top: 65px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            padding: 20px;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+
+        .mobile-menu.show {
+            transform: translateX(0);
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 14px 0;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid var(--border);
+            transition: color 0.2s;
+        }
+
+        .mobile-menu a:hover {
+            color: var(--primary);
+        }
+
+        .mobile-menu strong {
+            color: var(--text-light); /* Using var(--text-light) as it's defined */
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Hero Section (From first block) */
+        .hero {
+            padding: 40px 0 60px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+        }
+
+        .hero-grid {
+            text-align: center;
+        }
+
+        .headline {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .scribble {
+            color: var(--primary);
+            position: relative;
+        }
+
+        .sub {
+            font-size: 16px;
+            color: var(--text-light);
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        .cta {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        /* Level Intro Section (From second block) */
+        .level-intro {
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+            padding: 40px 0 48px;
+        }
+
+        .level-title {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+            color: var(--text);
+        }
+
+        .level-blurb {
+            font-size: 16px;
+            color: var(--muted);
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        .pill-grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .pill:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+        }
+
+        .check {
+            width: 20px;
+            height: 20px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Main Content Wrapper (From second block) */
+        .wrap {
+            padding: 32px 0 48px;
+        }
+
+        /* Cards (Applies to both) */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px 16px; /* Mobile padding from second block */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+            /* Extra styles from the first block for the steps section cards */
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        /* Card Hover (From first block) */
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+        }
+
+        /* Card Components (From first block for steps section) */
+        .icon-wrap {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .icon-wrap svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            color: var(--text-light);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* Header Card (From second block) */
+        .header-card {
+            margin-bottom: 28px;
+        }
+
+        .header-card h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .header-card p {
+            font-size: 15px;
+        }
+
+        /* Segments (Class Selector from second block) */
+        .segments {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 4px;
+            margin-top: 16px;
+        }
+
+        .segments::-webkit-scrollbar {
+            display: none;
+        }
+
+        .seg {
+            padding: 10px 20px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .seg:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .seg.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        /* Resource Grid (From second block) */
+        .grid {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .tile {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            background: var(--bg-light);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s;
+            gap: 12px;
+        }
+
+        .tile:hover {
+            border-color: var(--primary);
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+        }
+
+        .tile h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .arrow {
+            font-size: 20px;
+            color: var(--primary);
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* Tools Section (From second block) */
+        .tools {
+            background: white;
+            padding: 48px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .tools-title {
+            font-size: 28px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .lead {
+            font-size: 16px;
+            color: var(--muted);
+            text-align: center;
+            line-height: 1.7;
+            margin-bottom: 32px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tool-cta {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        /* Steps Section (From first block) */
+        .steps {
+            padding: 60px 0;
+            background: var(--bg);
+        }
+
+        .steps h2 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            letter-spacing: -0.02em;
+        }
+
+        .cards {
+            display: grid;
+            gap: 24px;
+        }
+
+        /* Buttons (Combined and unified padding/hover) */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 13px 24px; /* Using 13px vertical padding from the second block for consistency */
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            font-size: 15px;
+            cursor: pointer;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            /* Using the hover effect from the second block as it's more dynamic */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-outline {
+            border-color: var(--border);
+            color: var(--text);
+            background: white;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Modal Styles (From first block) */
+        .backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1100;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none; /* Initially non-interactive */
+        }
+
+        .backdrop.show {
+            opacity: 1;
+            pointer-events: auto; /* Interactive when shown */
+        }
+
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: white;
+            border-radius: 16px;
+            padding: 32px 24px;
+            width: calc(100% - 40px);
+            max-width: 440px;
+            max-height: 90vh;
+            overflow-y: auto;
+            z-index: 1200;
+            opacity: 0;
+            visibility: hidden; /* Hide completely when not shown */
+            transition: all 0.3s;
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: var(--text-light);
+            transition: color 0.2s;
+        }
+        
+        .close:hover {
+            color: var(--text);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            padding-right: 32px;
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 12px 24px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            color: var(--text);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .google-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--text-light);
+            margin: 24px 0;
+            font-size: 14px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .divider::before {
+            margin-right: 12px;
+        }
+
+        .divider::after {
+            margin-left: 12px;
+        }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+        }
+
+        .label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .input {
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .pw-toggle {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--text-light);
+        }
+
+        .modal-cta {
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        .switch {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .switch a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none; /* Already defined above, but keep for clarity */
+            cursor: pointer;
+        }
+
+        .terms {
+            font-size: 13px;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+
+        .terms a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .register-link {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .register-link a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .forgot-password {
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            text-align: right;
+            margin-top: -8px;
+        }
+
+        /* Footer (From first block) */
+        .mega-footer {
+            background: var(--text);
+            color: white;
+            padding: 60px 0 24px;
+        }
+
+        .footer-top {
+            margin-bottom: 48px;
+        }
+
+        .footer-logo {
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .brand-bolt {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 8px;
+        }
+
+        .footer-grid {
+            display: grid;
+            gap: 32px;
+        }
+
+        .footer-grid h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .footer-grid ul {
+            list-style: none;
+        }
+
+        .footer-grid li {
+            margin-bottom: 10px;
+        }
+
+        .footer-grid a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-grid a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .footer-bottom p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 8px;
+        }
+
+        .disclaimer {
+            font-size: 12px !important;
+            line-height: 1.5;
+        }
+
+        .socials {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .socials a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .socials a:hover {
+            background: var(--primary);
+        }
+
+        .socials svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        /* Utility (From second block) */
+        br {
+            display: block;
+            content: "";
+            margin-top: 16px;
+        }
+
+        /* Utility (From first block) */
+        [hidden] {
+            display: none !important;
+        }
+
+        /* Tablet styles */
+        @media (min-width: 640px) {
+            .container {
+                padding: 0 24px; /* Using 24px from second block */
+            }
+
+            /* Hero (From first block) */
+            .headline {
+                font-size: 42px;
+            }
+
+            .sub {
+                font-size: 18px;
+            }
+
+            .cta {
+                flex-direction: row;
+                max-width: none;
+                justify-content: center;
+            }
+
+            /* Steps (From first block) */
+            .cards {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+
+            /* Footer (From first block) */
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            /* Level Intro (From second block) */
+            .level-intro {
+                padding: 56px 0 64px;
+            }
+
+            .level-title {
+                font-size: 40px;
+            }
+
+            .level-blurb {
+                font-size: 18px;
+                max-width: 700px;
+            }
+
+            .pill-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .pill {
+                padding: 14px 18px;
+                font-size: 15px;
+            }
+
+            /* Wrap/Card (From second block) */
+            .wrap {
+                padding: 48px 0 64px;
+            }
+
+            .card {
+                padding: 32px 28px;
+            }
+
+            .header-card h2 {
+                font-size: 28px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .tile {
+                padding: 20px 24px;
+            }
+
+            .tile h3 {
+                font-size: 17px;
+            }
+
+            /* Tools (From second block) */
+            .tools {
+                padding: 64px 0;
+            }
+
+            .tools-title {
+                font-size: 36px;
+            }
+
+            .lead {
+                font-size: 18px;
+            }
+
+            .tool-cta {
+                flex-direction: row;
+                max-width: none;
+                justify-content: center;
+            }
+        }
+
+        /* Desktop styles */
+        @media (min-width: 900px) {
+            .header-inner {
+                padding: 20px;
+            }
+
+            .primary-nav {
+                display: flex;
+                align-items: center;
+                gap: 32px;
+            }
+
+            .menu-item {
+                position: relative;
+            }
+
+            .nav-link {
+                color: var(--text);
+                text-decoration: none;
+                font-weight: 500;
+                font-size: 15px;
+                padding: 8px 0;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                transition: color 0.2s;
+            }
+
+            .nav-link:hover {
+                color: var(--primary);
+            }
+
+            .dropdown {
                 position: absolute;
                 top: 100%;
                 left: -20px;
@@ -228,192 +1135,21 @@
                 grid-template-columns: repeat(4, 1fr);
             }
         }
-
-    /* Root Variables (Consolidated) */
-    :root {
-      --primary: #3b82f6;
-      --primary-dark: #2563eb;
-      --primary-light: #dbeafe; 
-      --text: #0f172a;
-      --text-light: #475569;
-      --text-muted: #64748b; /* Renamed 'muted' to 'text-muted' for clarity */
-      --border: #e2e8f0;
-      --bg: #ffffff;
-      --bg-light: #f8fafc;
-      --bg-hover: #f1f5f9; /* Added a distinct hover background color for topics */
-      --success: #10b981;
-    }
-
-    /* Base Body Styles */
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      color: var(--text);
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
-      background: var(--bg-light);
+    </style>
+ <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
     .container {
-      max-width: 1400px; /* Using the wider max-width */
+      max-width: 1400px;
       margin: 0 auto;
-      padding: 0 16px; 
+      padding: 0 16px;
     }
 
-    /* Utility */
-    [hidden] {
-      display: none !important;
-    }
-    
-    /* Utility: Replaced <br> utility with margin utility */
-    .mt-4 { margin-top: 16px; }
-
-    /* --- General Components --- */
-
-    /* Buttons (Unified) */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 13px 24px;
-      border-radius: 8px;
-      font-weight: 600;
-      text-decoration: none;
-      transition: all 0.2s;
-      border: 2px solid transparent;
-      font-size: 15px;
-      cursor: pointer;
-      white-space: nowrap;
-      text-align: center;
-    }
-
-    .btn-primary {
-      background: var(--primary);
-      color: white;
-    }
-
-    .btn-primary:hover {
-      background: var(--primary-dark);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-    }
-
-    .btn-outline {
-      border-color: var(--border);
-      color: var(--text);
-      background: white;
-    }
-
-    .btn-outline:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-    
-    /* Card Styles (Unified) */
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 24px 16px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-      border: 1px solid var(--border);
-      transition: transform 0.2s, box-shadow 0.2s;
-    }
-    
-    /* Card Hover (Used for steps/features) */
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.08);
-    }
-    
-    /* Specific Card Headings/Content */
-    .card h3 {
-      font-size: 20px;
-      font-weight: 700;
-      margin-bottom: 12px;
-    }
-
-    .card p {
-      color: var(--text-light);
-      font-size: 15px;
-      line-height: 1.6;
-    }
-    
-    /* --- Header & Navigation --- */
-
-    .header {
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-
-    .header-inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      gap: 16px;
-    }
-
-    .brand {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--primary);
-      text-decoration: none;
-      white-space: nowrap;
-    }
-    
-    .menu-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    
-    /* Mobile-only styles for nav/search/actions (Hidden on desktop) */
-    .primary-nav, .search, .actions {
-      display: none;
-    }
-
-    /* Mobile Menu (Simplified transition styles) */
-    .mobile-menu {
-      position: fixed;
-      top: 65px;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: var(--bg);
-      padding: 20px;
-      overflow-y: auto;
-      transform: translateX(100%);
-      transition: transform 0.3s ease;
-      z-index: 999;
-    }
-
-    .mobile-menu.show {
-      transform: translateX(0);
-    }
-
-    .mobile-menu a {
-      display: block;
-      padding: 14px 0;
-      color: var(--text);
-      text-decoration: none;
-      font-weight: 500;
-      border-bottom: 1px solid var(--border);
-      transition: color 0.2s;
-    }
-
-    .mobile-menu a:hover {
-      color: var(--primary);
-    }
-
-    /* --- Breadcrumb & Page Header (Content page specific) --- */
-
+    /* Breadcrumb */
     .breadcrumb {
       padding: 24px 0 16px;
       display: flex;
@@ -441,7 +1177,8 @@
       color: var(--text);
       font-weight: 500;
     }
-    
+
+    /* Page Header */
     .page-header {
       padding: 24px 0 32px;
     }
@@ -454,28 +1191,40 @@
       color: var(--text);
       letter-spacing: -0.02em;
     }
-    
+
+    .exam-code {
+      display: inline-block;
+      padding: 6px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
     .page-description {
       font-size: 16px;
       color: var(--text-muted);
       max-width: 700px;
     }
 
-    /* --- Content Sections (Revision Page) --- */
-
+    /* Content Grid */
     .content-grid {
       display: grid;
       gap: 24px;
       padding-bottom: 80px;
     }
 
+    /* Section Card */
     .section-card {
       background: var(--bg);
       border: 1px solid var(--border);
       border-radius: 12px;
       overflow: hidden;
     }
-    
+
     .section-header {
       padding: 20px 24px;
       border-bottom: 1px solid var(--border);
@@ -486,8 +1235,8 @@
       font-weight: 700;
       color: var(--text);
     }
-    
-    /* Accordion/Topic Item */
+
+    /* Topic Item */
     .topic-item {
       border-bottom: 1px solid var(--border);
     }
@@ -529,6 +1278,7 @@
       transform: rotate(180deg);
     }
 
+    /* Subtopic Content */
     .subtopic-content {
       max-height: 0;
       overflow: hidden;
@@ -537,7 +1287,7 @@
     }
 
     .topic-item.active .subtopic-content {
-      max-height: 1000px; /* Use a large value to allow smooth accordion transition */
+      max-height: 1000px;
     }
 
     .subtopic-list {
@@ -563,20 +1313,16 @@
       transform: translateX(4px);
     }
 
-    /* --- Media Queries (Consolidated and Organized) --- */
+    .subtopic-link:last-child {
+      margin-bottom: 0;
+    }
 
-    /* Tablet (min-width: 640px) */
-    @media (min-width: 640px) {
+    /* Tablet */
+    @media (min-width: 768px) {
       .container {
-        padding: 0 24px;
-      }
-      
-      /* Header */
-      .header-inner {
-        padding: 16px 24px;
+        padding: 0 32px;
       }
 
-      /* Page Header */
       .page-title {
         font-size: 42px;
       }
@@ -585,93 +1331,35 @@
         font-size: 18px;
       }
 
-      /* Content Grid */
       .content-grid {
         grid-template-columns: repeat(2, 1fr);
       }
-
-      /* Card styles (used for steps/features sections not present here) */
-      .card {
-        padding: 32px 28px;
-      }
-
-      .cards {
-        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      }
     }
 
-    /* Desktop (min-width: 900px) */
-    @media (min-width: 900px) {
-      .header-inner {
-        padding: 20px;
-      }
-      
-      .menu-btn, .mobile-menu {
-        display: none;
-      }
-      
-      /* Desktop Navigation */
-      .primary-nav {
-        display: flex;
-        align-items: center;
-        gap: 32px;
-      }
-      
-      .nav-link {
-        color: var(--text);
-        text-decoration: none;
-        font-weight: 500;
+    /* Desktop */
+    @media (min-width: 1024px) {
+      .breadcrumb {
         font-size: 15px;
-        padding: 8px 0;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        transition: color 0.2s;
       }
-      
-      .nav-link:hover {
-        color: var(--primary);
-      }
-      
-      .search {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        padding: 10px 16px;
-        border: 2px solid var(--border);
-        border-radius: 8px;
-        background: var(--bg-light);
-        flex: 0 1 280px;
-      }
-      
-      .search input {
-        border: none;
-        background: none;
-        outline: none;
-        flex: 1;
-        font-size: 14px;
-        font-family: inherit;
-      }
-      
-      .actions {
-        display: flex;
-        gap: 12px;
-      }
-      
-      /* Page Header */
+
       .page-header {
         padding: 32px 0 48px;
       }
 
       .page-title {
-        font-size: 52px; /* Used 52px from the second block's larger size */
+        font-size: 52px;
       }
-    }
 
-    /* Extra large desktop (min-width: 1200px) */
-    @media (min-width: 1200px) {
-      .container {
-        padding: 0 32px; /* Increased padding for XL screens */
+      .section-title {
+        font-size: 22px;
+      }
+
+      .topic-name {
+        font-size: 17px;
+      }
+
+      .subtopic-link {
+        font-size: 16px;
       }
     }
   </style>
