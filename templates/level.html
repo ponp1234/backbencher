@@ -1,1624 +1,1697 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Primary Level - BBPlatform</title>
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-  /* Global Resets */
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-
-  /* Root Variables (Combined and refined) */
-  :root {
-    --primary: #3b82f6;
-    --primary-dark: #2563eb;
-    --primary-light: #dbeafe; /* From the second block, useful */
-    --text: #0f172a;
-    --text-light: #475569; /* From the first block */
-    --muted: #64748b; /* From the second block, similar to text-light */
-    --border: #e2e8f0;
-    --bg: #ffffff;
-    --bg-light: #f8fafc;
-    --success: #10b981; /* From the second block */
-  }
-
-  /* Base Body Styles */
-  body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    color: var(--text);
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    background: var(--bg-light); /* From the second block */
-  }
-
-  .container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 16px; /* Using 16px from the second block for mobile padding */
-  }
-
-  /* Header Styles */
-  .header {
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-  }
-
-  .header-inner {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 20px;
-    gap: 16px;
-  }
-
-  .brand {
-    font-size: 20px;
-    font-weight: 800;
-    color: var(--primary);
-    text-decoration: none;
-    white-space: nowrap;
-  }
-
-  /* Mobile-first navigation */
-  .primary-nav {
-    display: none;
-  }
-
-  .search {
-    display: none;
-  }
-
-  .actions {
-    display: none;
-  }
-
-  .menu-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* Mobile Menu */
-  .mobile-menu {
-    position: fixed;
-    top: 65px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: var(--bg);
-    padding: 20px;
-    overflow-y: auto;
-    transform: translateX(100%);
-    transition: transform 0.3s ease;
-    z-index: 999;
-  }
-
-  .mobile-menu.show {
-    transform: translateX(0);
-  }
-
-  .mobile-menu a {
-    display: block;
-    padding: 14px 0;
-    color: var(--text);
-    text-decoration: none;
-    font-weight: 500;
-    border-bottom: 1px solid var(--border);
-    transition: color 0.2s;
-  }
-
-  .mobile-menu a:hover {
-    color: var(--primary);
-  }
-
-  .mobile-menu strong {
-    color: var(--text-light); /* Using var(--text-light) as it's defined */
-    font-size: 14px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-  }
-
-  /* Hero Section (From first block) */
-  .hero {
-    padding: 40px 0 60px;
-    background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
-  }
-
-  .hero-grid {
-    text-align: center;
-  }
-
-  .headline {
-    font-size: 32px;
-    font-weight: 800;
-    line-height: 1.2;
-    margin-bottom: 20px;
-    letter-spacing: -0.02em;
-  }
-
-  .scribble {
-    color: var(--primary);
-    position: relative;
-  }
-
-  .sub {
-    font-size: 16px;
-    color: var(--text-light);
-    margin-bottom: 28px;
-    line-height: 1.6;
-  }
-
-  .cta {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-width: 300px;
-    margin: 0 auto;
-  }
-
-  /* Level Intro Section (From second block) */
-  .level-intro {
-    background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
-    padding: 40px 0 48px;
-  }
-
-  .level-title {
-    font-size: 32px;
-    font-weight: 800;
-    line-height: 1.2;
-    margin-bottom: 16px;
-    letter-spacing: -0.02em;
-    color: var(--text);
-  }
-
-  .level-blurb {
-    font-size: 16px;
-    color: var(--muted);
-    margin-bottom: 28px;
-    line-height: 1.6;
-  }
-
-  .pill-grid {
-    display: grid;
-    gap: 12px;
-    margin-top: 24px;
-  }
-
-  .pill {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
-    background: white;
-    border-radius: 10px;
-    border: 1px solid var(--border);
-    font-size: 14px;
-    font-weight: 500;
-    transition: all 0.2s;
-  }
-
-  .pill:hover {
-    border-color: var(--primary);
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
-  }
-
-  .check {
-    width: 20px;
-    height: 20px;
-    background: var(--success);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    flex-shrink: 0;
-  }
-
-  /* Main Content Wrapper (From second block) */
-  .wrap {
-    padding: 32px 0 48px;
-  }
-
-  /* Cards (Applies to both) */
-  .card {
-    background: white;
-    border-radius: 16px;
-    padding: 24px 16px; /* Mobile padding from second block */
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    border: 1px solid var(--border);
-    /* Extra styles from the first block for the steps section cards */
-    transition: transform 0.2s, box-shadow 0.2s;
-  }
-
-  /* Card Hover (From first block) */
-  .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
-  }
-
-  /* Card Components (From first block for steps section) */
-  .icon-wrap {
-    width: 48px;
-    height: 48px;
-    background: var(--primary);
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 16px;
-  }
-
-  .icon-wrap svg {
-    width: 24px;
-    height: 24px;
-    fill: white;
-  }
-
-  .card h3 {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 12px;
-  }
-
-  .card p {
-    color: var(--text-light);
-    font-size: 15px;
-    line-height: 1.6;
-  }
-
-  /* Header Card (From second block) */
-  .header-card {
-    margin-bottom: 28px;
-  }
-
-  .header-card h2 {
-    font-size: 24px;
-    font-weight: 800;
-    color: var(--text);
-  }
-
-  .header-card p {
-    font-size: 15px;
-  }
-
-  /* Segments (Class Selector from second block) */
-  .segments {
-    display: flex;
-    gap: 8px;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    padding-bottom: 4px;
-    margin-top: 16px;
-  }
-
-  .segments::-webkit-scrollbar {
-    display: none;
-  }
-
-  .seg {
-    padding: 10px 20px;
-    border: 2px solid var(--border);
-    border-radius: 8px;
-    background: white;
-    color: var(--text);
-    font-weight: 600;
-    font-size: 14px;
-    cursor: pointer;
-    transition: all 0.2s;
-    white-space: nowrap;
-    flex-shrink: 0;
-  }
-
-  .seg:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-  }
-
-  .seg.active {
-    background: var(--primary);
-    border-color: var(--primary);
-    color: white;
-  }
-
-  /* Resource Grid (From second block) */
-  .grid {
-    display: grid;
-    gap: 12px;
-    margin-bottom: 24px;
-  }
-
-  .tile {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 18px 20px;
-    background: var(--bg-light);
-    border: 2px solid var(--border);
-    border-radius: 12px;
-    text-decoration: none;
-    color: var(--text);
-    transition: all 0.2s;
-    gap: 12px;
-  }
-
-  .tile:hover {
-    border-color: var(--primary);
-    background: white;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
-  }
-
-  .tile h3 {
-    font-size: 16px;
-    font-weight: 600;
-    margin: 0;
-  }
-
-  .arrow {
-    font-size: 20px;
-    color: var(--primary);
-    font-weight: 600;
-    flex-shrink: 0;
-  }
-
-  /* Tools Section (From second block) */
-  .tools {
-    background: white;
-    padding: 48px 0;
-    border-top: 1px solid var(--border);
-  }
-
-  .tools-title {
-    font-size: 28px;
-    font-weight: 800;
-    text-align: center;
-    margin-bottom: 16px;
-    letter-spacing: -0.02em;
-  }
-
-  .lead {
-    font-size: 16px;
-    color: var(--muted);
-    text-align: center;
-    line-height: 1.7;
-    margin-bottom: 32px;
-    max-width: 700px;
-    margin-left: auto;
-    margin-right: auto;
-  }
-
-  .tool-cta {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    max-width: 320px;
-    margin: 0 auto;
-  }
-
-  /* Steps Section (From first block) */
-  .steps {
-    padding: 60px 0;
-    background: var(--bg);
-  }
-
-  .steps h2 {
-    text-align: center;
-    font-size: 28px;
-    font-weight: 800;
-    margin-bottom: 40px;
-    letter-spacing: -0.02em;
-  }
-
-  .cards {
-    display: grid;
-    gap: 24px;
-  }
-
-  /* Buttons (Combined and unified padding/hover) */
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 13px 24px; /* Using 13px vertical padding from the second block for consistency */
-    border-radius: 8px;
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s;
-    border: 2px solid transparent;
-    font-size: 15px;
-    cursor: pointer;
-    white-space: nowrap;
-    text-align: center;
-  }
-
-  .btn-primary {
-    background: var(--primary);
-    color: white;
-  }
-
-  .btn-primary:hover {
-    background: var(--primary-dark);
-    /* Using the hover effect from the second block as it's more dynamic */
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-  }
-
-  .btn-outline {
-    border-color: var(--border);
-    color: var(--text);
-    background: white;
-  }
-
-  .btn-outline:hover {
-    border-color: var(--primary);
-    color: var(--primary);
-  }
-
-  /* Modal Styles (From first block) */
-  .backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.5);
-    z-index: 1100;
-    opacity: 0;
-    transition: opacity 0.3s;
-  }
-
-  .backdrop.show {
-    opacity: 1;
-  }
-
-  .modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%) scale(0.9);
-    background: white;
-    border-radius: 16px;
-    padding: 32px 24px;
-    width: calc(100% - 40px);
-    max-width: 440px;
-    max-height: 90vh;
-    overflow-y: auto;
-    z-index: 1200;
-    opacity: 0;
-    transition: all 0.3s;
-  }
-
-  .modal.show {
-    opacity: 1;
-    transform: translate(-50%, -50%) scale(1);
-  }
-
-  .close {
-    position: absolute;
-    top: 16px;
-    right: 16px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px;
-  }
-
-  .modal-title {
-    font-size: 24px;
-    font-weight: 700;
-    margin-bottom: 24px;
-    padding-right: 32px;
-  }
-
-  .google-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 12px 24px;
-    border: 2px solid var(--border);
-    border-radius: 8px;
-    background: white;
-    color: var(--text);
-    font-weight: 600;
-    text-decoration: none;
-    transition: all 0.2s;
-  }
-
-  .google-btn:hover {
-    border-color: var(--primary);
-  }
-
-  .divider {
-    display: flex;
-    align-items: center;
-    text-align: center;
-    color: var(--text-light);
-    margin: 24px 0;
-    font-size: 14px;
-  }
-
-  .divider::before,
-  .divider::after {
-    content: '';
-    flex: 1;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .divider::before {
-    margin-right: 12px;
-  }
-
-  .divider::after {
-    margin-left: 12px;
-  }
-
-  .form {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .field {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    position: relative;
-  }
-
-  .label {
-    font-weight: 600;
-    font-size: 14px;
-    color: var(--text);
-  }
-
-  .input {
-    padding: 12px 14px;
-    border: 2px solid var(--border);
-    border-radius: 8px;
-    font-size: 15px;
-    font-family: inherit;
-    transition: border-color 0.2s;
-  }
-
-  .input:focus {
-    outline: none;
-    border-color: var(--primary);
-  }
-
-  .pw-toggle {
-    position: absolute;
-    right: 12px;
-    bottom: 12px;
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px;
-  }
-
-  .modal-cta {
-    margin-top: 8px;
-    width: 100%;
-  }
-
-  .switch {
-    display: block;
-    text-align: center;
-    margin-top: 20px;
-    font-size: 14px;
-    color: var(--text-light);
-    text-decoration: none;
-  }
-
-  .switch #switchLink {
-    color: var(--primary);
-    font-weight: 600;
-  }
-
-  .terms {
-    font-size: 13px;
-    color: var(--text-light);
-    text-align: center;
-    margin-top: 16px;
-    line-height: 1.5;
-  }
-
-  .terms a {
-    color: var(--primary);
-    text-decoration: none;
-  }
-
-  .register-link {
-    text-align: center;
-    font-size: 14px;
-    color: var(--text-light);
-  }
-
-  .register-link a {
-    color: var(--primary);
-    font-weight: 600;
-    text-decoration: none;
-  }
-
-  /* Footer (From first block) */
-  .mega-footer {
-    background: var(--text);
-    color: white;
-    padding: 60px 0 24px;
-  }
-
-  .footer-top {
-    margin-bottom: 48px;
-  }
-
-  .footer-logo {
-    margin-bottom: 32px;
-    display: flex;
-    justify-content: center;
-  }
-
-  .brand-bolt {
-    width: 40px;
-    height: 40px;
-    background: var(--primary);
-    border-radius: 8px;
-  }
-
-  .footer-grid {
-    display: grid;
-    gap: 32px;
-  }
-
-  .footer-grid h4 {
-    font-size: 16px;
-    font-weight: 700;
-    margin-bottom: 16px;
-    color: white;
-  }
-
-  .footer-grid ul {
-    list-style: none;
-  }
-
-  .footer-grid li {
-    margin-bottom: 10px;
-  }
-
-  .footer-grid a {
-    color: rgba(255,255,255,0.7);
-    text-decoration: none;
-    font-size: 14px;
-    transition: color 0.2s;
-  }
-
-  .footer-grid a:hover {
-    color: white;
-  }
-
-  .footer-bottom {
-    border-top: 1px solid rgba(255,255,255,0.1);
-    padding-top: 24px;
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .footer-bottom p {
-    font-size: 13px;
-    color: rgba(255,255,255,0.6);
-    margin-bottom: 8px;
-  }
-
-  .disclaimer {
-    font-size: 12px !important;
-    line-height: 1.5;
-  }
-
-  .socials {
-    display: flex;
-    gap: 16px;
-    justify-content: center;
-  }
-
-  .socials a {
-    width: 40px;
-    height: 40px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.2s;
-  }
-
-  .socials a:hover {
-    background: var(--primary);
-  }
-
-  .socials svg {
-    width: 20px;
-    height: 20px;
-    fill: white;
-  }
-
-  /* Utility (From second block) */
-  br {
-    display: block;
-    content: "";
-    margin-top: 16px;
-  }
-
-  /* Utility (From first block) */
-  [hidden] {
-    display: none !important;
-  }
-
-  /* Tablet styles */
-  @media (min-width: 640px) {
-    .container {
-      padding: 0 24px; /* Using 24px from second block */
-    }
-
-    /* Hero (From first block) */
-    .headline {
-      font-size: 42px;
-    }
-
-    .sub {
-      font-size: 18px;
-    }
-
-    .cta {
-      flex-direction: row;
-      max-width: none;
-      justify-content: center;
-    }
-
-    /* Steps (From first block) */
-    .cards {
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    }
-
-    /* Footer (From first block) */
-    .footer-grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
-
-    /* Level Intro (From second block) */
-    .level-intro {
-      padding: 56px 0 64px;
-    }
-
-    .level-title {
-      font-size: 40px;
-    }
-
-    .level-blurb {
-      font-size: 18px;
-      max-width: 700px;
-    }
-
-    .pill-grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }
-
-    .pill {
-      padding: 14px 18px;
-      font-size: 15px;
-    }
-
-    /* Wrap/Card (From second block) */
-    .wrap {
-      padding: 48px 0 64px;
-    }
-
-    .card {
-      padding: 32px 28px;
-    }
-
-    .header-card h2 {
-      font-size: 28px;
-    }
-
-    .grid {
-      grid-template-columns: repeat(2, 1fr);
-      gap: 16px;
-    }
-
-    .tile {
-      padding: 20px 24px;
-    }
-
-    .tile h3 {
-      font-size: 17px;
-    }
-
-    /* Tools (From second block) */
-    .tools {
-      padding: 64px 0;
-    }
-
-    .tools-title {
-      font-size: 36px;
-    }
-
-    .lead {
-      font-size: 18px;
-    }
-
-    .tool-cta {
-      flex-direction: row;
-      max-width: none;
-      justify-content: center;
-    }
-  }
-
-  /* Desktop styles */
-  @media (min-width: 900px) {
-    .header-inner {
-      padding: 20px;
-    }
-
-    .primary-nav {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-    }
-
-    .menu-item {
-      position: relative;
-    }
-
-    .nav-link {
-      color: var(--text);
-      text-decoration: none;
-      font-weight: 500;
-      font-size: 15px;
-      padding: 8px 0;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      transition: color 0.2s;
-    }
-
-    .nav-link:hover {
-      color: var(--primary);
-    }
-
-    .dropdown {
-      position: absolute;
-      top: 100%;
-      left: -20px;
-      margin-top: 8px;
-      background: white;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
-      min-width: 400px;
-      box-shadow: 0 12px 24px rgba(0,0,0,0.1);
-      opacity: 0;
-      visibility: hidden;
-      transform: translateY(-10px);
-      transition: all 0.2s;
-    }
-
-    .dropdown.show {
-      opacity: 1;
-      visibility: visible;
-      transform: translateY(0);
-    }
-
-    .dd-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 24px;
-    }
-
-    .dd-col h5 {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--text-light);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 12px;
-    }
-
-    .dd-list {
-      list-style: none;
-    }
-
-    .dd-link {
-      display: block;
-      padding: 8px 12px;
-      color: var(--text);
-      text-decoration: none;
-      border-radius: 6px;
-      font-size: 14px;
-      font-weight: 500;
-      transition: background 0.2s;
-    }
-
-    .dd-link:hover {
-      background: var(--bg-light);
-    }
-
-    .dd-badge {
-      display: inline-block;
-      background: var(--primary);
-      color: white;
-      font-size: 11px;
-      padding: 2px 8px;
-      border-radius: 4px;
-      margin-left: 8px;
-      font-weight: 600;
-    }
-
-    .search {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 16px;
-      border: 2px solid var(--border);
-      border-radius: 8px;
-      background: var(--bg-light);
-      flex: 0 1 280px;
-    }
-
-    .search input {
-      border: none;
-      background: none;
-      outline: none;
-      flex: 1;
-      font-size: 14px;
-      font-family: inherit;
-    }
-
-    .actions {
-      display: flex;
-      gap: 12px;
-    }
-
-    .menu-btn {
-      display: none;
-    }
-
-    .mobile-menu {
-      display: none;
-    }
-
-    /* Hero (From first block) */
-    .hero {
-      padding: 80px 0 100px;
-    }
-
-    .headline {
-      font-size: 56px;
-    }
-
-    .sub {
-      font-size: 20px;
-      max-width: 800px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    /* Steps (From first block) */
-    .steps {
-      padding: 100px 0;
-    }
-
-    .steps h2 {
-      font-size: 42px;
-    }
-
-    .footer-grid {
-      grid-template-columns: repeat(4, 1fr);
-    }
-
-    .footer-bottom {
-      flex-direction: row;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .socials {
-      justify-content: flex-end;
-    }
-
-    /* Level Intro (From second block) */
-    .level-intro {
-      padding: 80px 0;
-    }
-
-    .level-title {
-      font-size: 52px;
-    }
-
-    .level-blurb {
-      font-size: 20px;
-    }
-
-    .pill-grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    /* Wrap/Card (From second block) */
-    .wrap {
-      padding: 64px 0 80px;
-    }
-
-    .card {
-      padding: 40px;
-    }
-
-    .header-card h2 {
-      font-size: 32px;
-    }
-
-    .segments {
-      gap: 12px;
-      overflow-x: visible;
-    }
-
-    .seg {
-      padding: 12px 24px;
-      font-size: 15px;
-    }
-
-    .grid {
-      grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
-    }
-
-    .tile {
-      padding: 24px 28px;
-    }
-
-    .tile h3 {
-      font-size: 18px;
-    }
-
-    /* Tools (From second block) */
-    .tools {
-      padding: 80px 0;
-    }
-
-    .tools-title {
-      font-size: 42px;
-    }
-
-    .lead {
-      font-size: 19px;
-    }
-  }
-
-  /* Extra large desktop (From second block) */
-  @media (min-width: 1200px) {
-    .grid {
-      grid-template-columns: repeat(4, 1fr);
-    }
-  }
-</style>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Primary Level - BBPlatform</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Global Resets */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Root Variables (Combined and refined) */
+        :root {
+            --primary: #3b82f6;
+            --primary-dark: #2563eb;
+            --primary-light: #dbeafe; /* From the second block, useful */
+            --text: #0f172a;
+            --text-light: #475569; /* From the first block */
+            --muted: #64748b; /* From the second block, similar to text-light */
+            --border: #e2e8f0;
+            --bg: #ffffff;
+            --bg-light: #f8fafc;
+            --success: #10b981; /* From the second block */
+        }
+
+        /* Base Body Styles */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--text);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            background: var(--bg-light); /* From the second block */
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 16px; /* Using 16px from the second block for mobile padding */
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--bg);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            gap: 16px;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        /* Mobile-first navigation */
+        .primary-nav {
+            display: none;
+        }
+
+        .search {
+            display: none;
+        }
+
+        .actions {
+            display: none;
+        }
+
+        .menu-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            position: fixed;
+            top: 65px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg);
+            padding: 20px;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 999;
+        }
+
+        .mobile-menu.show {
+            transform: translateX(0);
+        }
+
+        .mobile-menu a {
+            display: block;
+            padding: 14px 0;
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 500;
+            border-bottom: 1px solid var(--border);
+            transition: color 0.2s;
+        }
+
+        .mobile-menu a:hover {
+            color: var(--primary);
+        }
+
+        .mobile-menu strong {
+            color: var(--text-light); /* Using var(--text-light) as it's defined */
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Hero Section (From first block) */
+        .hero {
+            padding: 40px 0 60px;
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+        }
+
+        .hero-grid {
+            text-align: center;
+        }
+
+        .headline {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .scribble {
+            color: var(--primary);
+            position: relative;
+        }
+
+        .sub {
+            font-size: 16px;
+            color: var(--text-light);
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        .cta {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+
+        /* Level Intro Section (From second block) */
+        .level-intro {
+            background: linear-gradient(135deg, #f8fafc 0%, #e0f2fe 100%);
+            padding: 40px 0 48px;
+        }
+
+        .level-title {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.2;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+            color: var(--text);
+        }
+
+        .level-blurb {
+            font-size: 16px;
+            color: var(--muted);
+            margin-bottom: 28px;
+            line-height: 1.6;
+        }
+
+        .pill-grid {
+            display: grid;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .pill {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: white;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .pill:hover {
+            border-color: var(--primary);
+            box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
+        }
+
+        .check {
+            width: 20px;
+            height: 20px;
+            background: var(--success);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Main Content Wrapper (From second block) */
+        .wrap {
+            padding: 32px 0 48px;
+        }
+
+        /* Cards (Applies to both) */
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 24px 16px; /* Mobile padding from second block */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+            /* Extra styles from the first block for the steps section cards */
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        /* Card Hover (From first block) */
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+        }
+
+        /* Card Components (From first block for steps section) */
+        .icon-wrap {
+            width: 48px;
+            height: 48px;
+            background: var(--primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+
+        .icon-wrap svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        .card p {
+            color: var(--text-light);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* Header Card (From second block) */
+        .header-card {
+            margin-bottom: 28px;
+        }
+
+        .header-card h2 {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .header-card p {
+            font-size: 15px;
+        }
+
+        /* Segments (Class Selector from second block) */
+        .segments {
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+            padding-bottom: 4px;
+            margin-top: 16px;
+        }
+
+        .segments::-webkit-scrollbar {
+            display: none;
+        }
+
+        .seg {
+            padding: 10px 20px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            color: var(--text);
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        .seg:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .seg.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        /* Resource Grid (From second block) */
+        .grid {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .tile {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            background: var(--bg-light);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            text-decoration: none;
+            color: var(--text);
+            transition: all 0.2s;
+            gap: 12px;
+        }
+
+        .tile:hover {
+            border-color: var(--primary);
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+        }
+
+        .tile h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .arrow {
+            font-size: 20px;
+            color: var(--primary);
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        /* Tools Section (From second block) */
+        .tools {
+            background: white;
+            padding: 48px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .tools-title {
+            font-size: 28px;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 16px;
+            letter-spacing: -0.02em;
+        }
+
+        .lead {
+            font-size: 16px;
+            color: var(--muted);
+            text-align: center;
+            line-height: 1.7;
+            margin-bottom: 32px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .tool-cta {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-width: 320px;
+            margin: 0 auto;
+        }
+
+        /* Steps Section (From first block) */
+        .steps {
+            padding: 60px 0;
+            background: var(--bg);
+        }
+
+        .steps h2 {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 800;
+            margin-bottom: 40px;
+            letter-spacing: -0.02em;
+        }
+
+        .cards {
+            display: grid;
+            gap: 24px;
+        }
+
+        /* Buttons (Combined and unified padding/hover) */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 13px 24px; /* Using 13px vertical padding from the second block for consistency */
+            border-radius: 8px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+            font-size: 15px;
+            cursor: pointer;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            /* Using the hover effect from the second block as it's more dynamic */
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-outline {
+            border-color: var(--border);
+            color: var(--text);
+            background: white;
+        }
+
+        .btn-outline:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Modal Styles (From first block) */
+        .backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1100;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none; /* Initially non-interactive */
+        }
+
+        .backdrop.show {
+            opacity: 1;
+            pointer-events: auto; /* Interactive when shown */
+        }
+
+        .modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background: white;
+            border-radius: 16px;
+            padding: 32px 24px;
+            width: calc(100% - 40px);
+            max-width: 440px;
+            max-height: 90vh;
+            overflow-y: auto;
+            z-index: 1200;
+            opacity: 0;
+            visibility: hidden; /* Hide completely when not shown */
+            transition: all 0.3s;
+        }
+
+        .modal.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            color: var(--text-light);
+            transition: color 0.2s;
+        }
+        
+        .close:hover {
+            color: var(--text);
+        }
+
+        .modal-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            padding-right: 32px;
+        }
+
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 12px 24px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            background: white;
+            color: var(--text);
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .google-btn:hover {
+            border-color: var(--primary);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--text-light);
+            margin: 24px 0;
+            font-size: 14px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .divider::before {
+            margin-right: 12px;
+        }
+
+        .divider::after {
+            margin-left: 12px;
+        }
+
+        .form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+        }
+
+        .label {
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text);
+        }
+
+        .input {
+            padding: 12px 14px;
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            font-size: 15px;
+            font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        .input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .pw-toggle {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 4px;
+            color: var(--text-light);
+        }
+
+        .modal-cta {
+            margin-top: 8px;
+            width: 100%;
+        }
+
+        .switch {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: var(--text-light);
+            text-decoration: none;
+        }
+
+        .switch a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none; /* Already defined above, but keep for clarity */
+            cursor: pointer;
+        }
+
+        .terms {
+            font-size: 13px;
+            color: var(--text-light);
+            text-align: center;
+            margin-top: 16px;
+            line-height: 1.5;
+        }
+
+        .terms a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .register-link {
+            text-align: center;
+            font-size: 14px;
+            color: var(--text-light);
+        }
+
+        .register-link a {
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+        }
+        
+        .forgot-password {
+            font-size: 14px;
+            color: var(--primary);
+            font-weight: 600;
+            text-decoration: none;
+            text-align: right;
+            margin-top: -8px;
+        }
+
+        /* Footer (From first block) */
+        .mega-footer {
+            background: var(--text);
+            color: white;
+            padding: 60px 0 24px;
+        }
+
+        .footer-top {
+            margin-bottom: 48px;
+        }
+
+        .footer-logo {
+            margin-bottom: 32px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .brand-bolt {
+            width: 40px;
+            height: 40px;
+            background: var(--primary);
+            border-radius: 8px;
+        }
+
+        .footer-grid {
+            display: grid;
+            gap: 32px;
+        }
+
+        .footer-grid h4 {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 16px;
+            color: white;
+        }
+
+        .footer-grid ul {
+            list-style: none;
+        }
+
+        .footer-grid li {
+            margin-bottom: 10px;
+        }
+
+        .footer-grid a {
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .footer-grid a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .footer-bottom p {
+            font-size: 13px;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 8px;
+        }
+
+        .disclaimer {
+            font-size: 12px !important;
+            line-height: 1.5;
+        }
+
+        .socials {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+        }
+
+        .socials a {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .socials a:hover {
+            background: var(--primary);
+        }
+
+        .socials svg {
+            width: 20px;
+            height: 20px;
+            fill: white;
+        }
+
+        /* Utility (From second block) */
+        br {
+            display: block;
+            content: "";
+            margin-top: 16px;
+        }
+
+        /* Utility (From first block) */
+        [hidden] {
+            display: none !important;
+        }
+
+        /* Tablet styles */
+        @media (min-width: 640px) {
+            .container {
+                padding: 0 24px; /* Using 24px from second block */
+            }
+
+            /* Hero (From first block) */
+            .headline {
+                font-size: 42px;
+            }
+
+            .sub {
+                font-size: 18px;
+            }
+
+            .cta {
+                flex-direction: row;
+                max-width: none;
+                justify-content: center;
+            }
+
+            /* Steps (From first block) */
+            .cards {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+
+            /* Footer (From first block) */
+            .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            /* Level Intro (From second block) */
+            .level-intro {
+                padding: 56px 0 64px;
+            }
+
+            .level-title {
+                font-size: 40px;
+            }
+
+            .level-blurb {
+                font-size: 18px;
+                max-width: 700px;
+            }
+
+            .pill-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .pill {
+                padding: 14px 18px;
+                font-size: 15px;
+            }
+
+            /* Wrap/Card (From second block) */
+            .wrap {
+                padding: 48px 0 64px;
+            }
+
+            .card {
+                padding: 32px 28px;
+            }
+
+            .header-card h2 {
+                font-size: 28px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 16px;
+            }
+
+            .tile {
+                padding: 20px 24px;
+            }
+
+            .tile h3 {
+                font-size: 17px;
+            }
+
+            /* Tools (From second block) */
+            .tools {
+                padding: 64px 0;
+            }
+
+            .tools-title {
+                font-size: 36px;
+            }
+
+            .lead {
+                font-size: 18px;
+            }
+
+            .tool-cta {
+                flex-direction: row;
+                max-width: none;
+                justify-content: center;
+            }
+        }
+
+        /* Desktop styles */
+        @media (min-width: 900px) {
+            .header-inner {
+                padding: 20px;
+            }
+
+            .primary-nav {
+                display: flex;
+                align-items: center;
+                gap: 32px;
+            }
+
+            .menu-item {
+                position: relative;
+            }
+
+            .nav-link {
+                color: var(--text);
+                text-decoration: none;
+                font-weight: 500;
+                font-size: 15px;
+                padding: 8px 0;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+                transition: color 0.2s;
+            }
+
+            .nav-link:hover {
+                color: var(--primary);
+            }
+
+            .dropdown {
+                position: absolute;
+                top: 100%;
+                left: -20px;
+                margin-top: 8px;
+                background: white;
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 20px;
+                min-width: 400px;
+                box-shadow: 0 12px 24px rgba(0,0,0,0.1);
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-10px);
+                transition: all 0.2s;
+            }
+
+            .dropdown.show {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+
+            .dd-grid {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 24px;
+            }
+
+            .dd-col h5 {
+                font-size: 13px;
+                font-weight: 700;
+                color: var(--text-light);
+                text-transform: uppercase;
+                letter-spacing: 0.05em;
+                margin-bottom: 12px;
+            }
+
+            .dd-list {
+                list-style: none;
+            }
+
+            .dd-link {
+                display: block;
+                padding: 8px 12px;
+                color: var(--text);
+                text-decoration: none;
+                border-radius: 6px;
+                font-size: 14px;
+                font-weight: 500;
+                transition: background 0.2s;
+            }
+
+            .dd-link:hover {
+                background: var(--bg-light);
+            }
+
+            .dd-badge {
+                display: inline-block;
+                background: var(--primary);
+                color: white;
+                font-size: 11px;
+                padding: 2px 8px;
+                border-radius: 4px;
+                margin-left: 8px;
+                font-weight: 600;
+            }
+
+            .search {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 10px 16px;
+                border: 2px solid var(--border);
+                border-radius: 8px;
+                background: var(--bg-light);
+                flex: 0 1 280px;
+            }
+
+            .search input {
+                border: none;
+                background: none;
+                outline: none;
+                flex: 1;
+                font-size: 14px;
+                font-family: inherit;
+            }
+
+            .actions {
+                display: flex;
+                gap: 12px;
+            }
+
+            .menu-btn {
+                display: none;
+            }
+
+            .mobile-menu {
+                display: none;
+            }
+
+            /* Hero (From first block) */
+            .hero {
+                padding: 80px 0 100px;
+            }
+
+            .headline {
+                font-size: 56px;
+            }
+
+            .sub {
+                font-size: 20px;
+                max-width: 800px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            /* Steps (From first block) */
+            .steps {
+                padding: 100px 0;
+            }
+
+            .steps h2 {
+                font-size: 42px;
+            }
+
+            .footer-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .footer-bottom {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .socials {
+                justify-content: flex-end;
+            }
+
+            /* Level Intro (From second block) */
+            .level-intro {
+                padding: 80px 0;
+            }
+
+            .level-title {
+                font-size: 52px;
+            }
+
+            .level-blurb {
+                font-size: 20px;
+            }
+
+            .pill-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+
+            /* Wrap/Card (From second block) */
+            .wrap {
+                padding: 64px 0 80px;
+            }
+
+            .card {
+                padding: 40px;
+            }
+
+            .header-card h2 {
+                font-size: 32px;
+            }
+
+            .segments {
+                gap: 12px;
+                overflow-x: visible;
+            }
+
+            .seg {
+                padding: 12px 24px;
+                font-size: 15px;
+            }
+
+            .grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+
+            .tile {
+                padding: 24px 28px;
+            }
+
+            .tile h3 {
+                font-size: 18px;
+            }
+
+            /* Tools (From second block) */
+            .tools {
+                padding: 80px 0;
+            }
+
+            .tools-title {
+                font-size: 42px;
+            }
+
+            .lead {
+                font-size: 19px;
+            }
+        }
+
+        /* Extra large desktop (From second block) */
+        @media (min-width: 1200px) {
+            .grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+    </style>
 </head>
 <body>
 
-    <!-- Header -->
-  <header class="header">
-    <div class="container header-inner">
-      <a class="brand" href="{{ url_for('index') }}" aria-label="BBPlatform home">
-        <span>BackBenchAI</span>
-      </a>
+    <header class="header">
+        <div class="container header-inner">
+            <a class="brand" href="{{ url_for('index') }}" aria-label="BBPlatform home">
+                <span>BackBenchAI</span>
+            </a>
 
-      <!-- Primary nav with Courses dropdown -->
-      <nav aria-label="Primary" class="primary-nav">
-        <div class="menu-item">
-          <a href="#" class="nav-link menu-trigger" id="coursesBtn" aria-expanded="false" aria-haspopup="true">
-            Courses
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M6 9l6 6 6-6" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-          </a>
-          <div class="dropdown" id="coursesMenu" role="menu" aria-label="Courses menu">
-            <div class="dd-grid">
-              <div class="dd-col">
-                <h5>Primary</h5>
-                <ul class="dd-list">
-                  <li><a class="dd-link" href="{{ url_for('level', level_slug='primary') }}">Primary 3</a></li>
-                  <li><a class="dd-link" href="{{ url_for('level', level_slug='primary') }}">Primary 4</a></li>
-                  <li><a class="dd-link" href="{{ url_for('level', level_slug='primary') }}">Primary 5</a></li>
-                </ul>
-              </div>
-              <div class="dd-col">
-                <h5>Secondary</h5>
-                <ul class="dd-list">
-                  <li><a class="dd-link" href="{{ url_for('level', level_slug='secondary') }}">Sec 1 <span class="dd-badge">New</span></a></li>
-                  <li><a class="dd-link" href="{{ url_for('level', level_slug='secondary') }}">Sec 2</a></li>
-                  <li><a class="dd-link" href="{{ url_for('level', level_slug='secondary') }}">Sec 3</a></li>
-                  <li><a class="dd-link" href="{{ url_for('level', level_slug='secondary') }}">Sec 4</a></li>
-                </ul>
-              </div>
+            <nav aria-label="Primary" class="primary-nav">
+                <div class="menu-item">
+                    <a href="#" class="nav-link menu-trigger" id="coursesBtn" aria-expanded="false" aria-haspopup="true">
+                        Courses
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M6 9l6 6 6-6" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                    <div class="dropdown" id="coursesMenu" role="menu" aria-label="Courses menu">
+                        <div class="dd-grid">
+                            <div class="dd-col">
+                                <h5>Primary</h5>
+                                <ul class="dd-list">
+                                    <li><a class="dd-link" href="{{ url_for('level', level_slug='primary') }}">Primary 3</a></li>
+                                    <li><a class="dd-link" href="{{ url_for('level', level_slug='primary') }}">Primary 4</a></li>
+                                    <li><a class="dd-link" href="{{ url_for('level', level_slug='primary') }}">Primary 5</a></li>
+                                </ul>
+                            </div>
+                            <div class="dd-col">
+                                <h5>Secondary</h5>
+                                <ul class="dd-list">
+                                    <li><a class="dd-link" href="{{ url_for('level', level_slug='secondary') }}">Sec 1 <span class="dd-badge">New</span></a></li>
+                                    <li><a class="dd-link" href="{{ url_for('level', level_slug='secondary') }}">Sec 2</a></li>
+                                    <li><a class="dd-link" href="{{ url_for('level', level_slug='secondary') }}">Sec 3</a></li>
+                                    <li><a class="dd-link" href="{{ url_for('level', level_slug='secondary') }}">Sec 4</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <a class="nav-link" href="#about">About</a>
+            </nav>
+
+            <div class="search" role="search">
+                <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <input aria-label="Search subjects" type="search" placeholder="Search for a subject" />
             </div>
-          </div>
+
+            <div class="actions">
+                <a class="btn btn-outline" href="#" id="openLogin" aria-controls="loginModal">Log in</a>
+                <a class="btn btn-primary" href="#" id="openSignup" aria-controls="signupModal">Join now for free</a>
+            </div>
+
+            <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/></svg>
+            </button>
         </div>
 
-        <a class="nav-link" href="#about">About</a>
-      </nav>
-
-      <div class="search" role="search">
-        <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
-        </svg>
-        <input aria-label="Search subjects" type="search" placeholder="Search for a subject" />
-      </div>
-
-      <div class="actions">
-        <a class="btn btn-outline" href="#" id="openLogin">Log in</a>
-        <a class="btn btn-primary" href="#" id="openSignup">Join now for free</a>
-      </div>
-
-      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-    </div>
-
-    <!-- Mobile menu -->
-    <div id="mobileMenu" class="mobile-menu" aria-label="Mobile navigation" hidden>
-      <strong style="display:block;margin:8px 0">Courses by class</strong>
-      <a href="{{ url_for('level', level_slug='primary') }}">Primary 3</a>
-      <a href="{{ url_for('level', level_slug='primary') }}">Primary 4</a>
-      <a href="{{ url_for('level', level_slug='primary') }}">Primary 5</a>
-      <a href="{{ url_for('level', level_slug='secondary') }}">Sec 1</a>
-      <a href="{{ url_for('level', level_slug='secondary') }}">Sec 2</a>
-      <a href="{{ url_for('level', level_slug='secondary') }}">Sec 3</a>
-      <a href="{{ url_for('level', level_slug='secondary') }}">Sec 4</a>
-      <a href="#" id="mLogin">Log in</a>
-    </div>
-  </header>
-
-  <!-- Intro block -->
-  <section class="level-intro">
-    <div class="container">
-      <h1 class="level-title">Primary School Revision</h1>
-      <p class="level-blurb">
-        Comprehensive resources aligned with MOE syllabus for Primary 3-6 students preparing for PSLE.
-        Master Mathematics, Science, English, and Mother Tongue with our expert-created materials.
-      </p>
-
-      <div class="pill-grid">
-        <div class="pill">
-          <span class="check" aria-hidden="true">✓</span>
-          <span>MOE syllabus aligned content</span>
+        <div id="mobileMenu" class="mobile-menu" aria-label="Mobile navigation" hidden>
+            <strong style="display:block;margin:8px 0">Courses by class</strong>
+            <a href="{{ url_for('level', level_slug='primary') }}">Primary 3</a>
+            <a href="{{ url_for('level', level_slug='primary') }}">Primary 4</a>
+            <a href="{{ url_for('level', level_slug='primary') }}">Primary 5</a>
+            <a href="{{ url_for('level', level_slug='secondary') }}">Sec 1</a>
+            <a href="{{ url_for('level', level_slug='secondary') }}">Sec 2</a>
+            <a href="{{ url_for('level', level_slug='secondary') }}">Sec 3</a>
+            <a href="{{ url_for('level', level_slug='secondary') }}">Sec 4</a>
+            <a href="#" id="mLogin" aria-controls="loginModal">Log in</a>
         </div>
-        <div class="pill">
-          <span class="check" aria-hidden="true">✓</span>
-          <span>Expert-created revision notes</span>
-        </div>
-        <div class="pill">
-          <span class="check" aria-hidden="true">✓</span>
-          <span>Past papers & solutions</span>
-        </div>
-        <div class="pill">
-          <span class="check" aria-hidden="true">✓</span>
-          <span>Topic-based practice questions</span>
-        </div>
-        <div class="pill">
-          <span class="check" aria-hidden="true">✓</span>
-          <span>Progress tracking analytics</span>
-        </div>
-        <div class="pill">
-          <span class="check" aria-hidden="true">✓</span>
-          <span>Video explanations included</span>
-        </div>
-      </div>
-    </div>
-  </section>
+    </header>
 
-  <!-- Resources section -->
-  <main class="wrap">
-    <div class="container">
-      <section class="card">
-        <div class="header-card">
-          <h2 style="margin:0 0 6px">Primary Resources</h2>
-          <p style="color:var(--muted);margin:0 0 12px">Choose your class</p>
+    <section class="level-intro">
+        <div class="container">
+            <h1 class="level-title">Primary School Revision</h1>
+            <p class="level-blurb">
+                Comprehensive resources aligned with MOE syllabus for Primary 3-6 students preparing for PSLE.
+                Master Mathematics, Science, English, and Mother Tongue with our expert-created materials.
+            </p>
 
-          <div class="segments" role="tablist" aria-label="Choose class">
-            <button class="seg active" role="tab" aria-selected="true">Primary 3</button>
-            <button class="seg" role="tab" aria-selected="false">Primary 4</button>
-            <button class="seg" role="tab" aria-selected="false">Primary 5</button>
-            <button class="seg" role="tab" aria-selected="false">Primary 6</button>
-          </div>
+            <div class="pill-grid">
+                <div class="pill">
+                    <span class="check" aria-hidden="true">✓</span>
+                    <span>MOE syllabus aligned content</span>
+                </div>
+                <div class="pill">
+                    <span class="check" aria-hidden="true">✓</span>
+                    <span>Expert-created revision notes</span>
+                </div>
+                <div class="pill">
+                    <span class="check" aria-hidden="true">✓</span>
+                    <span>Past papers & solutions</span>
+                </div>
+                <div class="pill">
+                    <span class="check" aria-hidden="true">✓</span>
+                    <span>Topic-based practice questions</span>
+                </div>
+                <div class="pill">
+                    <span class="check" aria-hidden="true">✓</span>
+                    <span>Progress tracking analytics</span>
+                </div>
+                <div class="pill">
+                    <span class="check" aria-hidden="true">✓</span>
+                    <span>Video explanations included</span>
+                </div>
+            </div>
         </div>
+    </section>
 
-        <div class="grid">
-          <a class="tile" href="#mathematics" id="mathematics">
-            <h3>Mathematics</h3>
-            <span class="arrow">→</span>
-          </a>
-          <a class="tile" href="#science" id="science">
-            <h3>Science</h3>
-            <span class="arrow">→</span>
-          </a>
-          <a class="tile" href="#english" id="english">
-            <h3>English</h3>
-            <span class="arrow">→</span>
-          </a>
-          <a class="tile" href="#chinese" id="chinese">
-            <h3>Chinese</h3>
-            <span class="arrow">→</span>
-          </a>
-          <a class="tile" href="#malay" id="malay">
-            <h3>Malay</h3>
-            <span class="arrow">→</span>
-          </a>
-          <a class="tile" href="#tamil" id="tamil">
-            <h3>Tamil</h3>
-            <span class="arrow">→</span>
-          </a>
-          <a class="tile" href="#foundation-english" id="foundation-english">
-            <h3>Foundation English</h3>
-            <span class="arrow">→</span>
-          </a>
-          <a class="tile" href="#foundation-mathematics" id="foundation-mathematics">
-            <h3>Foundation Mathematics</h3>
-            <span class="arrow">→</span>
-          </a>
+    <main class="wrap">
+        <div class="container">
+            <section class="card">
+                <div class="header-card">
+                    <h2 style="margin:0 0 6px">Primary Resources</h2>
+                    <p style="color:var(--muted);margin:0 0 12px">Choose your class</p>
+
+                    <div class="segments" role="tablist" aria-label="Choose class">
+                        <button class="seg active" role="tab" aria-selected="true">Primary 3</button>
+                        <button class="seg" role="tab" aria-selected="false">Primary 4</button>
+                        <button class="seg" role="tab" aria-selected="false">Primary 5</button>
+                        <button class="seg" role="tab" aria-selected="false">Primary 6</button>
+                    </div>
+                </div>
+
+                <div class="grid">
+                    <a class="tile" href="#mathematics" id="mathematics">
+                        <h3>Mathematics</h3>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a class="tile" href="#science" id="science">
+                        <h3>Science</h3>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a class="tile" href="#english" id="english">
+                        <h3>English</h3>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a class="tile" href="#chinese" id="chinese">
+                        <h3>Chinese</h3>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a class="tile" href="#malay" id="malay">
+                        <h3>Malay</h3>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a class="tile" href="#tamil" id="tamil">
+                        <h3>Tamil</h3>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a class="tile" href="#foundation-english" id="foundation-english">
+                        <h3>Foundation English</h3>
+                        <span class="arrow">→</span>
+                    </a>
+                    <a class="tile" href="#foundation-mathematics" id="foundation-mathematics">
+                        <h3>Foundation Mathematics</h3>
+                        <span class="arrow">→</span>
+                    </a>
+                </div>
+
+                <p class="level-blurb">
+                    All resources are carefully curated by experienced educators and aligned with the latest MOE syllabus requirements.
+                </p>
+            </section>
         </div>
+    </main>
 
-        <p class="level-blurb">
-          All resources are carefully curated by experienced educators and aligned with the latest MOE syllabus requirements.
+    <section class="tools">
+        <div class="container">
+            <h2 class="tools-title">
+                <span class="scribble">PSLE</span> revision tools
+            </h2>
+            <p class="lead">
+                At EduPlatform, we provide expert-created Revision Notes, Exam Questions & Answers,
+                Past Papers, Flashcards and more—tailored to help you learn efficiently and boost your grades.
+                Our resources simplify complex topics, build confidence, and make exam prep stress-free.
+            </p>
+            <div class="tool-cta">
+                <a class="btn btn-primary" href="#mock-exams">Try a Mock Exam</a>
+                <a class="btn btn-outline" href="#past-papers">Browse Past Papers</a>
+            </div>
+        </div>
+    </section>
+
+    <footer class="mega-footer">
+        <div class="container">
+            <div class="footer-top">
+                <div class="footer-logo">
+                    <a class="brand" href="{{ url_for('index') }}" aria-label="BBPlatform home">
+                        <div class="brand-bolt"></div>
+                    </a>
+                </div>
+
+                <div class="footer-grid">
+                    <div>
+                        <h4>Courses</h4>
+                        <ul>
+                            <li><a href="{{ url_for('level', level_slug='primary') }}">Primary School</a></li>
+                            <li><a href="{{ url_for('level', level_slug='secondary') }}">Secondary School</a></li>
+                            <li><a href="#">Mock Exams</a></li>
+                            <li><a href="#">Past Papers</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Company</h4>
+                        <ul>
+                            <li><a href="#about">About Us</a></li>
+                            <li><a href="#">Careers</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Blog</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Legal</h4>
+                        <ul>
+                            <li><a href="#">Terms of Use</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Refund Policy</a></li>
+                            <li><a href="#">Sitemap</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4>Support</h4>
+                        <ul>
+                            <li><a href="#">Help Center</a></li>
+                            <li><a href="#">FAQ</a></li>
+                            <li><a href="#">Report a Bug</a></li>
+                            <li><a href="#">System Status</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div>
+                    <p>&copy; <span id="y"></span> BackBenchAI Platform. All rights reserved.</p>
+                    <p class="disclaimer">
+                        Disclaimer: BackBenchAI is an independent resource and is not affiliated with or endorsed by the Ministry of Education (MOE), Singapore.
+                    </p>
+                </div>
+                <div class="socials">
+                    <a href="#" aria-label="Follow us on Facebook">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3V2z" /></svg>
+                    </a>
+                    <a href="#" aria-label="Follow us on X/Twitter">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M22 4s-.7 2.1-2 3.4c1.1 0 2.2-.4 3-1-.9.5-2.2.8-3.3.6C16.5 4.5 15 4 13.5 4c-1.2 0-2.3.4-3.2 1.2S9 7.2 9 8.5v.5c-3.1 0-6-.7-8.6-2.2-.3 1.5.3 3 1.6 4.1C1.9 11 1.4 11 1 10.8v.1c0 1.3.5 2.5 1.4 3.4 1 .9 2.2 1.3 3.5 1.3-.8.2-1.7.3-2.5.1a5.1 5.1 0 0 0 4.5 3.5c-1.2 1-2.6 1.6-4 1.7a8.5 8.5 0 0 0 4.7 1.4c5.7 0 9-4.8 9-9.8v-.5c.8-.6 1.5-1.3 2-2.1z"/></svg>
+                    </a>
+                    <a href="#" aria-label="Follow us on Instagram">
+                        <svg viewBox="0 0 24 24" fill="none"><path d="M12 2c3.5 0 3.9 0 5.3.2 1.4.1 2.3.4 3.2.8.9.4 1.7 1.1 2.4 1.8.7.7 1.4 1.5 1.8 2.4.4.9.7 1.8.8 3.2.2 1.4.2 1.8.2 5.3s0 3.9-.2 5.3c-.1 1.4-.4 2.3-.8 3.2-.4.9-1.1 1.7-1.8 2.4-.7.7-1.5 1.4-2.4 1.8-.9.4-1.8.7-3.2.8-1.4.2-1.8.2-5.3.2s-3.9 0-5.3-.2c-1.4-.1-2.3-.4-3.2-.8-.9-.4-1.7-1.1-2.4-1.8-.7-.7-1.4-1.5-1.8-2.4-.4-.9-.7-1.8-.8-3.2-.2-1.4-.2-1.8-.2-5.3s0-3.9.2-5.3c.1-1.4.4-2.3.8-3.2.4-.9 1.1-1.7 1.8-2.4.7-.7 1.5-1.4 2.4-1.8.9-.4 1.8-.7 3.2-.8C8.1 2 8.5 2 12 2zm0 4c-3.3 0-6 2.7-6 6s2.7 6 6 6 6-2.7 6-6-2.7-6-6-6zm0 2c2.2 0 4 1.8 4 4s-1.8 4-4 4-4-1.8-4-4 1.8-4 4-4zm6.5-4c0-.8.7-1.5 1.5-1.5s1.5.7 1.5 1.5c0 .8-.7 1.5-1.5 1.5s-1.5-.7-1.5-1.5z"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="loginBackdrop" class="backdrop" hidden></div>
+
+    <div id="loginModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="loginTitle" tabindex="-1" hidden>
+        <button class="close" id="closeLogin" aria-label="Close dialog">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+
+        <h2 class="modal-title" id="loginTitle">Log in to your account</h2>
+
+        <a href="#" class="google-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"><path d="M12 4.5c2.2 0 4.1.8 5.6 2.1l-2.4 1.9c-.8-.6-1.9-1-3.2-1-2.5 0-4.6 1.7-5.3 4h-2.7c.9-3 3.7-5 7-5zm5.7 9c.4-.8.7-1.7.7-2.7h-3.4v-2h5.7c0 .4 0 .9-.1 1.3-.6 3.6-4.2 6.3-8.3 6.3-4.4 0-8-3.6-8-8s3.6-8 8-8c2.2 0 4.2.9 5.6 2.1l-2.4 1.9c-.8-.6-1.9-1-3.2-1-2.5 0-4.6 1.7-5.3 4h-2.7c.9-3 3.7-5 7-5zm-.1 3.5c1.4.9 2.4 2.2 2.7 3.9h-2.6v-3.9z" fill="#4285F4"/><path d="M4.1 12.5c0-.4 0-.8.1-1.3-.6 3.6-4.2 6.3-8.3 6.3-4.4 0-8-3.6-8-8s3.6-8 8-8c2.2 0 4.2.9 5.6 2.1l-2.4 1.9c-.8-.6-1.9-1-3.2-1-2.5 0-4.6 1.7-5.3 4h-2.7c.9-3 3.7-5 7-5zm-.1 3.5c1.4.9 2.4 2.2 2.7 3.9h-2.6v-3.9z" fill="#34A853"/><path d="M18.4 12c0-.4 0-.9-.1-1.3h-8.2v2.5h4.6c-.2 1.2-.8 2.2-1.7 3.1-.9.8-2 1.3-3.2 1.5v2.3c2.7-.4 4.8-2.1 6.1-4.2.8-1.2 1.2-2.7 1.2-4.8z" fill="#FBBC05"/><path d="M12 21c-2.7 0-5-1.1-6.7-2.9l2.2-1.9c1.1.8 2.6 1.3 4.4 1.3 3.2 0 5.9-2.2 6.8-5.3h-2.6v-2.5h7.6v2.5c0 4.4-3.6 8-8 8z" fill="#EA4335"/></svg>
+            Continue with Google
+        </a>
+
+        <div class="divider">or</div>
+
+        <form class="form" id="loginForm">
+            <div class="field">
+                <label class="label" for="email">Email</label>
+                <input class="input" type="email" id="email" name="email" placeholder="you@example.com" required>
+            </div>
+            
+            <div class="field">
+                <label class="label" for="password">Password</label>
+                <input class="input" type="password" id="password" name="password" placeholder="Enter your password" required>
+                <button type="button" class="pw-toggle" id="pwToggle" aria-label="Show password">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+            </div>
+            
+            <a href="#" class="forgot-password">Forgot password?</a>
+
+            <button type="submit" class="btn btn-primary modal-cta">Log in</button>
+        </form>
+
+        <p class="switch">
+            Don't have an account? <a href="#" id="switchToSignup">Join now for free</a>
         </p>
-      </section>
     </div>
-  </main>
 
-  <!-- Bottom encouragement block with CTAs -->
-  <section class="tools">
-    <div class="container">
-      <h2 class="tools-title">
-        <span class="scribble">PSLE</span> revision tools
-      </h2>
-      <p class="lead">
-        At EduPlatform, we provide expert-created Revision Notes, Exam Questions & Answers,
-        Past Papers, Flashcards and more—tailored to help you learn efficiently and boost your grades.
-        Our resources simplify complex topics, build confidence, and make exam prep stress-free.
-      </p>
-      <div class="tool-cta">
-        <a class="btn btn-primary" href="#mock-exams">Try a Mock Exam</a>
-        <a class="btn btn-outline" href="#past-papers">Browse Past Papers</a>
-      </div>
+    <div id="signupModal" class="modal" role="dialog" aria-modal="true" aria-labelledby="signupTitle" tabindex="-1" hidden>
+        <button class="close" id="closeSignup" aria-label="Close dialog">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+
+        <h2 class="modal-title" id="signupTitle">Create a new account</h2>
+
+        <a href="#" class="google-btn">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" aria-hidden="true"><path d="M12 4.5c2.2 0 4.1.8 5.6 2.1l-2.4 1.9c-.8-.6-1.9-1-3.2-1-2.5 0-4.6 1.7-5.3 4h-2.7c.9-3 3.7-5 7-5zm5.7 9c.4-.8.7-1.7.7-2.7h-3.4v-2h5.7c0 .4 0 .9-.1 1.3-.6 3.6-4.2 6.3-8.3 6.3-4.4 0-8-3.6-8-8s3.6-8 8-8c2.2 0 4.2.9 5.6 2.1l-2.4 1.9c-.8-.6-1.9-1-3.2-1-2.5 0-4.6 1.7-5.3 4h-2.7c.9-3 3.7-5 7-5zm-.1 3.5c1.4.9 2.4 2.2 2.7 3.9h-2.6v-3.9z" fill="#4285F4"/><path d="M4.1 12.5c0-.4 0-.8.1-1.3-.6 3.6-4.2 6.3-8.3 6.3-4.4 0-8-3.6-8-8s3.6-8 8-8c2.2 0 4.2.9 5.6 2.1l-2.4 1.9c-.8-.6-1.9-1-3.2-1-2.5 0-4.6 1.7-5.3 4h-2.7c.9-3 3.7-5 7-5zm-.1 3.5c1.4.9 2.4 2.2 2.7 3.9h-2.6v-3.9z" fill="#34A853"/><path d="M18.4 12c0-.4 0-.9-.1-1.3h-8.2v2.5h4.6c-.2 1.2-.8 2.2-1.7 3.1-.9.8-2 1.3-3.2 1.5v2.3c2.7-.4 4.8-2.1 6.1-4.2.8-1.2 1.2-2.7 1.2-4.8z" fill="#FBBC05"/><path d="M12 21c-2.7 0-5-1.1-6.7-2.9l2.2-1.9c1.1.8 2.6 1.3 4.4 1.3 3.2 0 5.9-2.2 6.8-5.3h-2.6v-2.5h7.6v2.5c0 4.4-3.6 8-8 8z" fill="#EA4335"/></svg>
+            Continue with Google
+        </a>
+
+        <div class="divider">or sign up with email</div>
+
+        <form class="form" id="signupForm">
+            <div class="field">
+                <label class="label" for="signup-email">Email</label>
+                <input class="input" type="email" id="signup-email" name="email" placeholder="you@example.com" required>
+            </div>
+            
+            <div class="field">
+                <label class="label" for="signup-password">Password</label>
+                <input class="input" type="password" id="signup-password" name="password" placeholder="Create a password" required>
+                <button type="button" class="pw-toggle" id="pwToggleSignup" aria-label="Show password">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+            </div>
+
+            <button type="submit" class="btn btn-primary modal-cta">Join now</button>
+        </form>
+        
+        <p class="terms">
+            By joining, you agree to our <a href="#">Terms of Use</a> and <a href="#">Privacy Policy</a>.
+        </p>
+        <p class="switch">
+            Already have an account? <a href="#" id="switchToLogin">Log in</a>
+        </p>
     </div>
-  </section>
 
-  <script>
-    // Mobile menu toggle
-    (function(){
-      const btn = document.getElementById('menuBtn');
-      const menu = document.getElementById('mobileMenu');
-      if(!btn || !menu) return;
-
-      function openMenu(){
-        menu.classList.add('show');
-        menu.removeAttribute('hidden');
-        btn.setAttribute('aria-expanded','true');
-        document.body.style.overflow = 'hidden';
-      }
-      
-      function closeMenu(){
-        menu.classList.remove('show');
-        menu.setAttribute('hidden','');
-        btn.setAttribute('aria-expanded','false');
-        document.body.style.overflow = '';
-      }
-      
-      btn.addEventListener('click', () => {
-        const isOpen = menu.classList.contains('show');
-        isOpen ? closeMenu() : openMenu();
-      });
-      
-      menu.addEventListener('click', (e) => {
-        if(e.target.closest('a')) closeMenu();
-      });
-      
-      window.addEventListener('keydown', (e) => { 
-        if(e.key === 'Escape') closeMenu(); 
-      });
-      
-      window.addEventListener('resize', () => { 
-        if(window.innerWidth > 900) closeMenu(); 
-      });
-    })();
-
-    // Desktop Courses dropdown
-    (function(){
-      const btn = document.getElementById('coursesBtn');
-      const dd = document.getElementById('coursesMenu');
-      if(!btn || !dd) return;
-
-      let open = false;
-      
-      function setOpen(v){
-        open = v;
-        dd.classList.toggle('show', v);
-        btn.setAttribute('aria-expanded', String(v));
-      }
-      
-      btn.addEventListener('click', (e) => { 
-        e.preventDefault(); 
-        setOpen(!open); 
-      });
-      
-      btn.addEventListener('mouseenter', () => { 
-        if(window.innerWidth > 900) setOpen(true); 
-      });
-      
-      dd.addEventListener('mouseleave', () => { 
-        if(window.innerWidth > 900) setOpen(false); 
-      });
-      
-      document.addEventListener('click', (e) => {
-        if(!open) return;
-        if(!dd.contains(e.target) && !btn.contains(e.target)) setOpen(false);
-      });
-      
-      window.addEventListener('resize', () => { 
-        if(window.innerWidth <= 900) setOpen(false); 
-      });
-    })();
-
-    // Segment switching functionality
-    (function() {
-      const segments = document.querySelectorAll('.seg');
-      
-      segments.forEach(seg => {
-        seg.addEventListener('click', function() {
-          // Remove active class from all segments
-          segments.forEach(s => {
-            s.classList.remove('active');
-            s.setAttribute('aria-selected', 'false');
-          });
-          
-          // Add active class to clicked segment
-          this.classList.add('active');
-          this.setAttribute('aria-selected', 'true');
-          
-          // Here you would typically filter/update the resource tiles
-          // based on the selected class level
-          console.log('Selected:', this.textContent);
-        });
-      });
-    })();
-
-    // Smooth scroll for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        const href = this.getAttribute('href');
-        if (href !== '#' && document.querySelector(href)) {
-          e.preventDefault();
-          document.querySelector(href).scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      });
-    });
-  </script>
     <script>
-    // Footer year
-    (function(){ 
-      const y = document.getElementById('y'); 
-      if(y) y.textContent = new Date().getFullYear(); 
-    })();
+        // Footer year
+        (function(){ 
+            const y = document.getElementById('y'); 
+            if(y) y.textContent = new Date().getFullYear(); 
+        })();
 
-    // Mobile menu toggle
-    (function(){
-      const btn = document.getElementById('menuBtn');
-      const menu = document.getElementById('mobileMenu');
-      if(!btn || !menu) return;
+        // Mobile menu toggle (existing code)
+        (function(){
+            const btn = document.getElementById('menuBtn');
+            const menu = document.getElementById('mobileMenu');
+            if(!btn || !menu) return;
 
-      function openMenu(){
-        menu.classList.add('show');
-        menu.removeAttribute('hidden');
-        btn.setAttribute('aria-expanded','true');
-        document.body.style.overflow = 'hidden';
-      }
-      
-      function closeMenu(){
-        menu.classList.remove('show');
-        menu.setAttribute('hidden','');
-        btn.setAttribute('aria-expanded','false');
-        document.body.style.overflow = '';
-      }
-      
-      btn.addEventListener('click', () => {
-        const isOpen = menu.classList.contains('show');
-        isOpen ? closeMenu() : openMenu();
-      });
-      
-      menu.addEventListener('click', (e) => {
-        if(e.target.closest('a')) closeMenu();
-      });
-      
-      window.addEventListener('keydown', (e) => { 
-        if(e.key === 'Escape') closeMenu(); 
-      });
-      
-      window.addEventListener('resize', () => { 
-        if(window.innerWidth > 900) closeMenu(); 
-      });
-    })();
+            function openMenu(){
+                menu.classList.add('show');
+                menu.removeAttribute('hidden');
+                btn.setAttribute('aria-expanded','true');
+                // Prevent body scroll only when mobile menu is open
+                if (window.innerWidth <= 900) { 
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+            
+            function closeMenu(){
+                menu.classList.remove('show');
+                menu.setAttribute('hidden','');
+                btn.setAttribute('aria-expanded','false');
+                document.body.style.overflow = '';
+            }
+            
+            btn.addEventListener('click', () => {
+                const isOpen = menu.classList.contains('show');
+                isOpen ? closeMenu() : openMenu();
+            });
+            
+            menu.addEventListener('click', (e) => {
+                if(e.target.closest('a')) closeMenu();
+            });
+            
+            window.addEventListener('keydown', (e) => { 
+                if(e.key === 'Escape') closeMenu(); 
+            });
+            
+            window.addEventListener('resize', () => { 
+                if(window.innerWidth > 900) closeMenu(); 
+            });
+        })();
 
-    // Desktop Courses dropdown
-    (function(){
-      const btn = document.getElementById('coursesBtn');
-      const dd = document.getElementById('coursesMenu');
-      if(!btn || !dd) return;
+        // Desktop Courses dropdown (existing code)
+        (function(){
+            const btn = document.getElementById('coursesBtn');
+            const dd = document.getElementById('coursesMenu');
+            if(!btn || !dd) return;
 
-      let open = false;
-      
-      function setOpen(v){
-        open = v;
-        dd.classList.toggle('show', v);
-        btn.setAttribute('aria-expanded', String(v));
-      }
-      
-      btn.addEventListener('click', (e) => { 
-        e.preventDefault(); 
-        setOpen(!open); 
-      });
-      
-      btn.addEventListener('mouseenter', () => { 
-        if(window.innerWidth > 900) setOpen(true); 
-      });
-      
-      dd.addEventListener('mouseleave', () => { 
-        if(window.innerWidth > 900) setOpen(false); 
-      });
-      
-      document.addEventListener('click', (e) => {
-        if(!open) return;
-        if(!dd.contains(e.target) && !btn.contains(e.target)) setOpen(false);
-      });
-      
-      window.addEventListener('resize', () => { 
-        if(window.innerWidth <= 900) setOpen(false); 
-      });
-    })();
+            let open = false;
+            
+            function setOpen(v){
+                open = v;
+                dd.classList.toggle('show', v);
+                btn.setAttribute('aria-expanded', String(v));
+            }
+            
+            btn.addEventListener('click', (e) => { 
+                e.preventDefault(); 
+                setOpen(!open); 
+            });
+            
+            btn.addEventListener('mouseenter', () => { 
+                if(window.innerWidth > 900) setOpen(true); 
+            });
+            
+            dd.addEventListener('mouseleave', () => { 
+                if(window.innerWidth > 900) setOpen(false); 
+            });
+            
+            document.addEventListener('click', (e) => {
+                if(!open) return;
+                if(!dd.contains(e.target) && !btn.contains(e.target)) setOpen(false);
+            });
+            
+            window.addEventListener('resize', () => { 
+                if(window.innerWidth <= 900) setOpen(false); 
+            });
+        })();
 
-    // Auth modal
-    (function(){
-      const backdrop = document.getElementById('authBackdrop');
-      const modal = document.getElementById('authModal');
-      const closeBtn = document.getElementById('closeAuth');
-      const openLogin = document.getElementById('openLogin');
-      const openSignup = document.getElementById('openSignup');
-      const switchAnchor = document.getElementById('switchAnchor');
-      const modalTitle = document.getElementById('authTitle');
-      const fullNameGroup = document.getElementById('fullNameGroup');
-      const primarySubmit = document.getElementById('primarySubmit');
-      const switchText = document.getElementById('switchText');
-      const switchLink = document.getElementById('switchLink');
-      const googleText = document.getElementById('googleText');
-      const mLogin = document.getElementById('mLogin');
-      const footerLogin = document.getElementById('footerLogin');
-      const footerJoin = document.getElementById('footerJoin');
-      const registerLink = document.getElementById('registerLink');
+        // Segment switching functionality (existing code)
+        (function() {
+            const segments = document.querySelectorAll('.seg');
+            
+            segments.forEach(seg => {
+                seg.addEventListener('click', function() {
+                    // Remove active class from all segments
+                    segments.forEach(s => {
+                        s.classList.remove('active');
+                        s.setAttribute('aria-selected', 'false');
+                    });
+                    
+                    // Add active class to clicked segment
+                    this.classList.add('active');
+                    this.setAttribute('aria-selected', 'true');
+                    
+                    // Here you would typically filter/update the resource tiles
+                    // based on the selected class level
+                    console.log('Selected:', this.textContent);
+                });
+            });
+        })();
 
-      let isSignup = true;
-
-      function openModal(signup = true){
-        isSignup = signup;
-        updateModalContent();
-        backdrop.removeAttribute('hidden');
-        modal.removeAttribute('hidden');
-        setTimeout(() => {
-          backdrop.classList.add('show');
-          modal.classList.add('show');
-        }, 10);
-        document.body.style.overflow = 'hidden';
-      }
-
-      function closeModal(){
-        backdrop.classList.remove('show');
-        modal.classList.remove('show');
-        setTimeout(() => {
-          backdrop.setAttribute('hidden', '');
-          modal.setAttribute('hidden', '');
-          document.body.style.overflow = '';
-        }, 300);
-      }
-
-      function updateModalContent(){
-        if(isSignup){
-          modalTitle.textContent = 'Sign up now. It is free';
-          fullNameGroup.style.display = 'flex';
-          primarySubmit.textContent = 'Sign up';
-          switchText.textContent = 'Already have an account';
-          switchLink.textContent = 'Log in';
-          googleText.textContent = 'Continue with Google';
-          registerLink.style.display = 'block';
-        } else {
-          modalTitle.textContent = 'Welcome back';
-          fullNameGroup.style.display = 'none';
-          primarySubmit.textContent = 'Log in';
-          switchText.textContent = "Don't have an account";
-          switchLink.textContent = 'Sign up';
-          googleText.textContent = 'Sign in with Google';
-          registerLink.style.display = 'none';
-        }
-      }
-
-      if(openLogin) openLogin.addEventListener('click', (e) => { 
-        e.preventDefault(); 
-        openModal(false); 
-      });
-      
-      if(openSignup) openSignup.addEventListener('click', (e) => { 
-        e.preventDefault(); 
-        openModal(true); 
-      });
-      
-      if(mLogin) mLogin.addEventListener('click', (e) => { 
-        e.preventDefault(); 
-        openModal(false); 
-      });
-      
-      if(footerLogin) footerLogin.addEventListener('click', (e) => { 
-        e.preventDefault(); 
-        openModal(false); 
-      });
-      
-      if(footerJoin) footerJoin.addEventListener('click', (e) => { 
-        e.preventDefault(); 
-        openModal(true); 
-      });
-
-      if(closeBtn) closeBtn.addEventListener('click', closeModal);
-      if(backdrop) backdrop.addEventListener('click', closeModal);
-
-      if(switchAnchor) switchAnchor.addEventListener('click', (e) => {
-        e.preventDefault();
-        isSignup = !isSignup;
-        updateModalContent();
-      });
-
-      window.addEventListener('keydown', (e) => {
-        if(e.key === 'Escape') closeModal();
-      });
-
-      // Password toggle
-      const togglePw = document.getElementById('togglePw');
-      const passwordInput = document.getElementById('password');
-      if(togglePw && passwordInput){
-        togglePw.addEventListener('click', () => {
-          const type = passwordInput.type === 'password' ? 'text' : 'password';
-          passwordInput.type = type;
+        // Smooth scroll for anchor links (existing code)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && document.querySelector(href)) {
+                    e.preventDefault();
+                    document.querySelector(href).scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
         });
-      }
 
-      // Form submission
-      const authForm = document.getElementById('authForm');
-      if(authForm){
-        authForm.addEventListener('submit', (e) => {
-          e.preventDefault();
-          alert(isSignup ? 'Sign up functionality would go here' : 'Login functionality would go here');
-        });
-      }
-    })();
-  </script>
+        // MODAL/LOGIN FUNCTIONALITY (CORRECTION/ADDITION)
+        (function() {
+            const loginModal = document.getElementById('loginModal');
+            const signupModal = document.getElementById('signupModal');
+            const backdrop = document.getElementById('loginBackdrop');
+            
+            // Buttons to open/close
+            const openLoginBtns = document.querySelectorAll('#openLogin, #mLogin, #switchToLogin');
+            const closeLoginBtn = document.getElementById('closeLogin');
+            const openSignupBtns = document.querySelectorAll('#openSignup, #switchToSignup');
+            const closeSignupBtn = document.getElementById('closeSignup');
+
+            // Password toggles
+            const pwToggleLogin = document.getElementById('pwToggle');
+            const pwInputLogin = document.getElementById('password');
+            const pwToggleSignup = document.getElementById('pwToggleSignup');
+            const pwInputSignup = document.getElementById('signup-password');
+
+            if (!loginModal || !signupModal || !backdrop) return;
+            
+            function openModal(modal) {
+                closeModal(loginModal); // Close any other open modal
+                closeModal(signupModal);
+                
+                modal.classList.add('show');
+                modal.removeAttribute('hidden');
+                backdrop.classList.add('show');
+                backdrop.removeAttribute('hidden');
+                document.body.style.overflow = 'hidden'; // Disable body scroll
+                modal.focus();
+            }
+
+            function closeModal(modal) {
+                modal.classList.remove('show');
+                modal.setAttribute('hidden', '');
+                backdrop.classList.remove('show');
+                backdrop.setAttribute('hidden', '');
+                document.body.style.overflow = '';
+            }
+
+            // Open Login Modal
+            openLoginBtns.forEach(btn => btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(loginModal);
+            }));
+
+            // Close Login Modal
+            closeLoginBtn.addEventListener('click', () => closeModal(loginModal));
+
+            // Open Signup Modal
+            openSignupBtns.forEach(btn => btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(signupModal);
+            }));
+
+            // Close Signup Modal
+            closeSignupBtn.addEventListener('click', () => closeModal(signupModal));
+
+            // Close modal when clicking backdrop
+            backdrop.addEventListener('click', () => {
+                closeModal(loginModal);
+                closeModal(signupModal);
+            });
+
+            // Close modal with ESC key
+            window.addEventListener('keydown', (e) => { 
+                if (e.key === 'Escape') {
+                    closeModal(loginModal);
+                    closeModal(signupModal);
+                }
+            });
+            
+            // Password toggle logic
+            function setupPasswordToggle(toggleBtn, input) {
+                if (!toggleBtn || !input) return;
+                toggleBtn.addEventListener('click', () => {
+                    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                    input.setAttribute('type', type);
+                    // Optionally update the icon based on visibility
+                    toggleBtn.setAttribute('aria-label', type === 'password' ? 'Show password' : 'Hide password');
+                    // In a real app, you'd swap the SVG here
+                });
+            }
+
+            setupPasswordToggle(pwToggleLogin, pwInputLogin);
+            setupPasswordToggle(pwToggleSignup, pwInputSignup);
+
+            // Prevent default form submission (for a static demo)
+            document.getElementById('loginForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Login attempt initiated (form submitted).');
+                // closeModal(loginModal); // Uncomment in real app on success
+            });
+
+            document.getElementById('signupForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Signup attempt initiated (form submitted).');
+                // closeModal(signupModal); // Uncomment in real app on success
+            });
+        })();
+    </script>
 </body>
 </html>
