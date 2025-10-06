@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AQA GCSE Biology Revision Notes - BackBenchAI</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --primary: #3b82f6;
+      --primary-dark: #2563eb;
+      --text: #0f172a;
+      --text-light: #475569;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --bg: #ffffff;
+      --bg-light: #f8fafc;
+      --bg-hover: #f1f5f9;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      background: var(--bg-light);
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* Header */
+    .header {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .brand svg {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      padding: 24px 0 16px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 14px;
+    }
+
+    .breadcrumb a {
+      color: var(--text-light);
+      text-decoration: underline;
+      transition: color 0.2s;
+    }
+
+    .breadcrumb a:hover {
+      color: var(--primary);
+    }
+
+    .breadcrumb span {
+      color: var(--text-muted);
+    }
+
+    .breadcrumb .current {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    /* Page Header */
+    .page-header {
+      padding: 24px 0 32px;
+    }
+
+    .page-title {
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 16px;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .exam-code {
+      display: inline-block;
+      padding: 6px 14px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+    }
+
+    .page-description {
+      font-size: 16px;
+      color: var(--text-muted);
+      max-width: 700px;
+    }
+
+    /* Content Grid */
+    .content-grid {
+      display: grid;
+      gap: 24px;
+      padding-bottom: 80px;
+    }
+
+    /* Section Card */
+    .section-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .section-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    /* Topic Item */
+    .topic-item {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .topic-item:last-child {
+      border-bottom: none;
+    }
+
+    .topic-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 24px;
+      cursor: pointer;
+      transition: background 0.2s;
+      user-select: none;
+    }
+
+    .topic-header:hover {
+      background: var(--bg-hover);
+    }
+
+    .topic-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      flex: 1;
+    }
+
+    .topic-icon {
+      width: 20px;
+      height: 20px;
+      color: var(--text-muted);
+      transition: transform 0.3s ease;
+      flex-shrink: 0;
+    }
+
+    .topic-item.active .topic-icon {
+      transform: rotate(180deg);
+    }
+
+    /* Subtopic Content */
+    .subtopic-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.3s ease;
+      background: var(--bg-light);
+    }
+
+    .topic-item.active .subtopic-content {
+      max-height: 1000px;
+    }
+
+    .subtopic-list {
+      padding: 16px 24px 24px;
+    }
+
+    .subtopic-link {
+      display: block;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 15px;
+      transition: all 0.2s;
+    }
+
+    .subtopic-link:hover {
+      border-color: var(--primary);
+      background: white;
+      transform: translateX(4px);
+    }
+
+    .subtopic-link:last-child {
+      margin-bottom: 0;
+    }
+
+    /* Tablet */
+    @media (min-width: 768px) {
+      .container {
+        padding: 0 32px;
+      }
+
+      .page-title {
+        font-size: 42px;
+      }
+
+      .page-description {
+        font-size: 18px;
+      }
+
+      .content-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* Desktop */
+    @media (min-width: 1024px) {
+      .breadcrumb {
+        font-size: 15px;
+      }
+
+      .page-header {
+        padding: 32px 0 48px;
+      }
+
+      .page-title {
+        font-size: 52px;
+      }
+
+      .section-title {
+        font-size: 22px;
+      }
+
+      .topic-name {
+        font-size: 17px;
+      }
+
+      .subtopic-link {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container header-inner">
+      <a class="brand" href="#" aria-label="BackBenchAI home">
+        <svg width="40" height="40" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" fill="none">
+          <path d="M350.208 192.512h61.44v61.44h-61.44zM411.648 251.904h61.44v61.44h-61.44zM473.088 251.904h61.44v61.44h-61.44z" fill="#009944"></path>
+          <path d="M532.48 192.512h61.44v61.44h-61.44z" fill="#009944"></path>
+          <path d="M229.376 374.784h61.44v61.44h-61.44zM290.816 313.344h61.44v61.44h-61.44z" fill="#2563eb"></path>
+          <path d="M350.208 313.344h61.44v61.44h-61.44zM290.816 374.784h61.44v61.44h-61.44z" fill="#2563eb"></path>
+          <path d="M350.208 374.784h61.44v61.44h-61.44z" fill="#2563eb"></path>
+          <path d="M473.088 313.344h61.44v61.44h-61.44z" fill="#009944"></path>
+          <path d="M411.648 374.784h61.44v61.44h-61.44z" fill="#2563eb"></path>
+          <path d="M532.48 313.344h61.44v61.44h-61.44zM593.92 313.344h61.44v61.44h-61.44z" fill="#009944"></path>
+        </svg>
+        <span>BackBenchAI</span>
+      </a>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Breadcrumb -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <a href="#">🏠</a>
+      <span>/</span>
+      <a href="#">GCSE</a>
+      <span>/</span>
+      <a href="#">Biology</a>
+      <span>/</span>
+      <a href="#">AQA</a>
+      <span>/</span>
+      <span class="current">Revision Notes</span>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <h1 class="page-title">AQA GCSE Biology Revision Notes</h1>
+      <div class="exam-code">Exam code: 8461</div>
+      <p class="page-description">
+        Concise resources for the AQA GCSE Biology course.
+      </p>
+    </div>
+
+    <!-- Content Grid -->
+    <div class="content-grid">
+      <!-- Cell Biology Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">Cell Biology</h2>
+        </div>
+        
+        <div class="topic-item">
+          <div class="topic-header">
+            <span class="topic-name">Cell Structure</span>
+            <svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+          <div class="subtopic-content">
+            <div class="subtopic-list">
+              <a href="#" class="subtopic-link">Eukaryotes & Prokaryotes</a>
+              <a href="#" class="subtopic-link">Animal & Plant Cells</a>
+              <a href="#" class="subtopic-link">Cell Specialisation</a>
+              <a href="#" class="subtopic-link">Cell Differentiation</a>
+              <a href="#" class="subtopic-link">Microscopy</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="topic-item">
+          <div class="topic-header">
+            <span class="topic-name">Cell Division</span>
+            <svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+          <div class="subtopic-content">
+            <div class="subtopic-list">
+              <a href="#" class="subtopic-link">Chromosomes & Mitosis</a>
+              <a href="#" class="subtopic-link">Stem Cells</a>
+              <a href="#" class="subtopic-link">Therapeutic Cloning</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="topic-item">
+          <div class="topic-header">
+            <span class="topic-name">Transport in Cells</span>
+            <svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+          <div class="subtopic-content">
+            <div class="subtopic-list">
+              <a href="#" class="subtopic-link">Diffusion</a>
+              <a href="#" class="subtopic-link">Osmosis</a>
+              <a href="#" class="subtopic-link">Active Transport</a>
+              <a href="#" class="subtopic-link">Exchange Surfaces</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Organisation Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">Organisation</h2>
+        </div>
+        
+        <div class="topic-item">
+          <div class="topic-header">
+            <span class="topic-name">Organisation: Digestion</span>
+            <svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+          <div class="subtopic-content">
+            <div class="subtopic-list">
+              <a href="#" class="subtopic-link">Principles of Organisation</a>
+              <a href="#" class="subtopic-link">The Digestive System</a>
+              <a href="#" class="subtopic-link">Enzymes</a>
+              <a href="#" class="subtopic-link">Food Tests</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="topic-item">
+          <div class="topic-header">
+            <span class="topic-name">Organisation: The Cardiovascular & Respiratory System</span>
+            <svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+          <div class="subtopic-content">
+            <div class="subtopic-list">
+              <a href="#" class="subtopic-link">The Heart</a>
+              <a href="#" class="subtopic-link">Blood Vessels</a>
+              <a href="#" class="subtopic-link">Blood</a>
+              <a href="#" class="subtopic-link">The Lungs</a>
+              <a href="#" class="subtopic-link">Breathing</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Health & Disease Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">Health & Disease</h2>
+        </div>
+        
+        <div class="topic-item">
+          <div class="topic-header">
+            <span class="topic-name">Communicable Diseases</span>
+            <svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+          <div class="subtopic-content">
+            <div class="subtopic-list">
+              <a href="#" class="subtopic-link">Health & Disease</a>
+              <a href="#" class="subtopic-link">Pathogens</a>
+              <a href="#" class="subtopic-link">Viral Diseases</a>
+              <a href="#" class="subtopic-link">Bacterial Diseases</a>
+              <a href="#" class="subtopic-link">Fungal & Protist Diseases</a>
+              <a href="#" class="subtopic-link">Fighting Disease</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="topic-item">
+          <div class="topic-header">
+            <span class="topic-name">Non-Communicable Diseases</span>
+            <svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+          <div class="subtopic-content">
+            <div class="subtopic-list">
+              <a href="#" class="subtopic-link">Risk Factors</a>
+              <a href="#" class="subtopic-link">Cancer</a>
+              <a href="#" class="subtopic-link">Lifestyle Diseases</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Plant Tissues Section -->
+      <div class="section-card">
+        <div class="section-header">
+          <h2 class="section-title">Plant Tissues, Organs & Systems</h2>
+        </div>
+        
+        <div class="topic-item">
+          <div class="topic-header">
+            <span class="topic-name">Photosynthesis</span>
+            <svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+          <div class="subtopic-content">
+            <div class="subtopic-list">
+              <a href="#" class="subtopic-link">Photosynthesis Reaction</a>
+              <a href="#" class="subtopic-link">Rate of Photosynthesis</a>
+              <a href="#" class="subtopic-link">Uses of Glucose</a>
+            </div>
+          </div>
+        </div>
+
+        <div class="topic-item">
+          <div class="topic-header">
+            <span class="topic-name">Plant Structure</span>
+            <svg class="topic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M19 9l-7 7-7-7"/>
+            </svg>
+          </div>
+          <div class="subtopic-content">
+            <div class="subtopic-list">
+              <a href="#" class="subtopic-link">Plant Tissues</a>
+              <a href="#" class="subtopic-link">Transpiration</a>
+              <a href="#" class="subtopic-link">Translocation</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Topic accordion functionality
+    document.querySelectorAll('.topic-header').forEach(header => {
+      header.addEventListener('click', function() {
+        const topicItem = this.parentElement;
+        const isActive = topicItem.classList.contains('active');
+        
+        // Close all other topics in the same section
+        const section = topicItem.closest('.section-card');
+        section.querySelectorAll('.topic-item').forEach(item => {
+          item.classList.remove('active');
+        });
+        
+        // Toggle current topic
+        if (!isActive) {
+          topicItem.classList.add('active');
+        }
+      });
+    });
+
+    // Optional: Open first topic in each section by default
+    document.querySelectorAll('.section-card').forEach(section => {
+      const firstTopic = section.querySelector('.topic-item');
+      if (firstTopic) {
+        firstTopic.classList.add('active');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -636,6 +636,10 @@ def home():
 def index():
     return render_template("index.html", site_name=SITE_NAME)
 
+@app.route("/subject/<subject_slug>")
+def subject(subject_slug: str):
+    return render_template(f"{subject_slug}.html")
+
 @app.route("/level/<level_slug>")
 def level(level_slug: str):
     level_slug = level_slug.lower()
