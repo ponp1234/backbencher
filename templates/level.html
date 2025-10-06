@@ -1417,5 +1417,208 @@
       });
     });
   </script>
+    <script>
+    // Footer year
+    (function(){ 
+      const y = document.getElementById('y'); 
+      if(y) y.textContent = new Date().getFullYear(); 
+    })();
+
+    // Mobile menu toggle
+    (function(){
+      const btn = document.getElementById('menuBtn');
+      const menu = document.getElementById('mobileMenu');
+      if(!btn || !menu) return;
+
+      function openMenu(){
+        menu.classList.add('show');
+        menu.removeAttribute('hidden');
+        btn.setAttribute('aria-expanded','true');
+        document.body.style.overflow = 'hidden';
+      }
+      
+      function closeMenu(){
+        menu.classList.remove('show');
+        menu.setAttribute('hidden','');
+        btn.setAttribute('aria-expanded','false');
+        document.body.style.overflow = '';
+      }
+      
+      btn.addEventListener('click', () => {
+        const isOpen = menu.classList.contains('show');
+        isOpen ? closeMenu() : openMenu();
+      });
+      
+      menu.addEventListener('click', (e) => {
+        if(e.target.closest('a')) closeMenu();
+      });
+      
+      window.addEventListener('keydown', (e) => { 
+        if(e.key === 'Escape') closeMenu(); 
+      });
+      
+      window.addEventListener('resize', () => { 
+        if(window.innerWidth > 900) closeMenu(); 
+      });
+    })();
+
+    // Desktop Courses dropdown
+    (function(){
+      const btn = document.getElementById('coursesBtn');
+      const dd = document.getElementById('coursesMenu');
+      if(!btn || !dd) return;
+
+      let open = false;
+      
+      function setOpen(v){
+        open = v;
+        dd.classList.toggle('show', v);
+        btn.setAttribute('aria-expanded', String(v));
+      }
+      
+      btn.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        setOpen(!open); 
+      });
+      
+      btn.addEventListener('mouseenter', () => { 
+        if(window.innerWidth > 900) setOpen(true); 
+      });
+      
+      dd.addEventListener('mouseleave', () => { 
+        if(window.innerWidth > 900) setOpen(false); 
+      });
+      
+      document.addEventListener('click', (e) => {
+        if(!open) return;
+        if(!dd.contains(e.target) && !btn.contains(e.target)) setOpen(false);
+      });
+      
+      window.addEventListener('resize', () => { 
+        if(window.innerWidth <= 900) setOpen(false); 
+      });
+    })();
+
+    // Auth modal
+    (function(){
+      const backdrop = document.getElementById('authBackdrop');
+      const modal = document.getElementById('authModal');
+      const closeBtn = document.getElementById('closeAuth');
+      const openLogin = document.getElementById('openLogin');
+      const openSignup = document.getElementById('openSignup');
+      const switchAnchor = document.getElementById('switchAnchor');
+      const modalTitle = document.getElementById('authTitle');
+      const fullNameGroup = document.getElementById('fullNameGroup');
+      const primarySubmit = document.getElementById('primarySubmit');
+      const switchText = document.getElementById('switchText');
+      const switchLink = document.getElementById('switchLink');
+      const googleText = document.getElementById('googleText');
+      const mLogin = document.getElementById('mLogin');
+      const footerLogin = document.getElementById('footerLogin');
+      const footerJoin = document.getElementById('footerJoin');
+      const registerLink = document.getElementById('registerLink');
+
+      let isSignup = true;
+
+      function openModal(signup = true){
+        isSignup = signup;
+        updateModalContent();
+        backdrop.removeAttribute('hidden');
+        modal.removeAttribute('hidden');
+        setTimeout(() => {
+          backdrop.classList.add('show');
+          modal.classList.add('show');
+        }, 10);
+        document.body.style.overflow = 'hidden';
+      }
+
+      function closeModal(){
+        backdrop.classList.remove('show');
+        modal.classList.remove('show');
+        setTimeout(() => {
+          backdrop.setAttribute('hidden', '');
+          modal.setAttribute('hidden', '');
+          document.body.style.overflow = '';
+        }, 300);
+      }
+
+      function updateModalContent(){
+        if(isSignup){
+          modalTitle.textContent = 'Sign up now. It is free';
+          fullNameGroup.style.display = 'flex';
+          primarySubmit.textContent = 'Sign up';
+          switchText.textContent = 'Already have an account';
+          switchLink.textContent = 'Log in';
+          googleText.textContent = 'Continue with Google';
+          registerLink.style.display = 'block';
+        } else {
+          modalTitle.textContent = 'Welcome back';
+          fullNameGroup.style.display = 'none';
+          primarySubmit.textContent = 'Log in';
+          switchText.textContent = "Don't have an account";
+          switchLink.textContent = 'Sign up';
+          googleText.textContent = 'Sign in with Google';
+          registerLink.style.display = 'none';
+        }
+      }
+
+      if(openLogin) openLogin.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        openModal(false); 
+      });
+      
+      if(openSignup) openSignup.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        openModal(true); 
+      });
+      
+      if(mLogin) mLogin.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        openModal(false); 
+      });
+      
+      if(footerLogin) footerLogin.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        openModal(false); 
+      });
+      
+      if(footerJoin) footerJoin.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        openModal(true); 
+      });
+
+      if(closeBtn) closeBtn.addEventListener('click', closeModal);
+      if(backdrop) backdrop.addEventListener('click', closeModal);
+
+      if(switchAnchor) switchAnchor.addEventListener('click', (e) => {
+        e.preventDefault();
+        isSignup = !isSignup;
+        updateModalContent();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape') closeModal();
+      });
+
+      // Password toggle
+      const togglePw = document.getElementById('togglePw');
+      const passwordInput = document.getElementById('password');
+      if(togglePw && passwordInput){
+        togglePw.addEventListener('click', () => {
+          const type = passwordInput.type === 'password' ? 'text' : 'password';
+          passwordInput.type = type;
+        });
+      }
+
+      // Form submission
+      const authForm = document.getElementById('authForm');
+      if(authForm){
+        authForm.addEventListener('submit', (e) => {
+          e.preventDefault();
+          alert(isSignup ? 'Sign up functionality would go here' : 'Login functionality would go here');
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
