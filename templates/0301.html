@@ -1149,6 +1149,41 @@
       padding: 0 16px;
     }
 
+    /* Header */
+    .header {
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .header-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 20px;
+      gap: 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--primary);
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .brand svg {
+      width: 40px;
+      height: 40px;
+      flex-shrink: 0;
+    }
+
     /* Breadcrumb */
     .breadcrumb {
       padding: 24px 0 16px;
