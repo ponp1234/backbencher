@@ -736,5 +736,228 @@
       }
     });
   </script>
+    <script>
+        // Footer year
+        (function(){ 
+            const y = document.getElementById('y'); 
+            if(y) y.textContent = new Date().getFullYear(); 
+        })();
+
+        // Mobile menu toggle (existing code)
+        (function(){
+            const btn = document.getElementById('menuBtn');
+            const menu = document.getElementById('mobileMenu');
+            if(!btn || !menu) return;
+
+            function openMenu(){
+                menu.classList.add('show');
+                menu.removeAttribute('hidden');
+                btn.setAttribute('aria-expanded','true');
+                // Prevent body scroll only when mobile menu is open
+                if (window.innerWidth <= 900) { 
+                    document.body.style.overflow = 'hidden';
+                }
+            }
+            
+            function closeMenu(){
+                menu.classList.remove('show');
+                menu.setAttribute('hidden','');
+                btn.setAttribute('aria-expanded','false');
+                document.body.style.overflow = '';
+            }
+            
+            btn.addEventListener('click', () => {
+                const isOpen = menu.classList.contains('show');
+                isOpen ? closeMenu() : openMenu();
+            });
+            
+            menu.addEventListener('click', (e) => {
+                if(e.target.closest('a')) closeMenu();
+            });
+            
+            window.addEventListener('keydown', (e) => { 
+                if(e.key === 'Escape') closeMenu(); 
+            });
+            
+            window.addEventListener('resize', () => { 
+                if(window.innerWidth > 900) closeMenu(); 
+            });
+        })();
+
+        // Desktop Courses dropdown (existing code)
+        (function(){
+            const btn = document.getElementById('coursesBtn');
+            const dd = document.getElementById('coursesMenu');
+            if(!btn || !dd) return;
+
+            let open = false;
+            
+            function setOpen(v){
+                open = v;
+                dd.classList.toggle('show', v);
+                btn.setAttribute('aria-expanded', String(v));
+            }
+            
+            btn.addEventListener('click', (e) => { 
+                e.preventDefault(); 
+                setOpen(!open); 
+            });
+            
+            btn.addEventListener('mouseenter', () => { 
+                if(window.innerWidth > 900) setOpen(true); 
+            });
+            
+            dd.addEventListener('mouseleave', () => { 
+                if(window.innerWidth > 900) setOpen(false); 
+            });
+            
+            document.addEventListener('click', (e) => {
+                if(!open) return;
+                if(!dd.contains(e.target) && !btn.contains(e.target)) setOpen(false);
+            });
+            
+            window.addEventListener('resize', () => { 
+                if(window.innerWidth <= 900) setOpen(false); 
+            });
+        })();
+
+        // Segment switching functionality (existing code)
+        (function() {
+            const segments = document.querySelectorAll('.seg');
+            
+            segments.forEach(seg => {
+                seg.addEventListener('click', function() {
+                    // Remove active class from all segments
+                    segments.forEach(s => {
+                        s.classList.remove('active');
+                        s.setAttribute('aria-selected', 'false');
+                    });
+                    
+                    // Add active class to clicked segment
+                    this.classList.add('active');
+                    this.setAttribute('aria-selected', 'true');
+                    
+                    // Here you would typically filter/update the resource tiles
+                    // based on the selected class level
+                    console.log('Selected:', this.textContent);
+                });
+            });
+        })();
+
+        // Smooth scroll for anchor links (existing code)
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (href !== '#' && document.querySelector(href)) {
+                    e.preventDefault();
+                    document.querySelector(href).scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // MODAL/LOGIN FUNCTIONALITY (CORRECTION/ADDITION)
+        (function() {
+            const loginModal = document.getElementById('loginModal');
+            const signupModal = document.getElementById('signupModal');
+            const backdrop = document.getElementById('loginBackdrop');
+            
+            // Buttons to open/close
+            const openLoginBtns = document.querySelectorAll('#openLogin, #mLogin, #switchToLogin');
+            const closeLoginBtn = document.getElementById('closeLogin');
+            const openSignupBtns = document.querySelectorAll('#openSignup, #switchToSignup');
+            const closeSignupBtn = document.getElementById('closeSignup');
+
+            // Password toggles
+            const pwToggleLogin = document.getElementById('pwToggle');
+            const pwInputLogin = document.getElementById('password');
+            const pwToggleSignup = document.getElementById('pwToggleSignup');
+            const pwInputSignup = document.getElementById('signup-password');
+
+            if (!loginModal || !signupModal || !backdrop) return;
+            
+            function openModal(modal) {
+                closeModal(loginModal); // Close any other open modal
+                closeModal(signupModal);
+                
+                modal.classList.add('show');
+                modal.removeAttribute('hidden');
+                backdrop.classList.add('show');
+                backdrop.removeAttribute('hidden');
+                document.body.style.overflow = 'hidden'; // Disable body scroll
+                modal.focus();
+            }
+
+            function closeModal(modal) {
+                modal.classList.remove('show');
+                modal.setAttribute('hidden', '');
+                backdrop.classList.remove('show');
+                backdrop.setAttribute('hidden', '');
+                document.body.style.overflow = '';
+            }
+
+            // Open Login Modal
+            openLoginBtns.forEach(btn => btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(loginModal);
+            }));
+
+            // Close Login Modal
+            closeLoginBtn.addEventListener('click', () => closeModal(loginModal));
+
+            // Open Signup Modal
+            openSignupBtns.forEach(btn => btn.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(signupModal);
+            }));
+
+            // Close Signup Modal
+            closeSignupBtn.addEventListener('click', () => closeModal(signupModal));
+
+            // Close modal when clicking backdrop
+            backdrop.addEventListener('click', () => {
+                closeModal(loginModal);
+                closeModal(signupModal);
+            });
+
+            // Close modal with ESC key
+            window.addEventListener('keydown', (e) => { 
+                if (e.key === 'Escape') {
+                    closeModal(loginModal);
+                    closeModal(signupModal);
+                }
+            });
+            
+            // Password toggle logic
+            function setupPasswordToggle(toggleBtn, input) {
+                if (!toggleBtn || !input) return;
+                toggleBtn.addEventListener('click', () => {
+                    const type = input.getAttribute('type') === 'password' ? 'text' : 'password';
+                    input.setAttribute('type', type);
+                    // Optionally update the icon based on visibility
+                    toggleBtn.setAttribute('aria-label', type === 'password' ? 'Show password' : 'Hide password');
+                    // In a real app, you'd swap the SVG here
+                });
+            }
+
+            setupPasswordToggle(pwToggleLogin, pwInputLogin);
+            setupPasswordToggle(pwToggleSignup, pwInputSignup);
+
+            // Prevent default form submission (for a static demo)
+            document.getElementById('loginForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Login attempt initiated (form submitted).');
+                // closeModal(loginModal); // Uncomment in real app on success
+            });
+
+            document.getElementById('signupForm').addEventListener('submit', (e) => {
+                e.preventDefault();
+                alert('Signup attempt initiated (form submitted).');
+                // closeModal(signupModal); // Uncomment in real app on success
+            });
+        })();
+    </script>
 </body>
 </html>
