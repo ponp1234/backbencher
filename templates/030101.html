@@ -4,31 +4,48 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Primary 3 Science — Living & Non-Living Things (MOE) - BackBenchAI</title>
+  <link rel="icon" href="static/bb.png" type="image/icon type">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     :root{
-      --primary:#3b82f6; --primary-dark:#2563eb;
-      --text:#0f172a; --text-light:#475569; --text-muted:#64748b;
+      --primary:#3b82f6; --primary-dark:#2563eb; --primary-light:#dbeafe;
+      --text:#0f172a; --text-light:#475569; --text-muted:#64748b; --muted:#64748b;
       --border:#e2e8f0; --bg:#ffffff; --bg-light:#f8fafc; --bg-hover:#f1f5f9;
-      --sidebar-width:320px;
+      --success:#10b981; --sidebar-width:320px;
     }
     body{ font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif; color:var(--text); line-height:1.6; -webkit-font-smoothing:antialiased; background:var(--bg-light);}
-    /* Header */
+    
+    /* Header Styles */
     .header{ background:var(--bg); border-bottom:1px solid var(--border); position:sticky; top:0; z-index:1000; box-shadow:0 1px 3px rgba(0,0,0,.05);}
     .header-inner{ display:flex; align-items:center; justify-content:space-between; padding:16px 20px; gap:16px; max-width:1600px; margin:0 auto;}
-    .brand{ display:flex; align-items:center; gap:12px; font-size:20px; font-weight:800; color:var(--primary); text-decoration:none;}
-    .brand svg{ width:40px; height:40px;}
-    .header-actions{ display:flex; align-items:center; gap:12px;}
-    .btn{ padding:10px 20px; border-radius:8px; font-weight:600; font-size:14px; text-decoration:none; transition:all .2s; border:none; cursor:pointer;}
-    .btn-primary{ background:var(--primary); color:#fff;}
-    .btn-primary:hover{ background:var(--primary-dark);}
-    .btn-outline{ background:transparent; color:var(--text); border:2px solid var(--border);}
+    .brand{ font-size:20px; font-weight:800; color:var(--primary); text-decoration:none; white-space:nowrap;}
+    .primary-nav{ display:none;}
+    .search{ display:none;}
+    .actions{ display:none;}
+    .menu-btn{ background:none; border:none; cursor:pointer; padding:8px; display:flex; align-items:center; justify-content:center;}
+    
+    /* Mobile Menu */
+    .mobile-menu{ position:fixed; top:65px; left:0; right:0; bottom:0; background:var(--bg); padding:20px; overflow-y:auto; transform:translateX(100%); transition:transform .3s ease; z-index:999;}
+    .mobile-menu.show{ transform:translateX(0);}
+    .mobile-menu a{ display:block; padding:14px 0; color:var(--text); text-decoration:none; font-weight:500; border-bottom:1px solid var(--border); transition:color .2s;}
+    .mobile-menu a:hover{ color:var(--primary);}
+    .mobile-menu strong{ color:var(--text-light); font-size:14px; text-transform:uppercase; letter-spacing:.05em;}
+    
+    /* Buttons */
+    .btn{ display:inline-flex; align-items:center; justify-content:center; padding:13px 24px; border-radius:8px; font-weight:600; text-decoration:none; transition:all .2s; border:2px solid transparent; font-size:15px; cursor:pointer; white-space:nowrap; text-align:center;}
+    .btn-primary{ background:var(--primary); color:white;}
+    .btn-primary:hover{ background:var(--primary-dark); transform:translateY(-1px); box-shadow:0 4px 12px rgba(59,130,246,.3);}
+    .btn-outline{ border-color:var(--border); color:var(--text); background:white;}
+    .btn-outline:hover{ border-color:var(--primary); color:var(--primary);}
+    
     /* Mobile Toggle */
     .mobile-toggle{ display:none; background:none; border:none; padding:8px; cursor:pointer;}
+    
     /* Layout */
     .page-container{ display:flex; max-width:1600px; margin:0 auto; min-height:calc(100vh - 65px);}
+    
     /* Sidebar */
     .sidebar{ width:var(--sidebar-width); background:var(--bg); border-right:1px solid var(--border); overflow-y:auto; position:sticky; top:65px; height:calc(100vh - 65px);}
     .sidebar-header{ padding:20px; border-bottom:1px solid var(--border);}
@@ -49,6 +66,7 @@
     .nav-item.active::before{ background:var(--primary);}
     .nav-dot{ width:8px; height:8px; border-radius:50%; border:2px solid var(--border); background:#fff; flex-shrink:0;}
     .nav-item.active .nav-dot{ background:var(--primary); border-color:var(--primary);}
+    
     /* Main */
     .main-content{ flex:1; padding:32px; max-width:900px;}
     .breadcrumb{ display:flex; align-items:center; flex-wrap:wrap; gap:8px; font-size:14px; margin-bottom:24px; color:var(--text-muted);}
@@ -66,13 +84,91 @@
     .update-date{ font-size:13px; color:var(--text-muted);}
     .download-btn{ padding:10px 20px; background:var(--primary); color:#fff; border:none; border-radius:8px; font-weight:600; cursor:pointer; font-size:14px; transition:background .2s;}
     .download-btn:hover{ background:var(--primary-dark);}
+    
     /* Content */
     .content-section{ margin-bottom:48px;}
     .content-section h2{ font-size:28px; font-weight:700; margin-bottom:20px; color:var(--text);}
     .content-section p{ font-size:16px; line-height:1.8; color:var(--text); margin-bottom:16px;}
     .diagram{ margin:32px 0; text-align:center;}
     .diagram img{ max-width:100%; height:auto; border-radius:12px; border:1px solid var(--border);}
-    /* Mobile */
+    
+    /* Modal Styles */
+    .backdrop{ position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:1100; opacity:0; transition:opacity .3s; pointer-events:none;}
+    .backdrop.show{ opacity:1; pointer-events:auto;}
+    .modal{ position:fixed; top:50%; left:50%; transform:translate(-50%,-50%) scale(.9); background:white; border-radius:16px; padding:32px 24px; width:calc(100% - 40px); max-width:440px; max-height:90vh; overflow-y:auto; z-index:1200; opacity:0; visibility:hidden; transition:all .3s;}
+    .modal.show{ opacity:1; visibility:visible; transform:translate(-50%,-50%) scale(1);}
+    .close{ position:absolute; top:16px; right:16px; background:none; border:none; cursor:pointer; padding:8px; color:var(--text-light); transition:color .2s;}
+    .close:hover{ color:var(--text);}
+    .modal-title{ font-size:24px; font-weight:700; margin-bottom:24px; padding-right:32px;}
+    .google-btn{ display:flex; align-items:center; justify-content:center; gap:12px; padding:12px 24px; border:2px solid var(--border); border-radius:8px; background:white; color:var(--text); font-weight:600; text-decoration:none; transition:all .2s;}
+    .google-btn:hover{ border-color:var(--primary);}
+    .divider{ display:flex; align-items:center; text-align:center; color:var(--text-light); margin:24px 0; font-size:14px;}
+    .divider::before,.divider::after{ content:''; flex:1; border-bottom:1px solid var(--border);}
+    .divider::before{ margin-right:12px;}
+    .divider::after{ margin-left:12px;}
+    .form{ display:flex; flex-direction:column; gap:16px;}
+    .field{ display:flex; flex-direction:column; gap:6px; position:relative;}
+    .label{ font-weight:600; font-size:14px; color:var(--text);}
+    .input{ padding:12px 14px; border:2px solid var(--border); border-radius:8px; font-size:15px; font-family:inherit; transition:border-color .2s;}
+    .input:focus{ outline:none; border-color:var(--primary);}
+    .pw-toggle{ position:absolute; right:12px; bottom:12px; background:none; border:none; cursor:pointer; padding:4px; color:var(--text-light);}
+    .modal-cta{ margin-top:8px; width:100%;}
+    .switch{ display:block; text-align:center; margin-top:20px; font-size:14px; color:var(--text-light); text-decoration:none;}
+    .switch a{ color:var(--primary); font-weight:600; text-decoration:none; cursor:pointer;}
+    .terms{ font-size:13px; color:var(--text-light); text-align:center; margin-top:16px; line-height:1.5;}
+    .terms a{ color:var(--primary); text-decoration:none;}
+    .forgot-password{ font-size:14px; color:var(--primary); font-weight:600; text-decoration:none; text-align:right; margin-top:-8px;}
+    
+    /* Footer */
+    .mega-footer{ background:var(--text); color:white; padding:60px 0 24px;}
+    .footer-top{ margin-bottom:48px;}
+    .footer-logo{ margin-bottom:32px; display:flex; justify-content:center;}
+    .brand-bolt{ width:40px; height:40px; background:var(--primary); border-radius:8px;}
+    .footer-grid{ display:grid; gap:32px;}
+    .footer-grid h4{ font-size:16px; font-weight:700; margin-bottom:16px; color:white;}
+    .footer-grid ul{ list-style:none;}
+    .footer-grid li{ margin-bottom:10px;}
+    .footer-grid a{ color:rgba(255,255,255,.7); text-decoration:none; font-size:14px; transition:color .2s;}
+    .footer-grid a:hover{ color:white;}
+    .footer-bottom{ border-top:1px solid rgba(255,255,255,.1); padding-top:24px; display:flex; flex-direction:column; gap:24px;}
+    .footer-bottom p{ font-size:13px; color:rgba(255,255,255,.6); margin-bottom:8px;}
+    .disclaimer{ font-size:12px!important; line-height:1.5;}
+    .socials{ display:flex; gap:16px; justify-content:center;}
+    .socials a{ width:40px; height:40px; background:rgba(255,255,255,.1); border-radius:8px; display:flex; align-items:center; justify-content:center; transition:background .2s;}
+    .socials a:hover{ background:var(--primary);}
+    .socials svg{ width:20px; height:20px; fill:white;}
+    .container{ max-width:1400px; margin:0 auto; padding:0 20px;}
+    
+    [hidden]{ display:none!important;}
+    
+    /* Responsive */
+    @media (min-width:640px){
+      .footer-grid{ grid-template-columns:repeat(2,1fr);}
+    }
+    
+    @media (min-width:900px){
+      .primary-nav{ display:flex; align-items:center; gap:32px;}
+      .menu-item{ position:relative;}
+      .nav-link{ color:var(--text); text-decoration:none; font-weight:500; font-size:15px; padding:8px 0; display:flex; align-items:center; gap:6px; transition:color .2s;}
+      .nav-link:hover{ color:var(--primary);}
+      .dropdown{ position:absolute; top:100%; left:-20px; margin-top:8px; background:white; border:1px solid var(--border); border-radius:12px; padding:20px; min-width:400px; box-shadow:0 12px 24px rgba(0,0,0,.1); opacity:0; visibility:hidden; transform:translateY(-10px); transition:all .2s;}
+      .dropdown.show{ opacity:1; visibility:visible; transform:translateY(0);}
+      .dd-grid{ display:grid; grid-template-columns:1fr 1fr; gap:24px;}
+      .dd-col h5{ font-size:13px; font-weight:700; color:var(--text-light); text-transform:uppercase; letter-spacing:.05em; margin-bottom:12px;}
+      .dd-list{ list-style:none;}
+      .dd-link{ display:block; padding:8px 12px; color:var(--text); text-decoration:none; border-radius:6px; font-size:14px; font-weight:500; transition:background .2s;}
+      .dd-link:hover{ background:var(--bg-light);}
+      .dd-badge{ display:inline-block; background:var(--primary); color:white; font-size:11px; padding:2px 8px; border-radius:4px; margin-left:8px; font-weight:600;}
+      .search{ display:flex; align-items:center; gap:10px; padding:10px 16px; border:2px solid var(--border); border-radius:8px; background:var(--bg-light); flex:0 1 280px;}
+      .search input{ border:none; background:none; outline:none; flex:1; font-size:14px; font-family:inherit;}
+      .actions{ display:flex; gap:12px;}
+      .menu-btn{ display:none;}
+      .mobile-menu{ display:none;}
+      .footer-grid{ grid-template-columns:repeat(4,1fr);}
+      .footer-bottom{ flex-direction:row; justify-content:space-between; align-items:center;}
+      .socials{ justify-content:flex-end;}
+    }
+    
     @media (max-width:1024px){
       .sidebar{ position:fixed; left:-100%; top:65px; width:85%; max-width:320px; transition:left .3s ease; z-index:999; box-shadow:4px 0 12px rgba(0,0,0,.1);}
       .sidebar.open{ left:0;}
@@ -93,18 +189,71 @@
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
         </button>
         <a class="brand" href="#">
-          <svg width="40" height="40" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
-            <path d="M350.208 192.512h61.44v61.44h-61.44zM411.648 251.904h61.44v61.44h-61.44z" fill="#009944"/>
-            <path d="M229.376 374.784h61.44v61.44h-61.44zM290.816 313.344h61.44v61.44h-61.44z" fill="#2563eb"/>
-            <path d="M350.208 313.344h61.44v61.44h-61.44z" fill="#2563eb"/>
-          </svg>
-          <span>BackBenchAI</span>
+          <span style="color:black;">Back</span>
+          <span>Bench.AI</span>
         </a>
       </div>
-      <div class="header-actions">
-        <a href="#" class="btn btn-outline">Log in</a>
-        <a href="#" class="btn btn-primary">Join now for free</a>
+      
+      <nav aria-label="Primary" class="primary-nav">
+        <div class="menu-item">
+          <a href="#" class="nav-link menu-trigger" id="coursesBtn" aria-expanded="false" aria-haspopup="true">
+            Courses
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M6 9l6 6 6-6" stroke="#0f172a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+          <div class="dropdown" id="coursesMenu" role="menu" aria-label="Courses menu">
+            <div class="dd-grid">
+              <div class="dd-col">
+                <h5>Primary</h5>
+                <ul class="dd-list">
+                  <li><a class="dd-link" href="#">Primary 3</a></li>
+                  <li><a class="dd-link" href="#">Primary 4</a></li>
+                  <li><a class="dd-link" href="#">Primary 5</a></li>
+                </ul>
+              </div>
+              <div class="dd-col">
+                <h5>Secondary</h5>
+                <ul class="dd-list">
+                  <li><a class="dd-link" href="#">Sec 1 <span class="dd-badge">New</span></a></li>
+                  <li><a class="dd-link" href="#">Sec 2</a></li>
+                  <li><a class="dd-link" href="#">Sec 3</a></li>
+                  <li><a class="dd-link" href="#">Sec 4</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <a class="nav-link" href="#about">About</a>
+      </nav>
+      
+      <div class="search" role="search">
+        <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15z" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input aria-label="Search subjects" type="search" placeholder="Search for a subject" />
       </div>
+      
+      <div class="actions">
+        <a class="btn btn-outline" href="#" id="openLogin" aria-controls="loginModal">Log in</a>
+        <a class="btn btn-primary" href="#" id="openSignup" aria-controls="signupModal">Join now for free</a>
+      </div>
+      
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mobileMenu" aria-label="Open menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="#0f172a" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+    
+    <div id="mobileMenu" class="mobile-menu" aria-label="Mobile navigation" hidden>
+      <strong style="display:block;margin:8px 0">Courses by class</strong>
+      <a href="#">Primary 3</a>
+      <a href="#">Primary 4</a>
+      <a href="#">Primary 5</a>
+      <a href="#">Sec 1</a>
+      <a href="#">Sec 2</a>
+      <a href="#">Sec 3</a>
+      <a href="#">Sec 4</a>
+      <a href="#" id="mLogin" aria-controls="loginModal">Log in</a>
     </div>
   </header>
 
@@ -208,12 +357,10 @@
           <div class="diagram" aria-label="Living vs Non-Living diagram">
             <svg width="100%" height="320" viewBox="0 0 840 320" role="img" aria-labelledby="ttl">
               <title id="ttl">Living vs Non-Living</title>
-              <!-- Panels -->
               <rect x="40" y="40" width="360" height="240" rx="12" fill="#e0f2fe" stroke="#3b82f6" stroke-width="2"/>
               <rect x="440" y="40" width="360" height="240" rx="12" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2"/>
               <text x="220" y="72" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">LIVING</text>
               <text x="620" y="72" text-anchor="middle" font-size="18" font-weight="700" fill="#0f172a">NON-LIVING</text>
-              <!-- Living bullets -->
               <g font-size="14" fill="#0f172a">
                 <text x="70" y="110">• Needs air, water, food</text>
                 <text x="70" y="140">• Grows and changes</text>
@@ -221,68 +368,5 @@
                 <text x="70" y="200">• Reproduces (has young/seeds)</text>
                 <text x="70" y="230">• Examples: cat, fern, snail</text>
               </g>
-              <!-- Non-living bullets -->
               <g font-size="14" fill="#0f172a">
                 <text x="470" y="110">• Does not carry out life processes</text>
-                <text x="470" y="140">• Examples: rock, chair, coin</text>
-                <text x="470" y="170">• Some may move (e.g. toy car) but</text>
-                <text x="470" y="190">  they still do not grow or reproduce</text>
-              </g>
-              <!-- Cute icons -->
-              <circle cx="320" cy="240" r="22" fill="#22c55e" />
-              <rect x="700" y="220" width="46" height="46" rx="8" fill="#64748b"/>
-            </svg>
-          </div>
-        </section>
-
-        <!-- Animal groups -->
-        <section class="content-section">
-          <h2>How we group animals</h2>
-          <p>We classify animals into groups using <strong>observable features</strong>. For example, mammals usually have body hair and produce milk for their young; birds have feathers; fish have scales and fins; reptiles often have dry scales; amphibians have smooth, moist skin; insects have 6 legs and 3 body parts. Classification helps us describe and compare living things clearly.</p>
-        </section>
-
-        <!-- Plant groups -->
-        <section class="content-section">
-          <h2>How we group plants</h2>
-          <p>Plants can be grouped as <strong>flowering</strong> or <strong>non-flowering</strong>. We also compare leaf shapes and veins, types of stems (woody or non-woody), and whether plants make <strong>seeds</strong> or <strong>spores</strong>. These features help us identify plants we see in gardens and parks.</p>
-        </section>
-
-        <!-- Quick checks -->
-        <section class="content-section">
-          <h2>Quick checks & common misconceptions</h2>
-          <p><strong>“It moves, so it must be living.”</strong> Not always. A toy car can move but it does not grow or reproduce — it is non-living.</p>
-          <p><strong>“Plants don’t breathe.”</strong> Plants do take in air and release gases — they are living.</p>
-          <p><strong>“Seeds are not living.”</strong> Seeds are living but in a <em>resting</em> state. With water, air and warmth, they can germinate into young plants.</p>
-        </section>
-      </article>
-    </main>
-  </div>
-
-  <script>
-    // Sidebar expand/collapse
-    document.querySelectorAll('.nav-section-header').forEach(header=>{
-      header.addEventListener('click', function(e){
-        const section = this.parentElement;
-        const isExpanded = section.classList.contains('expanded');
-        if (e.target.closest('.nav-items')) return;
-        section.classList.toggle('expanded');
-      });
-    });
-
-    // Mobile sidebar
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const sidebar = document.getElementById('sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-
-    function openSidebar(){ sidebar.classList.add('open'); sidebarOverlay.classList.add('show'); document.body.style.overflow='hidden'; }
-    function closeSidebar(){ sidebar.classList.remove('open'); sidebarOverlay.classList.remove('show'); document.body.style.overflow=''; }
-
-    if(sidebarToggle){ sidebarToggle.addEventListener('click', openSidebar); }
-    if(sidebarOverlay){ sidebarOverlay.addEventListener('click', closeSidebar); }
-    sidebar.querySelectorAll('.nav-item').forEach(link=>{
-      link.addEventListener('click', ()=>{ if(window.innerWidth<=1024){ closeSidebar(); }});
-    });
-    window.addEventListener('resize', ()=>{ if(window.innerWidth>1024){ closeSidebar(); }});
-  </script>
-</body>
-</html>
